@@ -13,7 +13,3 @@ FOUNDATION_EXPORT double FetchRequestsVersionNumber;
 
 //! Project version string for FetchRequests.
 FOUNDATION_EXPORT const unsigned char FetchRequestsVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <FetchRequests/PublicHeader.h>
-
-

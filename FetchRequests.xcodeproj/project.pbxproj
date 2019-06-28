@@ -8,8 +8,33 @@
 
 /* Begin PBXBuildFile section */
 		471C507622C6D0DC007F73E9 /* FetchRequests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 471C506C22C6D0DB007F73E9 /* FetchRequests.framework */; };
-		471C507B22C6D0DC007F73E9 /* FetchRequestsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C507A22C6D0DC007F73E9 /* FetchRequestsTests.swift */; };
 		471C507D22C6D0DC007F73E9 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		471C509822C6D18D007F73E9 /* CWFetchedResultsControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508722C6D18D007F73E9 /* CWFetchedResultsControllerProtocol.swift */; };
+		471C509922C6D18D007F73E9 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508822C6D18D007F73E9 /* Logging.swift */; };
+		471C509A22C6D18D007F73E9 /* CWObservableToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508922C6D18D007F73E9 /* CWObservableToken.swift */; };
+		471C509B22C6D18D007F73E9 /* AssociatedValueReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508A22C6D18D007F73E9 /* AssociatedValueReference.swift */; };
+		471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */; };
+		471C509D22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508C22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift */; };
+		471C509E22C6D18D007F73E9 /* CWFetchRequestAssociation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508D22C6D18D007F73E9 /* CWFetchRequestAssociation.swift */; };
+		471C509F22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508E22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift */; };
+		471C50A022C6D18D007F73E9 /* CWPausableFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508F22C6D18D007F73E9 /* CWPausableFetchedResultsController.swift */; };
+		471C50A122C6D18D007F73E9 /* CWFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509022C6D18D007F73E9 /* CWFetchRequest.swift */; };
+		471C50A222C6D18D007F73E9 /* CWFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509122C6D18D007F73E9 /* CWFetchedResultsController.swift */; };
+		471C50A322C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509222C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift */; };
+		471C50A422C6D18D007F73E9 /* CWFetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509322C6D18D007F73E9 /* CWFetchableObject.swift */; };
+		471C50A522C6D18D007F73E9 /* CWFetchableEntityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509422C6D18D007F73E9 /* CWFetchableEntityID.swift */; };
+		471C50A722C6D18D007F73E9 /* simplediff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509722C6D18D007F73E9 /* simplediff.swift */; };
+		471C50B822C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
+		471C50B922C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AD22C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift */; };
+		471C50BA22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
+		471C50BB22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */; };
+		471C50BC22C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */; };
+		471C50BD22C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */; };
+		471C50BE22C6D337007F73E9 /* CWTestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B222C6D337007F73E9 /* CWTestObject.swift */; };
+		471C50BF22C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */; };
+		471C50C022C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */; };
+		471C50C122C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */; };
+		471C50C222C6D337007F73E9 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,12 +48,41 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4719618122C6DC6C000BBE6B /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		471C506C22C6D0DB007F73E9 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		471C506F22C6D0DB007F73E9 /* FetchRequests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FetchRequests.h; sourceTree = "<group>"; };
 		471C507022C6D0DB007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471C507522C6D0DC007F73E9 /* FetchRequestsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FetchRequestsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		471C507A22C6D0DC007F73E9 /* FetchRequestsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchRequestsTests.swift; sourceTree = "<group>"; };
 		471C507C22C6D0DC007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		471C508722C6D18D007F73E9 /* CWFetchedResultsControllerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsControllerProtocol.swift; sourceTree = "<group>"; };
+		471C508822C6D18D007F73E9 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
+		471C508922C6D18D007F73E9 /* CWObservableToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWObservableToken.swift; sourceTree = "<group>"; };
+		471C508A22C6D18D007F73E9 /* AssociatedValueReference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssociatedValueReference.swift; sourceTree = "<group>"; };
+		471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CollectionType+SortDescriptors.swift"; sourceTree = "<group>"; };
+		471C508C22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWPaginatingFetchRequest.swift; sourceTree = "<group>"; };
+		471C508D22C6D18D007F73E9 /* CWFetchRequestAssociation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchRequestAssociation.swift; sourceTree = "<group>"; };
+		471C508E22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWCollapsibleSectionsFetchedResultsController.swift; sourceTree = "<group>"; };
+		471C508F22C6D18D007F73E9 /* CWPausableFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWPausableFetchedResultsController.swift; sourceTree = "<group>"; };
+		471C509022C6D18D007F73E9 /* CWFetchRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchRequest.swift; sourceTree = "<group>"; };
+		471C509122C6D18D007F73E9 /* CWFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsController.swift; sourceTree = "<group>"; };
+		471C509222C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsControllerWrapper.swift; sourceTree = "<group>"; };
+		471C509322C6D18D007F73E9 /* CWFetchableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchableObject.swift; sourceTree = "<group>"; };
+		471C509422C6D18D007F73E9 /* CWFetchableEntityID.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchableEntityID.swift; sourceTree = "<group>"; };
+		471C509622C6D18D007F73E9 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		471C509722C6D18D007F73E9 /* simplediff.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = simplediff.swift; sourceTree = "<group>"; };
+		471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWCollapsibleSectionsFetchedResultsControllerTestCase.swift; sourceTree = "<group>"; };
+		471C50AD22C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsControllerWrapperTestCase.swift; sourceTree = "<group>"; };
+		471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWPausableFetchedResultsControllerTestCase.swift; sourceTree = "<group>"; };
+		471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWPaginatingFetchedResultsControllerTestCase.swift; sourceTree = "<group>"; };
+		471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsControllerTestHarness.swift; sourceTree = "<group>"; };
+		471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchedResultsControllerTestCase.swift; sourceTree = "<group>"; };
+		471C50B222C6D337007F73E9 /* CWTestObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWTestObject.swift; sourceTree = "<group>"; };
+		471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchRequestAssociationTestCase.swift; sourceTree = "<group>"; };
+		471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchableObjectProtocolTestCase.swift; sourceTree = "<group>"; };
+		471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CWTestObject+CWFetchableObjectProtocol.swift"; sourceTree = "<group>"; };
+		471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CWTestObject+Associations.swift"; sourceTree = "<group>"; };
+		47B4771722C6D7860008C56E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		47B4771822C6D7860008C56E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +107,9 @@
 		471C506222C6D0DB007F73E9 = {
 			isa = PBXGroup;
 			children = (
+				47B4771822C6D7860008C56E /* LICENSE */,
+				47B4771722C6D7860008C56E /* README.md */,
+				4719618122C6DC6C000BBE6B /* CHANGELOG.md */,
 				471C506E22C6D0DB007F73E9 /* FetchRequests */,
 				471C507922C6D0DC007F73E9 /* FetchRequestsTests */,
 				471C506D22C6D0DB007F73E9 /* Products */,
@@ -72,6 +129,8 @@
 			isa = PBXGroup;
 			children = (
 				471C506F22C6D0DB007F73E9 /* FetchRequests.h */,
+				471C509522C6D18D007F73E9 /* simplediff-swift */,
+				471C508622C6D18D007F73E9 /* Sources */,
 				471C507022C6D0DB007F73E9 /* Info.plist */,
 			);
 			path = FetchRequests;
@@ -80,10 +139,90 @@
 		471C507922C6D0DC007F73E9 /* FetchRequestsTests */ = {
 			isa = PBXGroup;
 			children = (
-				471C507A22C6D0DC007F73E9 /* FetchRequestsTests.swift */,
+				471C50AB22C6D337007F73E9 /* Controllers */,
+				471C50B322C6D337007F73E9 /* Models */,
+				471C50B222C6D337007F73E9 /* CWTestObject.swift */,
+				471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */,
+				471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */,
 				471C507C22C6D0DC007F73E9 /* Info.plist */,
 			);
 			path = FetchRequestsTests;
+			sourceTree = "<group>";
+		};
+		471C508622C6D18D007F73E9 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				471C50A822C6D1D6007F73E9 /* Controller */,
+				471C50A922C6D203007F73E9 /* Requests */,
+				471C50AA22C6D244007F73E9 /* Associations */,
+				471C508822C6D18D007F73E9 /* Logging.swift */,
+				471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */,
+				471C509322C6D18D007F73E9 /* CWFetchableObject.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		471C509522C6D18D007F73E9 /* simplediff-swift */ = {
+			isa = PBXGroup;
+			children = (
+				471C509622C6D18D007F73E9 /* LICENSE */,
+				471C509722C6D18D007F73E9 /* simplediff.swift */,
+			);
+			path = "simplediff-swift";
+			sourceTree = "<group>";
+		};
+		471C50A822C6D1D6007F73E9 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				471C508722C6D18D007F73E9 /* CWFetchedResultsControllerProtocol.swift */,
+				471C509122C6D18D007F73E9 /* CWFetchedResultsController.swift */,
+				471C509222C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift */,
+				471C508E22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift */,
+				471C508F22C6D18D007F73E9 /* CWPausableFetchedResultsController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		471C50A922C6D203007F73E9 /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				471C509022C6D18D007F73E9 /* CWFetchRequest.swift */,
+				471C508C22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
+		471C50AA22C6D244007F73E9 /* Associations */ = {
+			isa = PBXGroup;
+			children = (
+				471C508A22C6D18D007F73E9 /* AssociatedValueReference.swift */,
+				471C508D22C6D18D007F73E9 /* CWFetchRequestAssociation.swift */,
+				471C509422C6D18D007F73E9 /* CWFetchableEntityID.swift */,
+				471C508922C6D18D007F73E9 /* CWObservableToken.swift */,
+			);
+			path = Associations;
+			sourceTree = "<group>";
+		};
+		471C50AB22C6D337007F73E9 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */,
+				471C50AD22C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift */,
+				471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */,
+				471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */,
+				471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */,
+				471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		471C50B322C6D337007F73E9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */,
+				471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,6 +281,7 @@
 		471C506322C6D0DB007F73E9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = CW;
 				LastSwiftUpdateCheck = 1100;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Speramus Inc.";
@@ -195,6 +335,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				471C509D22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift in Sources */,
+				471C509A22C6D18D007F73E9 /* CWObservableToken.swift in Sources */,
+				471C50A322C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift in Sources */,
+				471C509B22C6D18D007F73E9 /* AssociatedValueReference.swift in Sources */,
+				471C509F22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */,
+				471C50A122C6D18D007F73E9 /* CWFetchRequest.swift in Sources */,
+				471C509822C6D18D007F73E9 /* CWFetchedResultsControllerProtocol.swift in Sources */,
+				471C509E22C6D18D007F73E9 /* CWFetchRequestAssociation.swift in Sources */,
+				471C50A222C6D18D007F73E9 /* CWFetchedResultsController.swift in Sources */,
+				471C50A022C6D18D007F73E9 /* CWPausableFetchedResultsController.swift in Sources */,
+				471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */,
+				471C50A722C6D18D007F73E9 /* simplediff.swift in Sources */,
+				471C509922C6D18D007F73E9 /* Logging.swift in Sources */,
+				471C50A522C6D18D007F73E9 /* CWFetchableEntityID.swift in Sources */,
+				471C50A422C6D18D007F73E9 /* CWFetchableObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,7 +357,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				471C507B22C6D0DC007F73E9 /* FetchRequestsTests.swift in Sources */,
+				471C50B922C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
+				471C50BB22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
+				471C50C222C6D337007F73E9 /* CWTestObject+Associations.swift in Sources */,
+				471C50B822C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
+				471C50BA22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
+				471C50C122C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */,
+				471C50BC22C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
+				471C50BF22C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift in Sources */,
+				471C50C022C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
+				471C50BE22C6D337007F73E9 /* CWTestObject.swift in Sources */,
+				471C50BD22C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,15 +433,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Debug;
 		};
@@ -325,21 +493,25 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TVOS_DEPLOYMENT_TARGET = 10.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Release;
 		};
 		471C508122C6D0DC007F73E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 4MCW333UJY;
@@ -364,6 +536,7 @@
 		471C508222C6D0DC007F73E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 4MCW333UJY;
@@ -388,6 +561,7 @@
 		471C508422C6D0DC007F73E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4MCW333UJY;
 				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
@@ -406,6 +580,7 @@
 		471C508522C6D0DC007F73E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4MCW333UJY;
 				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
