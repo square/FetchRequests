@@ -328,6 +328,7 @@ extension CWFetchedResultsControllerTestCase {
         XCTAssertNil(associationRequest)
     }
 
+    #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = CWFetchedResultsController(
             request: createFetchRequest(associations: [\CWTestObject.tag]),
@@ -363,6 +364,7 @@ extension CWFetchedResultsControllerTestCase {
 
         associationRequest.parentsCompletion([:])
     }
+    #endif
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = CWFetchedResultsController(

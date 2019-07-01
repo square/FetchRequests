@@ -689,6 +689,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         XCTAssertNil(associationRequest)
     }
 
+    #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchController(
             request: createFetchRequest(associations: [\CWTestObject.tag]),
@@ -724,6 +725,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         associationRequest.parentsCompletion([:])
     }
+    #endif
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchController(

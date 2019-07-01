@@ -7,7 +7,13 @@
 //
 
 import Foundation
+
+#if canImport(UIKit)
 import UIKit
+#endif
+#if canImport(WatchKit)
+import WatchKit
+#endif
 
 // MARK: - Delegate
 
@@ -164,9 +170,15 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
-    private let memoryPressureToken: FetchRequestObservableToken<Notification> = FetchRequestObservableToken(
-        token: CWObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
-    )
+    private let memoryPressureToken: FetchRequestObservableToken<Notification>? = {
+        #if canImport(UIKit) && !os(watchOS)
+        return FetchRequestObservableToken(
+            token: CWObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
+        )
+        #else
+        return nil
+        #endif
+    }()
 
     //swiftlint:disable:next weak_delegate
     private var delegate: FetchResultsDelegate<FetchedObject>?
@@ -927,7 +939,7 @@ private extension CWFetchedResultsController {
     func startObservingNotificationsIfNeeded() {
         assert(Thread.isMainThread)
 
-        memoryPressureToken.observeIfNeeded { [ weak self] notification in
+        memoryPressureToken?.observeIfNeeded { [ weak self] notification in
             self?.removeAllAssociatedValues()
         }
         request.objectCreationToken.observeIfNeeded { [weak self] data in
@@ -942,7 +954,7 @@ private extension CWFetchedResultsController {
     }
 
     func stopObservingNotifications() {
-        memoryPressureToken.invalidateIfNeeded()
+        memoryPressureToken?.invalidateIfNeeded()
         request.objectCreationToken.invalidateIfNeeded()
 
         for dataResetToken in request.dataResetTokens {
@@ -1014,7 +1026,7 @@ private extension CWFetchedResultsController {
 
 internal extension CWFetchedResultsController {
     var listeningForInserts: Bool {
-        return memoryPressureToken.isObserving
+        return request.objectCreationToken.isObserving
     }
 }
 
@@ -1064,8 +1076,8 @@ private extension CWFetchedResultsController {
     func generateIndexPathsTable() -> [FetchedObject: IndexPath] {
         var updatedIndexPaths: [FetchedObject: IndexPath] = [:]
         for (sectionIndex, section) in sections.enumerated() {
-            for (rowIndex, object) in section.objects.enumerated() {
-                updatedIndexPaths[object] = IndexPath(row: rowIndex, section: sectionIndex)
+            for (itemIndex, object) in section.objects.enumerated() {
+                updatedIndexPaths[object] = IndexPath(item: itemIndex, section: sectionIndex)
             }
         }
 

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Speramus Inc. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import Foundation;
 
 //! Project version number for FetchRequests.
 FOUNDATION_EXPORT double FetchRequestsVersionNumber;

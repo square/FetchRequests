@@ -6,7 +6,7 @@
 //  Copyright © 2017 Speramus Inc. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public struct SectionCollapseConfig: Equatable {
     public let maxNumberOfItemsToDisplay: Int
@@ -207,7 +207,7 @@ public extension CWCollapsibleSectionsFetchedResultsController {
     }
 
     func object(at indexPath: IndexPath) -> FetchedObject {
-        return sections[indexPath.section].displayableObjects[indexPath.row]
+        return sections[indexPath.section].displayableObjects[indexPath.item]
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {
@@ -217,7 +217,7 @@ public extension CWCollapsibleSectionsFetchedResultsController {
 
         let section = sections[indexPath.section]
         let numberOfItemsDisplayed = section.numberOfDisplayableObjects
-        return indexPath.row < numberOfItemsDisplayed ? indexPath : nil
+        return indexPath.item < numberOfItemsDisplayed ? indexPath : nil
     }
 
     private func updateSections() {

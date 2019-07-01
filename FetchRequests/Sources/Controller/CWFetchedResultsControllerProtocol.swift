@@ -139,9 +139,9 @@ public extension CWFetchedResultsControllerProtocol {
         }
 
         var section = indexPath.section
-        var row = indexPath.row - 1
-        guard row < 0 else {
-            return IndexPath(row: row, section: section)
+        var item = indexPath.item - 1
+        guard item < 0 else {
+            return IndexPath(item: item, section: section)
         }
 
         section -= 1
@@ -149,9 +149,9 @@ public extension CWFetchedResultsControllerProtocol {
             return nil
         }
 
-        row = sections[section].numberOfObjects - 1
+        item = sections[section].numberOfObjects - 1
 
-        return IndexPath(row: row, section: section)
+        return IndexPath(item: item, section: section)
     }
 
     func getIndexPath(after indexPath: IndexPath) -> IndexPath? {
@@ -160,18 +160,18 @@ public extension CWFetchedResultsControllerProtocol {
         }
 
         var section = indexPath.section
-        var row = indexPath.row + 1
-        guard row == sections[section].numberOfObjects else {
-            return IndexPath(row: row, section: section)
+        var item = indexPath.item + 1
+        guard item == sections[section].numberOfObjects else {
+            return IndexPath(item: item, section: section)
         }
 
         section += 1
-        row = 0
+        item = 0
 
         if section == sections.count {
             return nil
         } else {
-            return IndexPath(row: row, section: section)
+            return IndexPath(item: item, section: section)
         }
     }
 }
