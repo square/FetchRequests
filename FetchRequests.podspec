@@ -20,5 +20,4 @@ Pod::Spec.new do |s|
     'FetchRequests/Sources/*.swift',
     'FetchRequests/Sources/*/*.swift'
 
-  s.frameworks = 'CFNetwork'
 end
