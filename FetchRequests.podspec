@@ -8,15 +8,30 @@ Pod::Spec.new do |s|
   s.authors = { 'Speramus Inc' => 'opensource@crewapp.com' }
   s.source = { :git => 'https://github.com/crewos/FetchRequests.git', :tag => s.version }
 
-  s.ios.deployment_target = '10.0'
-  s.osx.deployment_target = '10.12'
-  s.tvos.deployment_target = '10.0'
-  s.watchos.deployment_target = '3.0'
+  ios_deployment_target = '10.0'
+  tvos_deployment_target = '10.0'
+  macos_deployment_target = '10.12'
+  watchos_deployment_target = '3.0'
+
+  s.ios.deployment_target = ios_deployment_target
+  s.tvos.deployment_target = tvos_deployment_target
+  s.macos.deployment_target = macos_deployment_target
+  s.watchos.deployment_target = watchos_deployment_target
 
   s.swift_version = '5.0'
 
-  s.source_files = 'FetchRequests/simplediff-swift/*.swift',
-    'FetchRequests/Sources/*.swift',
-    'FetchRequests/Sources/*/*.swift'
+  s.source_files = [
+    'FetchRequests/simplediff-swift/simplediff.swift',
+    'FetchRequests/Sources/**/*.swift',
+  ]
+
+  s.test_spec do |test_spec|
+    test_spec.source_files = 'FetchRequestsTests/**/*.swift'
+
+    # watchOS inherently doesn't support tests
+    test_spec.ios.deployment_target = ios_deployment_target
+    test_spec.tvos.deployment_target = tvos_deployment_target
+    test_spec.macos.deployment_target = macos_deployment_target
+  end
 
 end
