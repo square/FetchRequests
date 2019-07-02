@@ -7,6 +7,7 @@ FetchRequests is an eventing library inspired by NSFetchedResultsController and 
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Platform](https://img.shields.io/cocoapods/p/FetchRequests.svg?style=flat)](https://cocoapods.org/pods/FetchRequests)
 [![Pod License](http://img.shields.io/cocoapods/l/FetchRequests.svg?style=flat)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/crewos/FetchRequests/branch/master/graph/badge.svg)](https://codecov.io/gh/crewos/FetchRequests)
 
 - [Features](#features)
 - [Usage](#usage)
