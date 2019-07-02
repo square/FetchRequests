@@ -7,7 +7,6 @@ Pod::Spec.new do |s|
   s.social_media_url = 'https://twitter.com/crew_app'
   s.authors = { 'Speramus Inc' => 'opensource@crewapp.com' }
   s.source = { :git => 'https://github.com/crewos/FetchRequests.git', :tag => s.version }
-  s.documentation_url = 'https://github.com/crewos/FetchRequests/blob/master/README.md'
 
   s.ios.deployment_target = '10.0'
   s.osx.deployment_target = '10.12'
