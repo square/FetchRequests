@@ -18,8 +18,8 @@ env:
     - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME" RUN_TESTS="YES" BUILD_EXAMPLE="NO" POD_LINT="YES"
 script:
   - set -o pipefail
-  - xcodebuild -version
-  - xcodebuild -showsdks
+  #- xcodebuild -version
+  #- xcodebuild -showsdks
 
   # Build Framework in Release and Run Tests if specified
   - if [ $RUN_TESTS == "YES" ]; then
@@ -38,4 +38,6 @@ script:
       pod lib lint;
     fi
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - if [ $RUN_TESTS == "YES" ]; then
+      bash <(curl -s https://codecov.io/bash);
+    fi
