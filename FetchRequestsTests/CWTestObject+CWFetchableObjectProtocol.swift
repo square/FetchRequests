@@ -25,7 +25,7 @@ extension CWTestObject: CWFetchableObjectProtocol {
     }
 
     static func entityID(from data: RawData) -> ObjectID? {
-        return data["id"] as? String
+        return data["id"] as? ObjectID
     }
 
     static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool {

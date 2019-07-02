@@ -10,7 +10,8 @@ env:
     - MACOS_FRAMEWORK_SCHEME="FetchRequests-macOS"
     - TVOS_FRAMEWORK_SCHEME="FetchRequests-tvOS"
     - WATCHOS_FRAMEWORK_SCHEME="FetchRequests-watchOS"
-    #- EXAMPLE_SCHEME="iOS Example"
+    - EXAMPLE_PROJECT="Example/iOS-Example.xcodeproj"
+    - EXAMPLE_SCHEME="iOS Example"
   matrix:
     - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO" BUILD_EXAMPLE="NO" POD_LINT="NO"
     - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
@@ -29,9 +30,9 @@ script:
     fi
 
   # Build Example in Debug if specified
-  #- if [ $BUILD_EXAMPLE == "YES" ]; then
-  #    xcodebuild -project "$PROJECT" -scheme "$EXAMPLE_SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
-  #  fi
+  - if [ $BUILD_EXAMPLE == "YES" ]; then
+      xcodebuild -project "$EXAMPLE_PROJECT" -scheme "$EXAMPLE_SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
+    fi
 
   # Run `pod lib lint` if specified
   - if [ $POD_LINT == "YES" ]; then
