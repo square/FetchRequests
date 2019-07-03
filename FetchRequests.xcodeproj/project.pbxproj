@@ -406,6 +406,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 471C508022C6D0DC007F73E9 /* Build configuration list for PBXNativeTarget "FetchRequests-iOS" */;
 			buildPhases = (
+				4736ABDC22CC3A1500253EB6 /* SwiftLint */,
 				471C506722C6D0DB007F73E9 /* Headers */,
 				471C506822C6D0DB007F73E9 /* Sources */,
 				471C506922C6D0DB007F73E9 /* Frameworks */,
@@ -622,6 +623,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4736ABDC22CC3A1500253EB6 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		471C506822C6D0DB007F73E9 /* Sources */ = {

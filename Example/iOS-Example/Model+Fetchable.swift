@@ -39,7 +39,7 @@ extension Model: CWFetchableObjectProtocol {
 extension CWFetchableObjectProtocol where Self: Model {
     static func fetchRequest() -> CWFetchRequest<Self> {
         let dataResetTokens: [ModelClearedToken<Self>] = [
-            ModelClearedToken<Self>()
+            ModelClearedToken(),
         ]
 
         return CWFetchRequest<Self>(

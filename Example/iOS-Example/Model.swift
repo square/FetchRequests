@@ -57,7 +57,7 @@ class Model: NSObject {
         super.init()
         data = [
             "id": objectID,
-            "createdAt": Date().timeIntervalSince1970
+            "createdAt": Date().timeIntervalSince1970,
         ]
     }
 

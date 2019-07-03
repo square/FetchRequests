@@ -125,7 +125,7 @@ extension NSObjectProtocol where Self: Model {
         return storage.values.lazy.compactMap {
             $0 as? Self.RawData
         }.compactMap {
-            Self.init(data: $0)
+            Self(data: $0)
         }
     }
 
@@ -133,7 +133,7 @@ extension NSObjectProtocol where Self: Model {
         return storage[id].flatMap {
             $0 as? Self.RawData
         }.flatMap {
-            Self.init(data: $0)
+            Self(data: $0)
         }
     }
 }

@@ -116,7 +116,6 @@ extension ViewController {
     }
 }
 
-
 // MARK: - Events
 
 private extension ViewController {
