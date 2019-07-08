@@ -35,6 +35,9 @@ The `CWFetchedResultsController` is the interface to access the your data.
 It will automatically cache your associated values for the lifetime of that controller.
 If a memory pressure event occurs, it will release its hold on those objects, allowing them to be deinited.
 
+The example app has an UserDefaults-backed storage mechanism.
+The unit tests have in-memory objects, with NotificationCenter eventing.
+
 Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observation.
 With Swift 5.1 it should be possible to further remove those restrictions.
 
