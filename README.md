@@ -41,6 +41,9 @@ The unit tests have in-memory objects, with NotificationCenter eventing.
 Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observation.
 With Swift 5.1 it should be possible to further remove those restrictions.
 
+It currently relies upon a `[String: Any]` raw data representation.
+Everything is in place to remove this restriction, but the swift compiler crashes if so.
+
 ## Requirements
 
 - iOS 10+ / macOS 10.12+ / tvOS 10+ / watchOS 3+
