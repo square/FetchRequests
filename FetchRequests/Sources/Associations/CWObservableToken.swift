@@ -55,6 +55,10 @@ public class CWObservableNotificationCenterToken: CWObservableToken {
         }
         notificationCenter.removeObserver(existing)
     }
+
+    deinit {
+        self.invalidate()
+    }
 }
 
 internal protocol KeyValueObservationToken {
