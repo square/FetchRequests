@@ -30,7 +30,6 @@ jobs:
     - stage: Example Project
       env:
         - DESTINATION="OS=12.2,name=iPhone XS"
-        - SCHEME="$IOS_FRAMEWORK_SCHEME"
         - PROJECT="Example/iOS-Example.xcodeproj"
         - SCHEME="iOS Example"
       script:
