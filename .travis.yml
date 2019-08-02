@@ -27,6 +27,7 @@ jobs:
     - stage: Example Project
       env:
         - SCHEME="iOS Example"
+        - DESTINATION="OS=12.2,name=iPhone XS"
         - PROJECT="Example/iOS-Example.xcodeproj"
       script:
         - set -o pipefail
