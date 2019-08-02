@@ -6,16 +6,12 @@ env:
     - LC_CTYPE=en_US.UTF-8
     - LANG=en_US.UTF-8
     - PROJECT=FetchRequests.xcodeproj
-    - IOS_FRAMEWORK_SCHEME="FetchRequests-iOS"
-    - MACOS_FRAMEWORK_SCHEME="FetchRequests-macOS"
-    - TVOS_FRAMEWORK_SCHEME="FetchRequests-tvOS"
-    - WATCHOS_FRAMEWORK_SCHEME="FetchRequests-watchOS"
     - RUN_TESTS="YES"
   matrix:
-    - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME"
-    - DESTINATION="OS=12.2,name=Apple TV 4K" SCHEME="$TVOS_FRAMEWORK_SCHEME"
-    - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO"
-    - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME"
+    - SCHEME="FetchRequests-iOS" DESTINATION="OS=12.2,name=iPhone XS"
+    - SCHEME="FetchRequests-tvOS" DESTINATION="OS=12.2,name=Apple TV 4K"
+    - SCHEME="FetchRequests-watchOS" DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" RUN_TESTS="NO"
+    - SCHEME="FetchRequests-macOS" DESTINATION="arch=x86_64"
 script:
   - set -o pipefail
   - if [ $RUN_TESTS == "YES" ]; then
@@ -30,8 +26,8 @@ jobs:
         - pod lib lint --verbose --allow-warnings
     - stage: Example Project
       env:
-        - PROJECT="Example/iOS-Example.xcodeproj"
         - SCHEME="iOS Example"
+        - PROJECT="Example/iOS-Example.xcodeproj"
       script:
         - set -o pipefail
         - xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c
