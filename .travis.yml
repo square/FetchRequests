@@ -14,10 +14,11 @@ jobs:
   include:
     - stage: Test
       env:
-        - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
-        - DESTINATION="OS=12.2,name=Apple TV 4K" SCHEME="$TVOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
-        - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO"
-        - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+        matrix:
+          - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+          - DESTINATION="OS=12.2,name=Apple TV 4K" SCHEME="$TVOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+          - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO"
+          - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
       script:
         - set -o pipefail
         - if [ $RUN_TESTS == "YES" ]; then
@@ -30,7 +31,10 @@ jobs:
         - pod lib lint --verbose --allow-warnings
     - stage: Example Project
       env:
-        - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" PROJECT="Example/iOS-Example.xcodeproj" SCHEME="iOS Example"
+        - DESTINATION="OS=12.2,name=iPhone XS"
+        - SCHEME="$IOS_FRAMEWORK_SCHEME"
+        - PROJECT="Example/iOS-Example.xcodeproj"
+        - SCHEME="iOS Example"
       script:
         - set -o pipefail
         - xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c
