@@ -10,34 +10,30 @@ env:
     - MACOS_FRAMEWORK_SCHEME="FetchRequests-macOS"
     - TVOS_FRAMEWORK_SCHEME="FetchRequests-tvOS"
     - WATCHOS_FRAMEWORK_SCHEME="FetchRequests-watchOS"
-    - EXAMPLE_PROJECT="Example/iOS-Example.xcodeproj"
-    - EXAMPLE_SCHEME="iOS Example"
-  matrix:
-    - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO" BUILD_EXAMPLE="NO" POD_LINT="NO"
-    - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" RUN_TESTS="YES" BUILD_EXAMPLE="YES" POD_LINT="NO"
-    - DESTINATION="OS=12.2,name=Apple TV 4K" SCHEME="$TVOS_FRAMEWORK_SCHEME" RUN_TESTS="YES" BUILD_EXAMPLE="NO" POD_LINT="NO"
-    - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME" RUN_TESTS="YES" BUILD_EXAMPLE="NO" POD_LINT="YES"
-script:
-  - set -o pipefail
-  #- xcodebuild -version
-  #- xcodebuild -showsdks
-
-  # Build Framework in Release and Run Tests if specified
-  - if [ $RUN_TESTS == "YES" ]; then
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=YES test | xcpretty -c;
-    else
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
-    fi
-
-  # Build Example in Debug if specified
-  - if [ $BUILD_EXAMPLE == "YES" ]; then
-      xcodebuild -project "$EXAMPLE_PROJECT" -scheme "$EXAMPLE_SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
-    fi
-
-  # Run `pod lib lint` if specified
-  - if [ $POD_LINT == "YES" ]; then
-      pod lib lint --allow-warnings;
-    fi
+jobs:
+  include:
+    - stage: Test
+      env:
+        - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+        - DESTINATION="OS=12.2,name=Apple TV 4K" SCHEME="$TVOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+        - DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" SCHEME="$WATCHOS_FRAMEWORK_SCHEME" RUN_TESTS="NO"
+        - DESTINATION="arch=x86_64" SCHEME="$MACOS_FRAMEWORK_SCHEME" RUN_TESTS="YES"
+      script:
+        - set -o pipefail
+        - if [ $RUN_TESTS == "YES" ]; then
+            xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=YES test | xcpretty -c;
+          else
+            xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
+          fi
+    - stage: Pod Lint
+      script:
+        - pod lib lint --verbose --allow-warnings
+    - stage: Example Project
+      env:
+        - DESTINATION="OS=12.2,name=iPhone XS" SCHEME="$IOS_FRAMEWORK_SCHEME" PROJECT="Example/iOS-Example.xcodeproj" SCHEME="iOS Example"
+      script:
+        - set -o pipefail
+        - xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO build | xcpretty -c
 after_success:
   - if [ $RUN_TESTS == "YES" ]; then
       bash <(curl -s https://codecov.io/bash);
