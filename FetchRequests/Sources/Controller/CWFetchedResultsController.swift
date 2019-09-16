@@ -423,7 +423,7 @@ private extension CWFetchedResultsController {
                 guard let value = values[objectID] else {
                     continue
                 }
-                
+
                 let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
                 let reference = references[key]
 
