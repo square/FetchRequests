@@ -39,7 +39,7 @@ extension CWFetchedResultsControllerTestHarness {
     func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> CWTestObject! {
         let object = controller.fetchedObjects[index]
 
-        XCTAssertEqual(object.objectID, objectID, file: file, line: line)
+        XCTAssertEqual(object.id, objectID, file: file, line: line)
 
         return object
     }
@@ -47,7 +47,7 @@ extension CWFetchedResultsControllerTestHarness {
 
 extension CWFetchedResultsController where FetchedObject: CWTestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.map { $0.objectID }
+        return fetchedObjects.map { $0.id }
     }
 
     var tags: [Int] {
@@ -57,7 +57,7 @@ extension CWFetchedResultsController where FetchedObject: CWTestObject {
 
 extension CWFetchedResultsSection where FetchedObject: CWTestObject {
     var fetchedIDs: [String] {
-        return objects.map { $0.objectID }
+        return objects.map { $0.id }
     }
 
     var tags: [Int] {

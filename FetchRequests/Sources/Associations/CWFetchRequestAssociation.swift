@@ -17,7 +17,7 @@ public enum CWAssociationReplacement<T> {
 /// Map an associated value's key to object
 public class CWFetchRequestAssociation<FetchedObject: CWFetchableObject> {
     /// Fetch associated values given a list of parent objects
-    public typealias AssocationRequestByParent<AssociatedEntity> = (_ objects: [FetchedObject], _ completion: @escaping ([FetchedObject.ObjectID: AssociatedEntity]) -> Void) -> Void
+    public typealias AssocationRequestByParent<AssociatedEntity> = (_ objects: [FetchedObject], _ completion: @escaping ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
     /// Fetch associated values given a list of associated IDs
     public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = (_ objects: [AssociatedEntityID], _ completion: @escaping ([AssociatedEntity]) -> Void) -> Void
     /// Event that represents the creation of an associated value object
@@ -315,16 +315,16 @@ public extension CWFetchRequestAssociation {
         Token: CWObservableToken
     > (
         for associatedType: AssociatedEntity.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedEntity.ObjectID>,
-        request: @escaping AssocationRequestByID<AssociatedEntity.ObjectID, AssociatedEntity>,
-        creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ObjectID, Token>,
+        keyPath: KeyPath<FetchedObject, AssociatedEntity.ID>,
+        request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
+        creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
     ) where Token.Parameter == AssociatedEntity.RawData {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
-            var valuesSet: Set<AssociatedEntity.ObjectID> = []
-            var valuesOrdered: [AssociatedEntity.ObjectID] = []
-            let mapping: [FetchedObject.ObjectID: AssociatedEntity.ObjectID] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
+            var valuesSet: Set<AssociatedEntity.ID> = []
+            var valuesOrdered: [AssociatedEntity.ID] = []
+            let mapping: [FetchedObject.ID: AssociatedEntity.ID] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
                 let associatedID = object[keyPath: keyPath]
                 if !valuesSet.contains(associatedID) {
                     valuesSet.insert(associatedID)
@@ -340,7 +340,7 @@ public extension CWFetchRequestAssociation {
 
             request(valuesOrdered) { values in
                 let mappedValues = values.createLookupTable()
-                var results: [FetchedObject.ObjectID: AssociatedEntity] = [:]
+                var results: [FetchedObject.ID: AssociatedEntity] = [:]
                 for (objectID, associatedID) in mapping {
                     if let association = mappedValues[associatedID] {
                         results[objectID] = association
@@ -403,16 +403,16 @@ public extension CWFetchRequestAssociation {
         Token: CWObservableToken
     > (
         for associatedType: AssociatedEntity.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedEntity.ObjectID?>,
-        request: @escaping AssocationRequestByID<AssociatedEntity.ObjectID, AssociatedEntity>,
-        creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ObjectID, Token>,
+        keyPath: KeyPath<FetchedObject, AssociatedEntity.ID?>,
+        request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
+        creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
     ) where Token.Parameter == AssociatedEntity.RawData {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
-            var valuesSet: Set<AssociatedEntity.ObjectID> = []
-            var valuesOrdered: [AssociatedEntity.ObjectID] = []
-            let mapping: [FetchedObject.ObjectID: AssociatedEntity.ObjectID] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
+            var valuesSet: Set<AssociatedEntity.ID> = []
+            var valuesOrdered: [AssociatedEntity.ID] = []
+            let mapping: [FetchedObject.ID: AssociatedEntity.ID] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
                 guard let associatedID = object[keyPath: keyPath] else {
                     return
                 }
@@ -430,7 +430,7 @@ public extension CWFetchRequestAssociation {
 
             request(valuesOrdered) { values in
                 let mappedValues = values.createLookupTable()
-                var results: [FetchedObject.ObjectID: AssociatedEntity] = [:]
+                var results: [FetchedObject.ID: AssociatedEntity] = [:]
                 for (objectID, associatedID) in mapping {
                     if let association = mappedValues[associatedID] {
                         results[objectID] = association
@@ -499,17 +499,17 @@ public extension CWFetchRequestAssociation {
         Token: CWObservableToken
     > (
         for associatedType: Array<AssociatedEntity>.Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ObjectID]>,
-        request: @escaping AssocationRequestByID<AssociatedEntity.ObjectID, AssociatedEntity>,
-        creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ObjectID], Token>,
+        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]>,
+        request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
+        creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
     ) where Token.Parameter == AssociatedEntity.RawData {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
-            var valuesSet: Set<AssociatedEntity.ObjectID> = []
-            var valuesOrdered: [AssociatedEntity.ObjectID] = []
-            let mapping: [FetchedObject.ObjectID: [AssociatedEntity.ObjectID]] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
-                let associatedIDs: [AssociatedEntity.ObjectID] = object[keyPath: keyPath]
+            var valuesSet: Set<AssociatedEntity.ID> = []
+            var valuesOrdered: [AssociatedEntity.ID] = []
+            let mapping: [FetchedObject.ID: [AssociatedEntity.ID]] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
+                let associatedIDs: [AssociatedEntity.ID] = object[keyPath: keyPath]
                 guard !associatedIDs.isEmpty else {
                     return
                 }
@@ -530,7 +530,7 @@ public extension CWFetchRequestAssociation {
 
             request(valuesOrdered) { values in
                 let mappedValues = values.createLookupTable()
-                var results: [FetchedObject.ObjectID: [AssociatedEntity]] = [:]
+                var results: [FetchedObject.ID: [AssociatedEntity]] = [:]
                 for (objectID, associatedIDs) in mapping {
                     let associations: [AssociatedEntity] = associatedIDs.compactMap { mappedValues[$0] }
                     if !associations.isEmpty {
@@ -600,17 +600,17 @@ public extension CWFetchRequestAssociation {
         Token: CWObservableToken
     > (
         for associatedType: Array<AssociatedEntity>.Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ObjectID]?>,
-        request: @escaping AssocationRequestByID<AssociatedEntity.ObjectID, AssociatedEntity>,
-        creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ObjectID], Token>,
+        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]?>,
+        request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
+        creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
     ) where Token.Parameter == AssociatedEntity.RawData {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
-            var valuesSet: Set<AssociatedEntity.ObjectID> = []
-            var valuesOrdered: [AssociatedEntity.ObjectID] = []
-            let mapping: [FetchedObject.ObjectID: [AssociatedEntity.ObjectID]] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
-                guard let associatedIDs: [AssociatedEntity.ObjectID] = object[keyPath: keyPath],
+            var valuesSet: Set<AssociatedEntity.ID> = []
+            var valuesOrdered: [AssociatedEntity.ID] = []
+            let mapping: [FetchedObject.ID: [AssociatedEntity.ID]] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
+                guard let associatedIDs: [AssociatedEntity.ID] = object[keyPath: keyPath],
                     !associatedIDs.isEmpty else
                 {
                     return
@@ -632,7 +632,7 @@ public extension CWFetchRequestAssociation {
 
             request(valuesOrdered) { values in
                 let mappedValues = values.createLookupTable()
-                var results: [FetchedObject.ObjectID: [AssociatedEntity]] = [:]
+                var results: [FetchedObject.ID: [AssociatedEntity]] = [:]
                 for (objectID, associatedIDs) in mapping {
                     let associations: [AssociatedEntity] = associatedIDs.compactMap { mappedValues[$0] }
                     if !associations.isEmpty {
@@ -714,8 +714,8 @@ public extension CWFetchRequestAssociation {
         var valuesOrdered: [EntityID] = []
 
         let requestQuery: AssocationRequestByParent<AssociatedType> = { objects, completion in
-            let mapping: [FetchedObject.ObjectID: EntityID] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
+            let mapping: [FetchedObject.ID: EntityID] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
                 let associatedID = object[keyPath: keyPath]
                 if !valuesSet.contains(associatedID) {
                     valuesSet.insert(associatedID)
@@ -737,7 +737,7 @@ public extension CWFetchRequestAssociation {
                     memo[compositeID] = entry
                 }
 
-                var results: [FetchedObject.ObjectID: AssociatedType] = [:]
+                var results: [FetchedObject.ID: AssociatedType] = [:]
                 for (objectID, associatedID) in mapping {
                     if let association = mappedValues[associatedID] {
                         results[objectID] = association
@@ -786,8 +786,8 @@ public extension CWFetchRequestAssociation {
         var valuesOrdered: [EntityID] = []
 
         let requestQuery: AssocationRequestByParent<AssociatedType> = { objects, completion in
-            let mapping: [FetchedObject.ObjectID: EntityID] = objects.reduce(into: [:]) { memo, object in
-                let objectID = object.objectID
+            let mapping: [FetchedObject.ID: EntityID] = objects.reduce(into: [:]) { memo, object in
+                let objectID = object.id
                 guard let associatedID = object[keyPath: keyPath] else {
                     return
                 }
@@ -811,7 +811,7 @@ public extension CWFetchRequestAssociation {
                     memo[compositeID] = entry
                 }
 
-                var results: [FetchedObject.ObjectID: AssociatedType] = [:]
+                var results: [FetchedObject.ID: AssociatedType] = [:]
                 for (objectID, associatedID) in mapping {
                     if let association = mappedValues[associatedID] {
                         results[objectID] = association
@@ -851,9 +851,9 @@ public extension CWFetchRequestAssociation {
 // MARK: - Helpers
 
 private extension Sequence where Iterator.Element: CWFetchableObjectProtocol {
-    func createLookupTable() -> [Iterator.Element.ObjectID: Iterator.Element] {
+    func createLookupTable() -> [Iterator.Element.ID: Iterator.Element] {
         return reduce(into: [:]) { memo, entry in
-            memo[entry.objectID] = entry
+            memo[entry.id] = entry
         }
     }
 }

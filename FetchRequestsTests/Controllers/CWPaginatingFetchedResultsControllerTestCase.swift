@@ -102,9 +102,9 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
 
         XCTAssertEqual(changeEvents.count, 2)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "d")
+        XCTAssertEqual(changeEvents[0].object.id, "d")
         XCTAssertEqual(changeEvents[1].change, CWFetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
-        XCTAssertEqual(changeEvents[1].object.objectID, "f")
+        XCTAssertEqual(changeEvents[1].object.id, "f")
     }
 
     func testPaginationDoesNotDisableInserts() {
@@ -149,7 +149,7 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "e")
+        XCTAssertEqual(changeEvents[0].object.id, "e")
     }
 }
 

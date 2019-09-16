@@ -15,7 +15,7 @@ class CWFetchRequestAssociationTestCase: XCTestCase {
     private var objects: [CWTestObject] = []
 
     private var objectIDs: [String] {
-        return objects.map { $0.objectID }
+        return objects.map { $0.id }
     }
 
     private var tags: [Int] {
@@ -262,14 +262,14 @@ extension CWFetchRequestAssociationTestCase {
         let expected: [CWTestObject] = [CWTestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<CWTestObject.ID, CWTestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject.ObjectID, DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<CWTestObject.ID, DataTestToken> = { object in
             token
         }
 
@@ -326,14 +326,14 @@ extension CWFetchRequestAssociationTestCase {
         let expected: [CWTestObject] = [CWTestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<CWTestObject.ID, CWTestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject.ObjectID, DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<CWTestObject.ID, DataTestToken> = { object in
             token
         }
 
@@ -394,14 +394,14 @@ extension CWFetchRequestAssociationTestCase {
         let expected: [CWTestObject] = [CWTestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<CWTestObject.ID, CWTestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ObjectID], DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ID], DataTestToken> = { object in
             token
         }
 
@@ -462,14 +462,14 @@ extension CWFetchRequestAssociationTestCase {
         let expected: [CWTestObject] = [CWTestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<CWTestObject.ID, CWTestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ObjectID], DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ID], DataTestToken> = { object in
             token
         }
 
@@ -545,7 +545,7 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         let expected: [String: CWTestObject] = objects.reduce(into: [:]) { memo, element in
-            memo[element.objectID] = CWTestObject(id: element.nonOptionalTagID)
+            memo[element.id] = CWTestObject(id: element.nonOptionalTagID)
         }
 
         var calledRequest = false
@@ -604,7 +604,7 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         let expected: [String: CWTestObject] = objects.reduce(into: [:]) { memo, element in
-            memo[element.objectID] = CWTestObject(id: element.nonOptionalTagID)
+            memo[element.id] = CWTestObject(id: element.nonOptionalTagID)
         }
 
         var calledRequest = false
@@ -741,7 +741,7 @@ private extension CWTestObject {
 }
 
 private final class TestFetchableEntityID: NSObject, CWFetchableEntityID {
-    let id: CWTestObject.ObjectID
+    let id: CWTestObject.ID
 
     init(id: String) {
         self.id = id
@@ -762,7 +762,7 @@ private final class TestFetchableEntityID: NSObject, CWFetchableEntityID {
     }
 
     required convenience init(from entity: CWTestObject) {
-        self.init(id: entity.objectID)
+        self.init(id: entity.id)
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [CWTestObject] {

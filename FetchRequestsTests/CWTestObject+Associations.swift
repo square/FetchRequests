@@ -42,7 +42,7 @@ extension CWTestObject {
             guard case let .parents(objects, _) = self else {
                 return nil
             }
-            return objects.map { $0.objectID }
+            return objects.map { $0.id }
         }
 
         var tagIDs: [String]! {
@@ -207,7 +207,7 @@ class VoidNotificationObservableToken: WrappedObservableToken<Void> {
 // MARK: - Associations
 
 extension CWTestObject {
-    static func fetch(byIDs ids: [CWTestObject.ObjectID]) -> [CWTestObject] {
+    static func fetch(byIDs ids: [CWTestObject.ID]) -> [CWTestObject] {
         return ids.map { CWTestObject(id: $0) }
     }
 }
@@ -215,8 +215,8 @@ extension CWTestObject {
 extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
     convenience init<AssociatedType: CWTestObject>(
         for associatedType: AssociatedType.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedType.ObjectID>,
-        request: @escaping AssocationRequestByID<AssociatedType.ObjectID, AssociatedType>
+        keyPath: KeyPath<FetchedObject, AssociatedType.ID>,
+        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
             for: associatedType,
@@ -239,8 +239,8 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
 
     convenience init<AssociatedType: CWTestObject>(
         for associatedType: AssociatedType.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedType.ObjectID?>,
-        request: @escaping AssocationRequestByID<AssociatedType.ObjectID, AssociatedType>
+        keyPath: KeyPath<FetchedObject, AssociatedType.ID?>,
+        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
             for: associatedType,
@@ -263,8 +263,8 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
 
     convenience init<AssociatedType: CWTestObject>(
         for associatedType: Array<AssociatedType>.Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedType.ObjectID]>,
-        request: @escaping AssocationRequestByID<AssociatedType.ObjectID, AssociatedType>
+        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]>,
+        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
             for: associatedType,
@@ -286,7 +286,7 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
                 guard let objectID = AssociatedType.entityID(from: rhs) else {
                     return .same
                 }
-                if lhs.contains(where: { $0.objectID == objectID }) {
+                if lhs.contains(where: { $0.id == objectID }) {
                     return .same
                 }
                 return .invalid
@@ -296,8 +296,8 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
 
     convenience init<AssociatedType: CWTestObject>(
         for associatedType: Array<AssociatedType>.Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedType.ObjectID]?>,
-        request: @escaping AssocationRequestByID<AssociatedType.ObjectID, AssociatedType>
+        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?>,
+        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
             for: associatedType,
@@ -319,7 +319,7 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
                 guard let objectID = AssociatedType.entityID(from: rhs) else {
                     return .same
                 }
-                if lhs.contains(where: { $0.objectID == objectID }) {
+                if lhs.contains(where: { $0.id == objectID }) {
                     return .same
                 }
                 return .invalid

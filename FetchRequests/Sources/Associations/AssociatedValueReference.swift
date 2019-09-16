@@ -11,7 +11,7 @@ import Foundation
 // MARK: - Internal Structures
 
 struct AssociatedValueKey<FetchedObject: CWFetchableObject>: Hashable {
-    var objectID: FetchedObject.ObjectID
+    var id: FetchedObject.ID
     var keyPath: PartialKeyPath<FetchedObject>
 }
 

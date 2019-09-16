@@ -187,7 +187,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
 
     public private(set) var hasFetchedObjects: Bool = false
     public private(set) var fetchedObjects: [FetchedObject] = []
-    private var fetchedObjectIDs: Set<FetchedObject.ObjectID> = []
+    private var fetchedObjectIDs: Set<FetchedObject.ID> = []
     private var _indexPathsTable: [FetchedObject: IndexPath]?
     private var indexPathsTable: [FetchedObject: IndexPath] {
         if let existing = _indexPathsTable {
@@ -335,14 +335,14 @@ public extension CWFetchedResultsController {
 // MARK: Associated Values
 
 private extension CWFetchedResultsController {
-    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ObjectID) throws -> Any? {
-        let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
+        let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
 
         if let holder = associatedValues[key] {
             return holder.value
         }
 
-        guard let index = fetchedObjects.firstIndex(where: { $0.objectID == objectID }) else {
+        guard let index = fetchedObjects.firstIndex(where: { $0.id == objectID }) else {
             throw CWFetchedResultsError.objectNotFound
         }
 
@@ -361,8 +361,8 @@ private extension CWFetchedResultsController {
             objects = Array(fetchedObjects[smallIndex...largeIndex])
         }
         let fetchableObjects = objects.filter {
-            let objectID = $0.objectID
-            let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+            let objectID = $0.id
+            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
             return associatedValues[key] == nil
         }
 
@@ -370,8 +370,8 @@ private extension CWFetchedResultsController {
 
         for object in fetchableObjects {
             // Mark fetchable objects as visited
-            let objectID = object.objectID
-            let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+            let objectID = object.id
+            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
             let reference = association.referenceGenerator(object)
 
             valueReferences[key] = reference
@@ -405,7 +405,7 @@ private extension CWFetchedResultsController {
 
 private extension CWFetchedResultsController {
     func assignAssociatedValues(
-        _ values: [FetchedObject.ObjectID: Any],
+        _ values: [FetchedObject.ID: Any],
         with keyPath: PartialKeyPath<FetchedObject>,
         for objects: [FetchedObject],
         references: [AssociatedValueKey<FetchedObject>: AssociatedValueReference],
@@ -419,12 +419,12 @@ private extension CWFetchedResultsController {
                     continue
                 }
 
-                let objectID = object.objectID
+                let objectID = object.id
                 guard let value = values[objectID] else {
                     continue
                 }
-
-                let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+                
+                let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
                 let reference = references[key]
 
                 reference?.stopObservingAndUpdateValue(to: value)
@@ -434,8 +434,8 @@ private extension CWFetchedResultsController {
         }
 
         for object in objects {
-            let objectID = object.objectID
-            let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+            let objectID = object.id
+            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
             let reference = references[key]
 
             reference?.observeChanges { [weak self, weak object] invalid in
@@ -455,13 +455,13 @@ private extension CWFetchedResultsController {
     }
 
     func removeAssociatedValue(for object: FetchedObject, keyPath: PartialKeyPath<FetchedObject>, emitChanges: Bool = true) {
-        let objectID = object.objectID
+        let objectID = object.id
         guard let indexPath = indexPath(for: object) else {
             return
         }
 
         performChanges(emitChanges: emitChanges) {
-            let key = AssociatedValueKey(objectID: objectID, keyPath: keyPath)
+            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
             associatedValues[key] = nil
 
             notifyUpdating(object, at: indexPath, emitChanges: emitChanges)
@@ -540,7 +540,7 @@ private extension CWFetchedResultsController {
 
             sections[indexPath.section].objects.remove(at: indexPath.item)
             fetchedObjects.remove(at: fetchIndex)
-            fetchedObjectIDs.remove(object.objectID)
+            fetchedObjectIDs.remove(object.id)
 
             notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
@@ -565,7 +565,7 @@ private extension CWFetchedResultsController {
             guard !object.isDeleted else {
                 return false
             }
-            return !fetchedObjectIDs.contains(object.objectID)
+            return !fetchedObjectIDs.contains(object.id)
         }.sorted(by: sortDescriptors)
 
         guard !objects.isEmpty else {
@@ -791,7 +791,7 @@ private extension CWFetchedResultsController {
 
             fetchedObjects.remove(at: fetchIndex)
             sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjectIDs.remove(object.objectID)
+            fetchedObjectIDs.remove(object.id)
 
             notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
@@ -822,7 +822,7 @@ private extension CWFetchedResultsController {
 
             fetchedObjects.insert(object, at: fetchIndex)
             sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
-            fetchedObjectIDs.insert(object.objectID)
+            fetchedObjectIDs.insert(object.id)
 
             let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
             notifyInserting(object, at: indexPath, emitChanges: emitChanges)
@@ -1142,11 +1142,11 @@ private extension CWFetchedResultsController {
 // MARK: - Associated Values Extensions
 
 private class Context<FetchedObject: CWFetchableObject>: NSObject {
-    typealias Wrapped = (_ keyPath: PartialKeyPath<FetchedObject>, _ objectID: FetchedObject.ObjectID) throws -> Any?
+    typealias Wrapped = (_ keyPath: PartialKeyPath<FetchedObject>, _ objectID: FetchedObject.ID) throws -> Any?
 
     let wrapped: Wrapped
 
-    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ObjectID) throws -> Any? {
+    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
         return try wrapped(keyPath, objectID)
     }
 
@@ -1188,7 +1188,7 @@ private extension CWFetchableObjectProtocol where Self: NSObject {
             throw CWFetchedResultsError.objectNotFound
         }
 
-        if let rawValue = try context.associatedValue(with: keyPath, forObjectID: objectID) {
+        if let rawValue = try context.associatedValue(with: keyPath, forObjectID: id) {
             return rawValue as? Value
         } else {
             return nil

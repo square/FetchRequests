@@ -68,7 +68,7 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
         XCTAssertTrue(calledClosure)
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
-        XCTAssertEqual(controller.fetchedObjects.map { $0.objectID }, objectIDs)
+        XCTAssertEqual(controller.fetchedObjects.map { $0.id }, objectIDs)
     }
 
     func testWrappedProperties() {
@@ -86,7 +86,7 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
 
         let effectiveSortDescriptorKeys = [
             #selector(getter: CWTestObject.sectionName),
-            #selector(getter: CWTestObject.objectID),
+            #selector(getter: CWTestObject.id),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])
