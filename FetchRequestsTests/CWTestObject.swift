@@ -9,7 +9,7 @@
 import Foundation
 @testable import FetchRequests
 
-final class CWTestObject: NSObject, Identifiable {
+final class CWTestObject: NSObject, CWIdentifiable {
     typealias RawData = [String: Any]
 
     @objc dynamic var id: String
