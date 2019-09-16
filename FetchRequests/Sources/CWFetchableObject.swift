@@ -13,7 +13,13 @@ public typealias CWFetchableObject = NSObject & CWFetchableObjectProtocol
 // As of Swift 5 this crashes
 private let canUseRawData = false
 
-public protocol _CWFetchableObjectProtocolBase: class, Identifiable {
+@available(iOS, deprecated: 13, message: "Use system Identifiable if it won't crash on iOS 12")
+public protocol CWIdentifiable {
+    associatedtype ID : Hashable
+    var id: Self.ID { get }
+}
+
+public protocol _CWFetchableObjectProtocolBase: class, CWIdentifiable {
     #if canUseRawData
     associatedtype RawData
     #else
