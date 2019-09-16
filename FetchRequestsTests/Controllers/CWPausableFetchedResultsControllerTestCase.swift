@@ -92,7 +92,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "d")
+        XCTAssertEqual(changeEvents[0].object.id, "d")
 
         changeEvents.removeAll()
 
@@ -178,7 +178,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         let effectiveSortDescriptorKeys = [
             #selector(getter: CWTestObject.sectionName),
-            #selector(getter: CWTestObject.objectID),
+            #selector(getter: CWTestObject.id),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])

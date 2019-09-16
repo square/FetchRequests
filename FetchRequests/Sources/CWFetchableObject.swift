@@ -13,31 +13,30 @@ public typealias CWFetchableObject = NSObject & CWFetchableObjectProtocol
 // As of Swift 5 this crashes
 private let canUseRawData = false
 
-public protocol _CWFetchableObjectProtocolBase: class {
-    associatedtype ObjectID: Hashable
+public protocol _CWFetchableObjectProtocolBase: class, Identifiable {
     #if canUseRawData
     associatedtype RawData
     #else
     typealias RawData = [String: Any]
     #endif
 
-    var objectID: ObjectID { get }
+    var id: ID { get }
     var data: RawData { get }
     var isDeleted: Bool { get }
 }
 
 public protocol CWFetchableObjectProtocol: _CWFetchableObjectProtocolBase {
     associatedtype KeyPathBase: _CWFetchableObjectProtocolBase where
-        KeyPathBase.ObjectID == ObjectID, KeyPathBase.RawData == RawData
+        KeyPathBase.ID == ID, KeyPathBase.RawData == RawData
 
     init?(data: RawData)
     var observingUpdates: Bool { get set }
 
-    static var idKeyPath: KeyPath<KeyPathBase, ObjectID> { get }
+    static var idKeyPath: KeyPath<KeyPathBase, ID> { get }
     static var dataKeyPath: KeyPath<KeyPathBase, RawData> { get }
     static var deletedKeyPath: KeyPath<KeyPathBase, Bool> { get }
 
-    static func entityID(from data: RawData) -> ObjectID?
+    static func entityID(from data: RawData) -> ID?
     static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool
 }
 

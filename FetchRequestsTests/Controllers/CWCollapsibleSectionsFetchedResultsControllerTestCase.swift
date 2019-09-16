@@ -476,7 +476,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
             return object
         }
         let sortedSecondaryObjects = secondaryObjects.sorted(by: controller.sortDescriptors)
-        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.objectID }
+        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.id }
 
         try! performFetch(secondaryObjects)
 
@@ -493,7 +493,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         controller = FetchController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(key: #keyPath(CWTestObject.objectID), ascending: false),
+                NSSortDescriptor(key: CWTestObject.idKeyPath._kvcKeyPathString!, ascending: false),
             ],
             debounceInsertsAndReloads: false
         )
@@ -611,7 +611,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         controller = FetchController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(key: #keyPath(CWTestObject.objectID), ascending: true),
+                NSSortDescriptor(key: CWTestObject.idKeyPath._kvcKeyPathString!, ascending: true),
             ],
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
@@ -810,13 +810,13 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // Fetch associated value on A
 
         let tagObject1 = getObjectAtIndex(0, withObjectID: "a").tagObject()
 
-        XCTAssertEqual(tagObject1?.objectID, "0")
+        XCTAssertEqual(tagObject1?.id, "0")
     }
 }
 
@@ -935,7 +935,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
     }
 
     func testAssociatedObjectDeleteFromKVO() {
@@ -977,7 +977,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // We should *not* fault here & our object should be nil
 
@@ -1025,7 +1025,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // We should *not* fault here & our object should be nil
 
@@ -1082,7 +1082,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
     }
 
     func testExpectReloadFromAssociatedObjectKVO() {
@@ -1124,7 +1124,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "a")
+        XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // We should *not* fault here & our object should be non-nil
 
@@ -1172,7 +1172,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "b")
+        XCTAssertEqual(changeEvents[0].object.id, "b")
 
         // We should *not* fault here & our object should be non-nil
 
@@ -1206,7 +1206,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "d")
+        XCTAssertEqual(changeEvents[0].object.id, "d")
 
         changeEvents.removeAll()
 
@@ -1237,7 +1237,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         let newObject = CWTestObject(id: "d")
 
         inclusionCheck = { json in
-            (json["id"] as? String) != newObject.objectID
+            (json["id"] as? String) != newObject.id
         }
 
         let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
@@ -1274,7 +1274,7 @@ private extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
     func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> CWTestObject! {
         let object = controller.fetchedObjects[index]
 
-        XCTAssertEqual(object.objectID, objectID, file: file, line: line)
+        XCTAssertEqual(object.id, objectID, file: file, line: line)
 
         return object
     }
@@ -1293,7 +1293,7 @@ private extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
 extension CWCollapsibleSectionsFetchedResultsController where FetchedObject: CWTestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.compactMap { $0.objectID }
+        return fetchedObjects.compactMap { $0.id }
     }
 
     var tags: [Int] {
@@ -1303,11 +1303,11 @@ extension CWCollapsibleSectionsFetchedResultsController where FetchedObject: CWT
 
 extension CWCollapsibleResultsSection where FetchedObject: CWTestObject {
     var allFetchedIDs: [String] {
-        return allObjects.compactMap { $0.objectID }
+        return allObjects.compactMap { $0.id }
     }
 
     var displayableFetchedIDs: [String] {
-        return displayableObjects.compactMap { $0.objectID }
+        return displayableObjects.compactMap { $0.id }
     }
 
     var allTags: [Int] {

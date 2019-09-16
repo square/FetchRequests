@@ -9,11 +9,10 @@
 import Foundation
 @testable import FetchRequests
 
-final class CWTestObject: NSObject {
-    typealias ObjectID = String
+final class CWTestObject: NSObject, Identifiable {
     typealias RawData = [String: Any]
 
-    @objc dynamic var objectID: ObjectID
+    @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
 
@@ -39,12 +38,12 @@ final class CWTestObject: NSObject {
             return false
         }
 
-        return objectID == other.objectID
+        return id == other.id
     }
 
     override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(objectID)
+        hasher.combine(id)
 
         return hasher.finalize()
     }
@@ -53,13 +52,13 @@ final class CWTestObject: NSObject {
         guard let id = CWTestObject.entityID(from: data) else {
             return nil
         }
-        objectID = id
+        self.id = id
         super.init()
         self.data = data
     }
 
     init(id: String, tag: Int = 0, sectionName: String = "") {
-        self.objectID = id
+        self.id = id
         super.init()
         data = [
             "id": id,

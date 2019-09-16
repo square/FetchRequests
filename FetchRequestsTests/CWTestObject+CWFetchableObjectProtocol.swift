@@ -12,8 +12,8 @@ import FetchRequests
 // MARK: - CWFetchableObjectProtocol
 
 extension CWTestObject: CWFetchableObjectProtocol {
-    static var idKeyPath: KeyPath<CWTestObject, ObjectID> {
-        return \.objectID
+    static var idKeyPath: KeyPath<CWTestObject, ID> {
+        return \.id
     }
 
     static var dataKeyPath: KeyPath<CWTestObject, RawData> {
@@ -24,8 +24,8 @@ extension CWTestObject: CWFetchableObjectProtocol {
         return \.isDeleted
     }
 
-    static func entityID(from data: RawData) -> ObjectID? {
-        return data["id"] as? ObjectID
+    static func entityID(from data: RawData) -> ID? {
+        return data["id"] as? ID
     }
 
     static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool {
