@@ -24,17 +24,11 @@
 		471C50A422C6D18D007F73E9 /* CWFetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509322C6D18D007F73E9 /* CWFetchableObject.swift */; };
 		471C50A522C6D18D007F73E9 /* CWFetchableEntityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509422C6D18D007F73E9 /* CWFetchableEntityID.swift */; };
 		471C50A722C6D18D007F73E9 /* simplediff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509722C6D18D007F73E9 /* simplediff.swift */; };
-		471C50B822C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
-		471C50B922C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AD22C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift */; };
-		471C50BA22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
-		471C50BB22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */; };
 		471C50BC22C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */; };
-		471C50BD22C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */; };
 		471C50BE22C6D337007F73E9 /* CWTestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B222C6D337007F73E9 /* CWTestObject.swift */; };
 		471C50BF22C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */; };
 		471C50C022C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */; };
-		471C50C122C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */; };
-		471C50C222C6D337007F73E9 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
+		471C50C122C6D337007F73E9 /* CWTestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+FetchableObject.swift */; };
 		47A6ECCE22CA8FA80034A854 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		47A6ECD022CA8FA80034A854 /* CWPaginatingFetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508C22C6D18D007F73E9 /* CWPaginatingFetchRequest.swift */; };
 		47A6ECD122CA8FA80034A854 /* CWObservableToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508922C6D18D007F73E9 /* CWObservableToken.swift */; };
@@ -72,7 +66,7 @@
 		47A6ED1D22CA90640034A854 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
 		47A6ED1E22CA90640034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
 		47A6ED1F22CA90640034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
-		47A6ED2022CA90640034A854 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */; };
+		47A6ED2022CA90640034A854 /* CWTestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+FetchableObject.swift */; };
 		47A6ED2122CA90640034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */; };
 		47A6ED2222CA90640034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */; };
 		47A6ED2322CA90640034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */; };
@@ -99,7 +93,7 @@
 		47A6ED4E22CA90A40034A854 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
 		47A6ED4F22CA90A40034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
 		47A6ED5022CA90A40034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
-		47A6ED5122CA90A40034A854 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */; };
+		47A6ED5122CA90A40034A854 /* CWTestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* CWTestObject+FetchableObject.swift */; };
 		47A6ED5222CA90A40034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift */; };
 		47A6ED5322CA90A40034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */; };
 		47A6ED5422CA90A40034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */; };
@@ -111,6 +105,18 @@
 		47A6ED7922CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
 		47A6ED7A22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
 		47A6ED7B22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
+		47B31B4B2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
+		47B31B4C2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
+		47B31B4D2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
+		47B31B4F2330649300D6EB66 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
+		47B31B512330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */; };
+		47B31B522330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */; };
+		47B31B532330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */; };
+		47B31B542330696D00D6EB66 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
+		47B31B552330697000D6EB66 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AD22C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift */; };
+		47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
+		47B31B572330697500D6EB66 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */; };
+		47B31B582330697700D6EB66 /* CWFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,7 +175,7 @@
 		471C50B222C6D337007F73E9 /* CWTestObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWTestObject.swift; sourceTree = "<group>"; };
 		471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchRequestAssociationTestCase.swift; sourceTree = "<group>"; };
 		471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CWFetchableObjectProtocolTestCase.swift; sourceTree = "<group>"; };
-		471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CWTestObject+CWFetchableObjectProtocol.swift"; sourceTree = "<group>"; };
+		471C50B622C6D337007F73E9 /* CWTestObject+FetchableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CWTestObject+FetchableObject.swift"; sourceTree = "<group>"; };
 		471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CWTestObject+Associations.swift"; sourceTree = "<group>"; };
 		47A6ECE422CA8FA80034A854 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		47A6ED1522CA905A0034A854 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +183,8 @@
 		47A6ED4622CA90A20034A854 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		47A6ED5D22CA90A40034A854 /* FetchRequests-macOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FetchRequests-macOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IndexPath+Convenience.swift"; sourceTree = "<group>"; };
+		47B31B4A2330583600D6EB66 /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
+		47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CWTestObject+FetchRequests.swift"; sourceTree = "<group>"; };
 		47B4771722C6D7860008C56E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		47B4771822C6D7860008C56E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -279,9 +287,11 @@
 			children = (
 				471C50AB22C6D337007F73E9 /* Controllers */,
 				471C50B322C6D337007F73E9 /* Models */,
+				47B31B4A2330583600D6EB66 /* JSON.swift */,
 				471C50B222C6D337007F73E9 /* CWTestObject.swift */,
 				471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */,
-				471C50B622C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift */,
+				47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */,
+				471C50B622C6D337007F73E9 /* CWTestObject+FetchableObject.swift */,
 				471C507C22C6D0DC007F73E9 /* Info.plist */,
 			);
 			path = FetchRequestsTests;
@@ -673,17 +683,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				471C50B922C6D337007F73E9 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
-				471C50BB22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
-				471C50C222C6D337007F73E9 /* CWTestObject+Associations.swift in Sources */,
-				471C50B822C6D337007F73E9 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
-				471C50BA22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
-				471C50C122C6D337007F73E9 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */,
+				47B31B4B2330583600D6EB66 /* JSON.swift in Sources */,
+				471C50C122C6D337007F73E9 /* CWTestObject+FetchableObject.swift in Sources */,
+				47B31B512330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
+				47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
 				471C50BC22C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				471C50BF22C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift in Sources */,
+				47B31B572330697500D6EB66 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				471C50C022C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
+				47B31B582330697700D6EB66 /* CWFetchedResultsControllerTestCase.swift in Sources */,
+				47B31B542330696D00D6EB66 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
+				47B31B4F2330649300D6EB66 /* CWTestObject+Associations.swift in Sources */,
+				47B31B552330697000D6EB66 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				471C50BE22C6D337007F73E9 /* CWTestObject.swift in Sources */,
-				471C50BD22C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -740,11 +752,13 @@
 				47A6ED1B22CA90640034A854 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				47A6ED1C22CA90640034A854 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1D22CA90640034A854 /* CWTestObject+Associations.swift in Sources */,
+				47B31B4D2330583600D6EB66 /* JSON.swift in Sources */,
 				47A6ED1E22CA90640034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1F22CA90640034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
-				47A6ED2022CA90640034A854 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */,
+				47A6ED2022CA90640034A854 /* CWTestObject+FetchableObject.swift in Sources */,
 				47A6ED2122CA90640034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED2222CA90640034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */,
+				47B31B532330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
 				47A6ED2322CA90640034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
 				47A6ED2422CA90640034A854 /* CWTestObject.swift in Sources */,
 				47A6ED2522CA90640034A854 /* CWFetchedResultsControllerTestCase.swift in Sources */,
@@ -781,11 +795,13 @@
 				47A6ED4C22CA90A40034A854 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				47A6ED4D22CA90A40034A854 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED4E22CA90A40034A854 /* CWTestObject+Associations.swift in Sources */,
+				47B31B4C2330583600D6EB66 /* JSON.swift in Sources */,
 				47A6ED4F22CA90A40034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5022CA90A40034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
-				47A6ED5122CA90A40034A854 /* CWTestObject+CWFetchableObjectProtocol.swift in Sources */,
+				47A6ED5122CA90A40034A854 /* CWTestObject+FetchableObject.swift in Sources */,
 				47A6ED5222CA90A40034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED5322CA90A40034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */,
+				47B31B522330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
 				47A6ED5422CA90A40034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
 				47A6ED5522CA90A40034A854 /* CWTestObject.swift in Sources */,
 				47A6ED5622CA90A40034A854 /* CWFetchedResultsControllerTestCase.swift in Sources */,

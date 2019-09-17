@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import FetchRequests
+@testable import FetchRequests
 
 //swiftlint:disable implicitly_unwrapped_optional
 
@@ -68,6 +68,7 @@ extension CWTestObject {
     }
 
     static func fetchRequestAssociations(
+        matching: [PartialKeyPath<CWTestObject>],
         request: @escaping (AssociationRequest) -> Void
     ) -> [CWFetchRequestAssociation<CWTestObject>] {
         let tagString = CWFetchRequestAssociation<CWTestObject>(
@@ -93,61 +94,15 @@ extension CWTestObject {
             }
         )
 
-        return [tagString, tagObject, tagObjects]
+        let allAssociations = [tagString, tagObject, tagObjects]
+
+        return allAssociations.filter {
+            matching.contains($0.keyPath)
+        }
     }
 }
 
-extension CWFetchRequest where FetchedObject: CWTestObject {
-    convenience init(
-        request: @escaping Request,
-        objectCreationNotification: Notification.Name? = nil,
-        creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = []
-    ) {
-        let objectCreationNotification = objectCreationNotification ?? FetchedObject.objectWasCreated()
-
-        let dataResetNotifications = [
-            FetchedObject.dataWasCleared(),
-        ]
-
-        self.init(
-            request: request,
-            objectCreationToken: TestEntityObservableToken(name: objectCreationNotification),
-            creationInclusionCheck: creationInclusionCheck,
-            associations: associations,
-            dataResetTokens: dataResetNotifications.map {
-                VoidNotificationObservableToken(name: $0)
-            }
-        )
-    }
-}
-
-extension CWPaginatingFetchRequest where FetchedObject: CWTestObject {
-    convenience init(
-        request: @escaping Request,
-        paginationRequest: @escaping PaginationRequest,
-        objectCreationNotification: Notification.Name? = nil,
-        creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = []
-    ) {
-        let objectCreationNotification = objectCreationNotification ?? FetchedObject.objectWasCreated()
-
-        let dataResetNotifications = [
-            FetchedObject.dataWasCleared(),
-        ]
-
-        self.init(
-            request: request,
-            paginationRequest: paginationRequest,
-            objectCreationToken: TestEntityObservableToken(name: objectCreationNotification),
-            creationInclusionCheck: creationInclusionCheck,
-            associations: associations,
-            dataResetTokens: dataResetNotifications.map {
-                VoidNotificationObservableToken(name: $0)
-            }
-        )
-    }
-}
+// MARK: - Tokens
 
 class WrappedObservableToken<T>: CWObservableToken {
     private let notificationToken: CWObservableNotificationCenterToken

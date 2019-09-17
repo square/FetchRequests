@@ -14,17 +14,10 @@ class CWFetchableObjectProtocolTestCase: XCTestCase {
         let data: CWTestObject.RawData = ["id": "1", "test": 2]
         var newData: CWTestObject.RawData = ["id": "1", "test": 3]
 
-        XCTAssertFalse(CWTestObject.rawDataIsIdentical(lhs: data, rhs: newData))
+        XCTAssertFalse(data == newData)
 
         newData["test"] = 2
 
-        XCTAssertTrue(CWTestObject.rawDataIsIdentical(lhs: data, rhs: newData))
-    }
-
-    func testNullableDataEquality() {
-        let data: CWTestObject.RawData = ["id": "1", "test": 2]
-
-        XCTAssertTrue(CWTestObject.rawDataIsIdentical(lhs: nil, rhs: nil))
-        XCTAssertFalse(CWTestObject.rawDataIsIdentical(lhs: data, rhs: nil))
+        XCTAssertTrue(data == newData)
     }
 }

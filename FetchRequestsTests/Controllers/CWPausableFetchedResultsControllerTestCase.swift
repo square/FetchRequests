@@ -22,20 +22,26 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
     private var changeEvents: [(change: CWFetchedResultsChange<IndexPath>, object: CWTestObject)] = []
 
-    private func createFetchRequest(associations: [PartialKeyPath<CWTestObject>] = []) -> CWFetchRequest<CWTestObject> {
+    private func createFetchRequest(
+        associations: [PartialKeyPath<CWTestObject>] = []
+    ) -> CWFetchRequest<CWTestObject> {
         let request: CWFetchRequest<CWTestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        let allAssociations = CWTestObject.fetchRequestAssociations { [unowned self] associationRequest in
+
+        let desiredAssociations = CWTestObject.fetchRequestAssociations(
+            matching: associations
+        ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
-        let desiredAssociations = allAssociations.filter { associations.contains($0.keyPath) }
+
+        let inclusionCheck: CWFetchRequest<CWTestObject>.CreationInclusionCheck = { [unowned self] json in
+            return self.inclusionCheck?(json) ?? true
+        }
 
         return CWFetchRequest<CWTestObject>(
             request: request,
-            creationInclusionCheck: { [unowned self] json in
-                return self.inclusionCheck?(json) ?? true
-            },
+            creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
         )
     }

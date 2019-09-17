@@ -8,7 +8,7 @@
 
 import Foundation
 
-private func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
+func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
     objc_sync_enter(lockObject)
     defer {
         objc_sync_exit(lockObject)
@@ -17,11 +17,14 @@ private func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
     return block()
 }
 
-public protocol CWObservableToken: class {
+public protocol CWInvalidatableToken: class {
+    func invalidate()
+}
+
+public protocol CWObservableToken: CWInvalidatableToken {
     associatedtype Parameter
 
     func observe(handler: @escaping (Parameter) -> Void)
-    func invalidate()
 }
 
 public class CWObservableNotificationCenterToken: CWObservableToken {
@@ -61,13 +64,9 @@ public class CWObservableNotificationCenterToken: CWObservableToken {
     }
 }
 
-internal protocol KeyValueObservationToken {
-    func invalidate()
-}
+extension NSKeyValueObservation: CWInvalidatableToken {}
 
-extension NSKeyValueObservation: KeyValueObservationToken {}
-
-internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, KeyValueObservationToken {
+internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, CWInvalidatableToken {
     typealias Handler = (_ object: Object, _ oldValue: Value?, _ newValue: Value?) -> Void
 
     private weak var object: Object?
@@ -117,16 +116,6 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
         let newValue = change?[.newKey] as? Value
 
         handler(typedObject, oldValue, newValue)
-    }
-}
-
-extension LegacyKeyValueObserving where Object: CWFetchableObjectProtocol {
-    convenience init(
-        object: Object,
-        keyPath: KeyPath<Object.KeyPathBase, Value>,
-        handler: @escaping Handler
-    ) {
-        self.init(object: object, keyPath: keyPath, type: Value.self, handler: handler)
     }
 }
 
