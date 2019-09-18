@@ -801,7 +801,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         // Broadcast tagID 0
 
         inclusionCheck = { json in
-            (json["id"] as? String) != "0"
+            CWTestObject.entityID(from: json) != "0"
         }
 
         let updateName = CWTestObject.objectWasCreated()
@@ -1237,7 +1237,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         let newObject = CWTestObject(id: "d")
 
         inclusionCheck = { json in
-            (json["id"] as? String) != newObject.id
+            CWTestObject.entityID(from: json) != newObject.id
         }
 
         let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
