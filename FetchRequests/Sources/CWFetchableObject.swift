@@ -39,7 +39,7 @@ public protocol CWRawDataRepresentable {
 }
 
 /// A class of types that should be fetchable via CWFetchRequests
-public protocol CWFetchableObjectProtocol: class, CWRawDataRepresentable, CWIdentifiable {
+public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable {
     associatedtype KeyPathBase: CWRawDataRepresentable & CWIdentifiable where
         KeyPathBase.ID == ID, KeyPathBase.RawData == RawData
 
