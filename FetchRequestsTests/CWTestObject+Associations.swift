@@ -97,7 +97,7 @@ extension CWTestObject {
     }
 }
 
-extension CWFetchRequest where FetchedObject == CWTestObject {
+extension CWFetchRequest where FetchedObject: CWTestObject {
     convenience init(
         request: @escaping Request,
         objectCreationNotification: Notification.Name? = nil,
@@ -122,7 +122,7 @@ extension CWFetchRequest where FetchedObject == CWTestObject {
     }
 }
 
-extension CWPaginatingFetchRequest where FetchedObject == CWTestObject {
+extension CWPaginatingFetchRequest where FetchedObject: CWTestObject {
     convenience init(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,
