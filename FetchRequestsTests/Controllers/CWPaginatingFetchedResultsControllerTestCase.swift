@@ -137,7 +137,7 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
 
         let newObject = CWTestObject(id: "e")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)

@@ -176,7 +176,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         sectionChangeEvents.removeAll()
 
         let testObject = CWTestObject(id: "6", sectionName: "0")
-        let firstInsertNotification = Notification(name: CWTestObject.objectWasCreated(), object: testObject.data, userInfo: testObject.data)
+        let firstInsertNotification = Notification(name: CWTestObject.objectWasCreated(), object: testObject.data)
         NotificationCenter.default.post(firstInsertNotification)
 
         XCTAssertNil(fetchCompletion)
@@ -211,7 +211,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         sectionChangeEvents.removeAll()
 
         let testObject = CWTestObject(id: "6", sectionName: "0")
-        let firstInsertNotification = Notification(name: CWTestObject.objectWasCreated(), object: testObject.data, userInfo: testObject.data)
+        let firstInsertNotification = Notification(name: CWTestObject.objectWasCreated(), object: testObject.data)
         NotificationCenter.default.post(firstInsertNotification)
 
         XCTAssertFalse(controller.sections[0].isCollapsed)
@@ -287,7 +287,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         let objectToMove = controller.sections[0].allObjects.first!
         objectToMove.sectionName = "1"
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: objectToMove.data, userInfo: objectToMove.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: objectToMove.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertEqual(changeEvents.count, 1)
@@ -305,7 +305,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         let secondObjectToMove = controller.sections[1].allObjects.first!
         objectToMove.sectionName = "0"
-        let secondNotification = Notification(name: CWTestObject.objectWasCreated(), object: secondObjectToMove.data, userInfo: secondObjectToMove.data)
+        let secondNotification = Notification(name: CWTestObject.objectWasCreated(), object: secondObjectToMove.data)
         NotificationCenter.default.post(secondNotification)
 
         XCTAssertEqual(changeEvents.count, 1)
@@ -1199,7 +1199,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         let newObject = CWTestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -1240,7 +1240,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
             (json["id"] as? String) != newObject.id
         }
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)

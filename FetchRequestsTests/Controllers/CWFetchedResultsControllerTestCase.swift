@@ -840,7 +840,7 @@ extension CWFetchedResultsControllerTestCase {
 
         let newObject = CWTestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -881,7 +881,7 @@ extension CWFetchedResultsControllerTestCase {
             (json["id"] as? String) != newObject.id
         }
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)

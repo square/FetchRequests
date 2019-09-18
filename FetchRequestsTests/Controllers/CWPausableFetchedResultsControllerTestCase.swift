@@ -85,7 +85,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         let newObject = CWTestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -126,7 +126,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         let newObject = CWTestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
