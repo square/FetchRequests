@@ -10,6 +10,9 @@ import Foundation
 
 public typealias CWFetchableObject = NSObject & CWFetchableObjectProtocol
 
+// As of Swift 5 this crashes
+private let canUseRawData = false
+
 // This prevents crashes on OSs bundling Swift < 5.1
 public protocol CWIdentifiable {
     associatedtype ID: Hashable
@@ -17,7 +20,11 @@ public protocol CWIdentifiable {
 }
 
 public protocol _CWFetchableObjectProtocolBase: class, CWIdentifiable {
+    #if canUseRawData
     associatedtype RawData
+    #else
+    typealias RawData = [String: Any]
+    #endif
 
     var id: ID { get }
     var data: RawData { get }
@@ -51,8 +58,10 @@ extension CWFetchableObjectProtocol {
     }
 }
 
+#if canUseRawData
 extension CWFetchableObjectProtocol where RawData: Equatable {
     static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool {
         return lhs == rhs
     }
 }
+#endif
