@@ -20,21 +20,9 @@ public protocol CWIdentifiable {
     var id: ID { get }
 }
 
-/// A class of types whose instances hold raw data of that entity
-public protocol CWRawDataRepresentable {
-    /// A type representing the underlying data of the entity associated with `self`.
-    associatedtype RawData
-
-    /// Initialize a fetchable object from raw data
-    init?(data: RawData)
-
-    /// The underlying data of the entity associated with `self`.
-    var data: RawData { get }
-}
-
 /// A class of types that should be fetchable via CWFetchRequests
 public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable
-    where ID: Comparable, RawData: Equatable
+    where ID: Comparable
 {
     /// Has this object been marked as deleted?
     var isDeleted: Bool { get }

@@ -105,9 +105,6 @@
 		47A6ED7922CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
 		47A6ED7A22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
 		47A6ED7B22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
-		47B31B4B2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
-		47B31B4C2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
-		47B31B4D2330583600D6EB66 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B4A2330583600D6EB66 /* JSON.swift */; };
 		47B31B4F2330649300D6EB66 /* CWTestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */; };
 		47B31B512330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */; };
 		47B31B522330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */; };
@@ -117,6 +114,10 @@
 		47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
 		47B31B572330697500D6EB66 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */; };
 		47B31B582330697700D6EB66 /* CWFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */; };
+		47D33F072334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
+		47D33F082334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
+		47D33F092334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
+		47D33F0A2334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,10 +184,10 @@
 		47A6ED4622CA90A20034A854 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		47A6ED5D22CA90A40034A854 /* FetchRequests-macOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FetchRequests-macOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IndexPath+Convenience.swift"; sourceTree = "<group>"; };
-		47B31B4A2330583600D6EB66 /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CWTestObject+FetchRequests.swift"; sourceTree = "<group>"; };
 		47B4771722C6D7860008C56E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		47B4771822C6D7860008C56E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWRawDataRepresentable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,7 +288,6 @@
 			children = (
 				471C50AB22C6D337007F73E9 /* Controllers */,
 				471C50B322C6D337007F73E9 /* Models */,
-				47B31B4A2330583600D6EB66 /* JSON.swift */,
 				471C50B222C6D337007F73E9 /* CWTestObject.swift */,
 				471C50B722C6D337007F73E9 /* CWTestObject+Associations.swift */,
 				47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */,
@@ -307,6 +307,7 @@
 				47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */,
 				471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */,
 				471C509322C6D18D007F73E9 /* CWFetchableObject.swift */,
+				47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -674,6 +675,7 @@
 				471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */,
 				471C50A722C6D18D007F73E9 /* simplediff.swift in Sources */,
 				471C509922C6D18D007F73E9 /* Logging.swift in Sources */,
+				47D33F072334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
 				471C50A522C6D18D007F73E9 /* CWFetchableEntityID.swift in Sources */,
 				471C50A422C6D18D007F73E9 /* CWFetchableObject.swift in Sources */,
 			);
@@ -683,7 +685,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47B31B4B2330583600D6EB66 /* JSON.swift in Sources */,
 				471C50C122C6D337007F73E9 /* CWTestObject+FetchableObject.swift in Sources */,
 				47B31B512330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
 				47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
@@ -717,6 +718,7 @@
 				47A6ECDA22CA8FA80034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ECDB22CA8FA80034A854 /* simplediff.swift in Sources */,
 				47A6ECDC22CA8FA80034A854 /* Logging.swift in Sources */,
+				47D33F0A2334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
 				47A6ECDD22CA8FA80034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ECDE22CA8FA80034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -740,6 +742,7 @@
 				47A6ED0B22CA905A0034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ED0C22CA905A0034A854 /* simplediff.swift in Sources */,
 				47A6ED0D22CA905A0034A854 /* Logging.swift in Sources */,
+				47D33F092334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
 				47A6ED0E22CA905A0034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ED0F22CA905A0034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -752,7 +755,6 @@
 				47A6ED1B22CA90640034A854 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				47A6ED1C22CA90640034A854 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1D22CA90640034A854 /* CWTestObject+Associations.swift in Sources */,
-				47B31B4D2330583600D6EB66 /* JSON.swift in Sources */,
 				47A6ED1E22CA90640034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1F22CA90640034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED2022CA90640034A854 /* CWTestObject+FetchableObject.swift in Sources */,
@@ -783,6 +785,7 @@
 				47A6ED3C22CA90A20034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ED3D22CA90A20034A854 /* simplediff.swift in Sources */,
 				47A6ED3E22CA90A20034A854 /* Logging.swift in Sources */,
+				47D33F082334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
 				47A6ED3F22CA90A20034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ED4022CA90A20034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -795,7 +798,6 @@
 				47A6ED4C22CA90A40034A854 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				47A6ED4D22CA90A40034A854 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED4E22CA90A40034A854 /* CWTestObject+Associations.swift in Sources */,
-				47B31B4C2330583600D6EB66 /* JSON.swift in Sources */,
 				47A6ED4F22CA90A40034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5022CA90A40034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5122CA90A40034A854 /* CWTestObject+FetchableObject.swift in Sources */,

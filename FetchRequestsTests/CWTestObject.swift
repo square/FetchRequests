@@ -10,7 +10,7 @@ import Foundation
 @testable import FetchRequests
 
 final class CWTestObject: NSObject, CWIdentifiable {
-    typealias RawData = JSON
+    typealias RawData = CWRawData
 
     @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
