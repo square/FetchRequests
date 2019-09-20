@@ -41,11 +41,14 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
     private func observeChanges(for entity: Entity) -> [CWInvalidatableToken] {
         entity.listenForUpdates()
 
-        let dataObserver = entity.observeDataChanges { [weak self] entity in
+        let dataObserver = entity.observeDataChanges { [weak self] in
             self?.changeHandler?(false)
         }
 
-        let isDeletedObserver = entity.observeIsDeletedChanges { [weak self] entity in
+        let isDeletedObserver = entity.observeIsDeletedChanges { [weak self, weak entity] in
+            guard let entity = entity else {
+                return
+            }
             self?.observedDeletionEvent(with: entity)
         }
 

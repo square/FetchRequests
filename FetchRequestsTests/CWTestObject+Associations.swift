@@ -170,30 +170,6 @@ extension CWTestObject {
 extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
     convenience init<AssociatedType: CWTestObject>(
         for associatedType: AssociatedType.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedType.ID>,
-        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
-    ) {
-        self.init(
-            for: associatedType,
-            keyPath: keyPath,
-            request: request,
-            creationTokenGenerator: { objectID in
-                return TestEntityObservableToken(
-                    name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let includeID = AssociatedType.entityID(from: json) else {
-                            return false
-                        }
-                        return objectID == includeID
-                    }
-                )
-            },
-            preferExistingValueOnCreate: true
-        )
-    }
-
-    convenience init<AssociatedType: CWTestObject>(
-        for associatedType: AssociatedType.Type,
         keyPath: KeyPath<FetchedObject, AssociatedType.ID?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
@@ -213,39 +189,6 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
                 )
             },
             preferExistingValueOnCreate: true
-        )
-    }
-
-    convenience init<AssociatedType: CWTestObject>(
-        for associatedType: Array<AssociatedType>.Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]>,
-        request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
-    ) {
-        self.init(
-            for: associatedType,
-            keyPath: keyPath,
-            request: request,
-            creationTokenGenerator: { objectIDs in
-                return TestEntityObservableToken(
-                    name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let objectID = AssociatedType.entityID(from: json) else {
-                            return false
-                        }
-                        return objectIDs.contains(objectID)
-                    }
-                )
-            },
-            creationObserved: { lhs, rhs in
-                let lhs = lhs ?? []
-                guard let objectID = AssociatedType.entityID(from: rhs) else {
-                    return .same
-                }
-                if lhs.contains(where: { $0.id == objectID }) {
-                    return .same
-                }
-                return .invalid
-            }
         )
     }
 

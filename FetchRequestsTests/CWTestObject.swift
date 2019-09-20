@@ -16,8 +16,8 @@ final class CWTestObject: NSObject, CWIdentifiable {
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
 
-    private var _dataObservers: [UUID: (CWTestObject) -> Void] = [:]
-    var dataObservers: [UUID: (CWTestObject) -> Void] {
+    private var _dataObservers: [UUID: () -> Void] = [:]
+    var dataObservers: [UUID: () -> Void] {
         get {
             return synchronized(self) {
                 return _dataObservers
@@ -36,7 +36,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
             guard oldValue != data else {
                 return
             }
-            dataObservers.values.forEach { $0(self) }
+            dataObservers.values.forEach { $0() }
         }
     }
 
@@ -81,8 +81,8 @@ final class CWTestObject: NSObject, CWIdentifiable {
     }
 
     private func integrate(data: RawData) {
-        tag = data["tag"] as? Int ?? 0
-        sectionName = (data["sectionName"] as? String) ?? ""
+        tag = data.tag?.int ?? 0
+        sectionName = data.sectionName?.string ?? ""
     }
 }
 

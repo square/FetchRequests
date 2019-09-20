@@ -10,30 +10,6 @@ import Foundation
 
 import FetchRequests
 
-// MARK: - CWFetchableObjectProtocol
-
-extension Model: CWFetchableObjectProtocol {
-    class var idKeyPath: KeyPath<Model, ObjectID> {
-        return \.objectID
-    }
-
-    class var dataKeyPath: KeyPath<Model, RawData> {
-        return \.data
-    }
-
-    class var deletedKeyPath: KeyPath<Model, Bool> {
-        return \.isDeleted
-    }
-
-    class func entityID(from data: RawData) -> ObjectID? {
-        return data["id"] as? ObjectID
-    }
-
-    class func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool {
-        return (lhs as NSDictionary) == (rhs as NSDictionary)
-    }
-}
-
 // MARK: - Fetch Requests
 
 extension CWFetchableObjectProtocol where Self: Model {

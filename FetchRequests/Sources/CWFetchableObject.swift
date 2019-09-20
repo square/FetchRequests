@@ -34,10 +34,10 @@ public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepre
     static func entityID(from data: RawData) -> ID?
 
     /// Listen for changes to the underlying data of `self`
-    func observeDataChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
+    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
 
     /// Listen for changes to whether `self` is deleted
-    func observeIsDeletedChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
 
     /// Enforce listening for changes to the underlying data of `self`
     func listenForUpdates()

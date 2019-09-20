@@ -874,11 +874,17 @@ private extension CWFetchedResultsController {
             }
         }
 
-        let dataObserver = object.observeDataChanges { object in
+        let dataObserver = object.observeDataChanges { [weak object] in
+            guard let object = object else {
+                return
+            }
             handleChange(object)
         }
 
-        let isDeletedObserver = object.observeIsDeletedChanges { object in
+        let isDeletedObserver = object.observeIsDeletedChanges { [weak object] in
+            guard let object = object else {
+                return
+            }
             handleChange(object)
         }
 

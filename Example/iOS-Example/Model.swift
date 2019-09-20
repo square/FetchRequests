@@ -11,11 +11,11 @@ import Foundation
 import FetchRequests
 
 class Model: NSObject {
-    typealias ObjectID = String
-    typealias RawData = [String: Any]
+    typealias ID = String
+    typealias RawData = CWRawData
 
     @objc dynamic
-    private(set) var objectID: ObjectID
+    private(set) var id: ID
 
     @objc dynamic
     private(set) var createdAt: Date = .distantPast
@@ -23,20 +23,16 @@ class Model: NSObject {
     @objc dynamic
     private(set) var updatedAt: Date = .distantPast
 
-    private var _data: RawData = [:]
-    @objc dynamic var data: RawData {
-        get {
-            return _data
-        }
-        set {
-            _data = newValue
+    @Observable
+    var data: RawData {
+        willSet {
             integrate(data: newValue)
         }
     }
 
     @objc dynamic
     private(set) var isDeleted: Bool = false
-    
+
     @objc dynamic
     var observingUpdates: Bool = false {
         didSet {
@@ -53,21 +49,25 @@ class Model: NSObject {
     }
 
     override init() {
-        objectID = UUID().uuidString
-        super.init()
+        id = UUID().uuidString
+        let createdAt = Date().timeIntervalSince1970
         data = [
-            "id": objectID,
-            "createdAt": Date().timeIntervalSince1970,
+            "id": id,
+            "createdAt": createdAt,
+            "updatedAt": createdAt,
         ]
+        super.init()
+        integrate(data: data)
     }
 
     required init?(data: RawData) {
         guard let id = Model.entityID(from: data) else {
             return nil
         }
-        objectID = id
-        super.init()
+        self.id = id
         self.data = data
+        super.init()
+        integrate(data: data)
     }
 
     // MARK: - NSObject Overrides
@@ -77,12 +77,12 @@ class Model: NSObject {
             return false
         }
 
-        return objectID == other.objectID
+        return id == other.id
     }
 
     override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(objectID)
+        hasher.combine(id)
 
         return hasher.finalize()
     }
@@ -100,14 +100,39 @@ extension Model {
     }
 }
 
+// MARK: - CWFetchableObjectProtocol
+
+extension Model: CWFetchableObjectProtocol {
+    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+        return _data.observeChanges { change in handler() }
+    }
+
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+        return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
+            guard let old = change.oldValue, let new = change.newValue, old != new else {
+                return
+            }
+            handler()
+        }
+    }
+
+    static func entityID(from data: RawData) -> Model.ID? {
+        return data.id?.string
+    }
+
+    func listenForUpdates() {
+        observingUpdates = true
+    }
+}
+
 // MARK: - Private Helpers
 
 private extension Model {
     func integrate(data: RawData) {
-        if let raw = data["createdAt"] as? TimeInterval {
+        if let raw = data.createdAt?.double as TimeInterval? {
             createdAt = Date(timeIntervalSince1970: raw)
         }
-        if let raw = data["updatedAt"] as? TimeInterval {
+        if let raw = data.updatedAt?.double as TimeInterval? {
             updatedAt = Date(timeIntervalSince1970: raw)
         }
     }
@@ -144,8 +169,9 @@ private extension Model {
             return
         }
 
-        guard let data = notification.userInfo as? RawData else {
-            fatalError("Bad notification with userInfo \(String(describing: notification.userInfo))")
+        guard let data = notification.userInfo?["data"] as? RawData else {
+            let info = notification.userInfo ?? [:]
+            fatalError("Bad notification with userInfo \(info)")
         }
         processUpdate(of: model, with: data)
     }
