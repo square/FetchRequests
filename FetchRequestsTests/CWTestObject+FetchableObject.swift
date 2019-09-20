@@ -46,7 +46,7 @@ extension CWTestObject: CWFetchableObjectProtocol {
     }
 
     static func entityID(from data: RawData) -> ID? {
-        return data["id"] as? ID
+        return data.id?.string
     }
 }
 

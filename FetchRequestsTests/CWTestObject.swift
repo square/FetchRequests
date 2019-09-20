@@ -81,8 +81,8 @@ final class CWTestObject: NSObject, CWIdentifiable {
     }
 
     private func integrate(data: RawData) {
-        tag = data["tag"] as? Int ?? 0
-        sectionName = (data["sectionName"] as? String) ?? ""
+        tag = data.tag?.int ?? 0
+        sectionName = data.sectionName?.string ?? ""
     }
 }
 
