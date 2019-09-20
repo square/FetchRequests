@@ -217,6 +217,150 @@ extension CWRawData: Equatable {
     }
 }
 
+// MARK: - Collection
+
+extension CWRawData: MutableCollection {
+    public enum Index: Comparable, Hashable {
+        public enum Key: Comparable, Hashable {
+            case offset(Int)
+            case key(String)
+            case value
+
+            public static func < (lhs: Key, rhs: Key) -> Bool {
+                switch (lhs, rhs) {
+                case let (.offset(lhs), .offset(rhs)):
+                    return lhs < rhs
+
+                case let (.key(lhs), .key(rhs)):
+                    return lhs < rhs
+
+                case (.offset, _), (.key, _), (.value, _):
+                    return false
+                }
+            }
+        }
+
+        public static func < (lhs: Index, rhs: Index) -> Bool {
+            switch (lhs, rhs) {
+            case let (.array(lhs), .array(rhs)):
+                return lhs < rhs
+
+            case let (.dictionary(lhs), .dictionary(rhs)):
+                return lhs < rhs
+
+            case (.array, _), (.dictionary, _), (.value, _):
+                return false
+            }
+        }
+
+        case array(Array<Any>.Index)
+        case dictionary(Dictionary<String, Any>.Index)
+        case value
+    }
+
+    public var count: Int {
+        switch self {
+        case let .array(array):
+            return array.count
+
+        case let .dictionary(dictionary):
+            return dictionary.count
+
+        case .string, .number, .bool, .null:
+            return 1
+        }
+    }
+
+    public var startIndex: Index {
+        switch self {
+        case let .array(array):
+            return .array(array.startIndex)
+
+        case let .dictionary(dictionary):
+            return .dictionary(dictionary.startIndex)
+
+        case .string, .number, .bool, .null:
+            return .value
+        }
+    }
+
+    public var endIndex: Index {
+        switch self {
+        case let .array(array):
+            return .array(array.endIndex)
+
+        case let .dictionary(dictionary):
+            return .dictionary(dictionary.endIndex)
+
+        case .string, .number, .bool, .null:
+            return .value
+        }
+    }
+
+    public func index(after index: Index) -> Index {
+        switch index {
+        case let .array(index):
+            return .array(array!.index(after: index))
+
+        case let .dictionary(index):
+            return .dictionary(dictionary!.index(after: index))
+
+        case .value:
+            return .value
+        }
+    }
+
+    private func key(for index: Index) -> Index.Key {
+        switch index {
+        case let .array(index):
+            return .offset(index)
+
+        case let .dictionary(index):
+            return .key(dictionary![index].key)
+
+        case .value:
+            return .value
+        }
+    }
+
+    public subscript(index: Index) -> (key: Index.Key, value: CWRawData) {
+        get {
+            let key = self.key(for: index)
+            return (key, self[key]!)
+        }
+        set {
+            self[newValue.key] = newValue.value
+        }
+    }
+
+    public subscript(key: Index.Key) -> CWRawData? {
+        get {
+            switch key {
+            case let .offset(offset):
+                return self[offset]
+
+            case let .key(key):
+                return self[key]
+
+            case .value:
+                return self
+            }
+        }
+        set {
+            switch key {
+            case let .offset(offset):
+                self[offset] = newValue
+
+            case let .key(key):
+                self[key] = newValue
+
+            case .value:
+                self = newValue ?? .null
+            }
+        }
+    }
+}
+
 // MARK: - Literals
 
 extension CWRawData: ExpressibleByDictionaryLiteral {
