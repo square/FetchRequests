@@ -21,6 +21,15 @@ public protocol CWRawDataRepresentable {
 
 // MARK: - CWRawData
 
+private let nsBool: NSNumber = true as NSNumber
+private let cfBool: CFBoolean = true as CFBoolean
+
+private extension NSNumber {
+    var isBool: Bool {
+        return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
+    }
+}
+
 /// This represents raw data within the FetchRequests framework
 /// It exists to work around compiler/runtime bugs around pointers in closure thunks
 @dynamicMemberLookup
@@ -39,8 +48,8 @@ public enum CWRawData {
             self = value
         } else if let value = value as? String {
             self = .string(value)
-        } else if let value = value as? Bool {
-            self = .bool(value)
+        } else if let value = value as? NSNumber, value.isBool {
+                self = .bool(value.boolValue)
         } else if let value = value as? NSNumber {
             self = .number(value)
         } else if let value = value as? [Any] {
@@ -114,10 +123,6 @@ extension CWRawData {
         return number?.intValue
     }
 
-    public var int64: Int64? {
-        return number?.int64Value
-    }
-
     public var float: Float? {
         return number?.floatValue
     }
@@ -139,7 +144,10 @@ extension CWRawData {
     }
 
     public var bool: Bool? {
-        return object as? Bool
+        guard case let .bool(value) = self else {
+            return nil
+        }
+        return value
     }
 }
 
@@ -224,7 +232,7 @@ extension CWRawData: MutableCollection {
         public enum Key: Comparable, Hashable {
             case offset(Int)
             case key(String)
-            case value
+            case value(isStart: Bool)
 
             public static func < (lhs: Key, rhs: Key) -> Bool {
                 switch (lhs, rhs) {
@@ -232,6 +240,11 @@ extension CWRawData: MutableCollection {
                     return lhs < rhs
 
                 case let (.key(lhs), .key(rhs)):
+                    return lhs < rhs
+
+                case let (.value(lhs), .value(rhs)):
+                    let lhs = lhs ? 0 : 1
+                    let rhs = rhs ? 0 : 1
                     return lhs < rhs
 
                 case (.offset, _), (.key, _), (.value, _):
@@ -255,7 +268,7 @@ extension CWRawData: MutableCollection {
 
         case array(Array<Any>.Index)
         case dictionary(Dictionary<String, Any>.Index)
-        case value
+        case value(isStart: Bool)
     }
 
     public var count: Int {
@@ -280,7 +293,7 @@ extension CWRawData: MutableCollection {
             return .dictionary(dictionary.startIndex)
 
         case .string, .number, .bool, .null:
-            return .value
+            return .value(isStart: true)
         }
     }
 
@@ -293,7 +306,7 @@ extension CWRawData: MutableCollection {
             return .dictionary(dictionary.endIndex)
 
         case .string, .number, .bool, .null:
-            return .value
+            return .value(isStart: false)
         }
     }
 
@@ -306,7 +319,7 @@ extension CWRawData: MutableCollection {
             return .dictionary(dictionary!.index(after: index))
 
         case .value:
-            return .value
+            return .value(isStart: false)
         }
     }
 
@@ -318,8 +331,8 @@ extension CWRawData: MutableCollection {
         case let .dictionary(index):
             return .key(dictionary![index].key)
 
-        case .value:
-            return .value
+        case let .value(isStart):
+            return .value(isStart: isStart)
         }
     }
 
@@ -342,7 +355,10 @@ extension CWRawData: MutableCollection {
             case let .key(key):
                 return self[key]
 
-            case .value:
+            case let .value(isStart):
+                guard isStart else {
+                    return nil
+                }
                 return self
             }
         }
@@ -354,7 +370,10 @@ extension CWRawData: MutableCollection {
             case let .key(key):
                 self[key] = newValue
 
-            case .value:
+            case let .value(isStart):
+                guard isStart else {
+                    return
+                }
                 self = newValue ?? .null
             }
         }

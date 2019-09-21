@@ -199,6 +199,53 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     }
 }
 
+// MARK: - Paginating
+
+extension CWPausableFetchedResultsControllerTestCase {
+    func testCanCreatePausableVariation() {
+        let baseRequest = createFetchRequest()
+
+        var paginationRequests = 0
+
+        let request = CWPaginatingFetchRequest<CWTestObject>(
+            request: baseRequest.request,
+            paginationRequest: { current, completion in
+                paginationRequests += 1
+
+                let newObject = CWTestObject(id: paginationRequests.description)
+
+                completion([newObject])
+            },
+            creationInclusionCheck: baseRequest.creationInclusionCheck,
+            associations: baseRequest.associations
+        )
+
+        let controller = CWPausablePaginatingFetchedResultsController(
+            request: request,
+            sectionNameKeyPath: \.sectionName,
+            debounceInsertsAndReloads: false
+        )
+        self.controller = controller
+        controller.setDelegate(self)
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        controller.isPaused = true
+        changeEvents.removeAll()
+
+        controller.performPagination()
+
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "b", "c"])
+
+        controller.isPaused = false
+
+        XCTAssertTrue(changeEvents.isEmpty)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["1", "a", "b", "c"])
+    }
+}
+
 // MARK: - CWFetchedResultsControllerDelegate
 
 extension CWPausableFetchedResultsControllerTestCase: CWPausableFetchedResultsControllerDelegate {
