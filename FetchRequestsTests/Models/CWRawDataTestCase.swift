@@ -155,7 +155,6 @@ extension CWRawDataTestCase {
         XCTAssertEqual(array.count, 3)
     }
 
-
     func testCollectionOfOne() {
         var value: CWRawData = true
 
