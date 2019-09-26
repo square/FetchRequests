@@ -16,7 +16,7 @@ struct AssociatedValueKey<FetchedObject: CWFetchableObject>: Hashable {
 }
 
 class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedValueReference {
-    private var observations: [Entity: [KeyValueObservationToken]] = [:]
+    private var observations: [Entity: [CWInvalidatableToken]] = [:]
 
     fileprivate override func stopObservingValue() {
         observations.values.forEach { $0.forEach { $0.invalidate() } }
@@ -38,35 +38,18 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
         }
     }
 
-    private func observeChanges(for entity: Entity) -> [KeyValueObservationToken] {
-        var tokens: [KeyValueObservationToken] = []
+    private func observeChanges(for entity: Entity) -> [CWInvalidatableToken] {
+        entity.listenForUpdates()
 
-        entity.observingUpdates = true
-
-        let dataObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: entity,
-            keyPath: Entity.dataKeyPath
-        ) { [weak self] object, oldValue, newValue in
-            guard !Entity.rawDataIsIdentical(lhs: oldValue, rhs: newValue) else {
-                return
-            }
-
+        let dataObserver = entity.observeDataChanges { [weak self] entity in
             self?.changeHandler?(false)
         }
 
-        let deleteObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: entity,
-            keyPath: Entity.deletedKeyPath
-        ) { [weak self] object, oldValue, newValue in
-            guard oldValue != newValue, newValue == true else {
-                return
-            }
+        let isDeletedObserver = entity.observeIsDeletedChanges { [weak self] entity in
             self?.observedDeletionEvent(with: entity)
         }
 
-        tokens += [dataObserver, deleteObserver]
-
-        return tokens
+        return [dataObserver, isDeletedObserver]
     }
 
     private func observedDeletionEvent(with entity: Entity) {

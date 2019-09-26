@@ -10,26 +10,37 @@ import Foundation
 @testable import FetchRequests
 
 final class CWTestObject: NSObject, CWIdentifiable {
-    typealias RawData = [String: Any]
+    typealias RawData = CWRawData
 
     @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
 
-    private var _data: RawData = [:]
-    @objc dynamic var data: RawData {
+    private var _dataObservers: [UUID: (CWTestObject) -> Void] = [:]
+    var dataObservers: [UUID: (CWTestObject) -> Void] {
         get {
-            return _data
+            return synchronized(self) {
+                return _dataObservers
+            }
         }
         set {
-            _data = newValue
-            integrate(data: newValue)
+            synchronized(self) {
+                _dataObservers = newValue
+            }
+        }
+    }
+
+    var data: RawData = [:] {
+        didSet {
+            integrate(data: data)
+            guard oldValue != data else {
+                return
+            }
+            dataObservers.values.forEach { $0(self) }
         }
     }
 
     @objc dynamic var isDeleted: Bool = false
-
-    var observingUpdates: Bool = false
 
     // MARK: NSObject Overrides
 
@@ -55,6 +66,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
         self.id = id
         super.init()
         self.data = data
+        integrate(data: data)
     }
 
     init(id: String, tag: Int = 0, sectionName: String = "") {
@@ -65,6 +77,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
             "tag": tag,
             "sectionName": sectionName,
         ]
+        integrate(data: data)
     }
 
     private func integrate(data: RawData) {

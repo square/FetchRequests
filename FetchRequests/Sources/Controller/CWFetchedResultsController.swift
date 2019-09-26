@@ -166,7 +166,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
     public let sortDescriptors: [NSSortDescriptor]
     public let sectionNameKeyPath: SectionNameKeyPath?
 
-    private var observationTokens: [ObjectIdentifier: [KeyValueObservationToken]] = [:]
+    private var observationTokens: [ObjectIdentifier: [CWInvalidatableToken]] = [:]
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
@@ -243,11 +243,24 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
             sortDescriptors.insert(sectionNameDescriptor, at: 0)
         }
 
-        let objectIDDescriptor = NSSortDescriptor(
-            key: FetchedObject.idKeyPath._kvcKeyPathString!,
-            ascending: true
-        )
-        sortDescriptors.append(objectIDDescriptor)
+        if FetchedObject.instancesRespond(to: Selector(("id"))) {
+            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            sortDescriptors.append(idDescriptor)
+        } else {
+            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                    return .orderedSame
+                }
+                if lhs.id < rhs.id {
+                    return .orderedAscending
+                } else if lhs.id > rhs.id {
+                    return .orderedDescending
+                } else {
+                    return .orderedSame
+                }
+            }
+            sortDescriptors.append(idDescriptor)
+        }
 
         self.request = request
         self.sortDescriptors = sortDescriptors
@@ -834,7 +847,7 @@ private extension CWFetchedResultsController {
     func startObserving(_ object: FetchedObject) {
         assert(Thread.isMainThread)
 
-        var observations: [KeyValueObservationToken] = []
+        var observations: [CWInvalidatableToken] = []
 
         for association in request.associations {
             let keyPath = association.keyPath
@@ -861,28 +874,15 @@ private extension CWFetchedResultsController {
             }
         }
 
-        let dataObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: object,
-            keyPath: FetchedObject.dataKeyPath
-        ) { object, oldValue, newValue in
-            guard !FetchedObject.rawDataIsIdentical(lhs: oldValue, rhs: newValue) else {
-                return
-            }
-
+        let dataObserver = object.observeDataChanges { object in
             handleChange(object)
         }
 
-        let deleteObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: object,
-            keyPath: FetchedObject.deletedKeyPath
-        ) { object, oldValue, newValue in
-            guard oldValue != newValue else {
-                return
-            }
+        let isDeletedObserver = object.observeIsDeletedChanges { object in
             handleChange(object)
         }
 
-        observations += [dataObserver, deleteObserver]
+        observations += [dataObserver, isDeletedObserver]
 
         let handleSort: (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
             guard let `self` = self else {
@@ -906,6 +906,9 @@ private extension CWFetchedResultsController {
         }
 
         for (index, sort) in sortDescriptors.enumerated() {
+            guard let keyPath = sort.key, keyPath != "self" else {
+                continue
+            }
             let isSectionNameKeyPath: Bool
             if sectionNameKeyPath != nil, index == 0 {
                 isSectionNameKeyPath = true
@@ -913,9 +916,9 @@ private extension CWFetchedResultsController {
                 isSectionNameKeyPath = false
             }
 
-            let observation: KeyValueObservationToken = LegacyKeyValueObserving(
+            let observation = LegacyKeyValueObserving(
                 object: object,
-                keyPath: sort.key!,
+                keyPath: keyPath,
                 type: Any.self
             ) { object, oldValue, newValue in
                 handleSort(object, isSectionNameKeyPath, oldValue, newValue)
@@ -923,7 +926,7 @@ private extension CWFetchedResultsController {
             observations.append(observation)
         }
 
-        object.observingUpdates = true
+        object.listenForUpdates()
         object.context = context
 
         observationTokens[ObjectIdentifier(object)] = observations
@@ -1040,7 +1043,7 @@ extension CWFetchedResultsController: CWInternalFetchResultsControllerProtocol {
             return
         }
 
-        objects.forEach { $0.observingUpdates = true }
+        objects.forEach { $0.listenForUpdates() }
 
         guard debounceInsertsAndReloads else {
             insert(objects, emitChanges: emitChanges)

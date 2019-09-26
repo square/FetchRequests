@@ -8,9 +8,6 @@
 
 import Foundation
 
-// As of Swift 5 this crashes
-private let canUseRawData = false
-
 /// A class of types that should be fetchable via CWFetchRequests
 public typealias CWFetchableObject = NSObject & CWFetchableObjectProtocol
 
@@ -23,26 +20,10 @@ public protocol CWIdentifiable {
     var id: ID { get }
 }
 
-public protocol CWRawDataRepresentable {
-    #if canUseRawData
-    /// A type representing the underlying data of the entity associated with `self`.
-    associatedtype RawData
-    #else
-    typealias RawData = [String: Any]
-    #endif
-
-    /// Initialize an object from raw data
-    init?(data: RawData)
-
-    /// The underlying data of the entity associated with `self`.
-    var data: RawData { get }
-}
-
 /// A class of types that should be fetchable via CWFetchRequests
-public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable {
-    associatedtype KeyPathBase: CWRawDataRepresentable & CWIdentifiable where
-        KeyPathBase.ID == ID, KeyPathBase.RawData == RawData
-
+public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable
+    where ID: Comparable
+{
     /// Has this object been marked as deleted?
     var isDeleted: Bool { get }
 
@@ -52,31 +33,16 @@ public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepre
     /// - returns: The entityID for a fetchable object
     static func entityID(from data: RawData) -> ID?
 
-    static var idKeyPath: KeyPath<KeyPathBase, ID> { get }
-    static var dataKeyPath: KeyPath<KeyPathBase, RawData> { get }
-    static var deletedKeyPath: KeyPath<KeyPathBase, Bool> { get }
+    /// Listen for changes to the underlying data of `self`
+    func observeDataChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
 
-    var observingUpdates: Bool { get set }
+    /// Listen for changes to whether `self` is deleted
+    func observeIsDeletedChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
 
-    static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool
+    /// Enforce listening for changes to the underlying data of `self`
+    func listenForUpdates()
 }
 
 extension CWFetchableObjectProtocol {
-    static func rawDataIsIdentical(lhs: RawData?, rhs: RawData?) -> Bool {
-        if lhs == nil, rhs == nil {
-            return true
-        } else if let lhs = lhs, let rhs = rhs {
-            return rawDataIsIdentical(lhs: lhs, rhs: rhs)
-        } else {
-            return false
-        }
-    }
+    public func listenForUpdates() {}
 }
-
-#if canUseRawData
-extension CWFetchableObjectProtocol where RawData: Equatable {
-    static func rawDataIsIdentical(lhs: RawData, rhs: RawData) -> Bool {
-        return lhs == rhs
-    }
-}
-#endif

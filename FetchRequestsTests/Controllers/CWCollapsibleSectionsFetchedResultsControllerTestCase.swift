@@ -26,20 +26,26 @@ class CWCollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     private var changeEvents: [(change: CWFetchedResultsChange<IndexPath>, object: CWTestObject)] = []
     private var sectionChangeEvents: [(change: CWFetchedResultsChange<Int>, section: CWCollapsibleResultsSection<CWTestObject>)] = []
 
-    private func createFetchRequest(associations: [PartialKeyPath<CWTestObject>] = []) -> CWFetchRequest<CWTestObject> {
+    private func createFetchRequest(
+        associations: [PartialKeyPath<CWTestObject>] = []
+    ) -> CWFetchRequest<CWTestObject> {
         let request: CWFetchRequest<CWTestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        let allAssociations = CWTestObject.fetchRequestAssociations { [unowned self] associationRequest in
+        
+        let desiredAssociations = CWTestObject.fetchRequestAssociations(
+            matching: associations
+        ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
-        let desiredAssociations = allAssociations.filter { associations.contains($0.keyPath) }
+
+        let inclusionCheck: CWFetchRequest<CWTestObject>.CreationInclusionCheck = { [unowned self] json in
+            return self.inclusionCheck?(json) ?? true
+        }
 
         return CWFetchRequest<CWTestObject>(
             request: request,
-            creationInclusionCheck: { [unowned self] json in
-                return self.inclusionCheck?(json) ?? true
-            },
+            creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
         )
     }
@@ -493,7 +499,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         controller = FetchController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(key: CWTestObject.idKeyPath._kvcKeyPathString!, ascending: false),
+                NSSortDescriptor(keyPath: \CWTestObject.id, ascending: false),
             ],
             debounceInsertsAndReloads: false
         )
@@ -611,7 +617,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
         controller = FetchController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(key: CWTestObject.idKeyPath._kvcKeyPathString!, ascending: true),
+                NSSortDescriptor(keyPath: \CWTestObject.id, ascending: true),
             ],
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
@@ -806,7 +812,7 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
 
         let updateName = CWTestObject.objectWasCreated()
         let update: CWTestObject.RawData = ["id": "0", "updatedAt": 1]
-        NotificationCenter.default.post(name: updateName, object: update, userInfo: update)
+        NotificationCenter.default.post(name: updateName, object: update)
 
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
@@ -1240,7 +1246,8 @@ extension CWCollapsibleSectionsFetchedResultsControllerTestCase {
             CWTestObject.entityID(from: json) != newObject.id
         }
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
+        let update = newObject.data
+        let notification = Notification(name: CWTestObject.objectWasCreated(), object: update)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
