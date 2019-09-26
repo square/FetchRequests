@@ -243,9 +243,24 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
             sortDescriptors.insert(sectionNameDescriptor, at: 0)
         }
 
-        assert(FetchedObject.instancesRespond(to: Selector(("id"))), "id is not KVC compliant?")
-        let objectIDDescriptor = NSSortDescriptor(key: "id", ascending: true)
-        sortDescriptors.append(objectIDDescriptor)
+        if FetchedObject.instancesRespond(to: Selector(("id"))) {
+            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            sortDescriptors.append(idDescriptor)
+        } else {
+            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                    return .orderedSame
+                }
+                if lhs.id < rhs.id {
+                    return .orderedAscending
+                } else if lhs.id > rhs.id {
+                    return .orderedDescending
+                } else {
+                    return .orderedSame
+                }
+            }
+            sortDescriptors.append(idDescriptor)
+        }
 
         self.request = request
         self.sortDescriptors = sortDescriptors
