@@ -89,7 +89,7 @@ public enum CWRawData {
 // MARK: - Getters
 
 extension CWRawData {
-    public var object: Any {
+    public internal(set) var object: Any {
         get {
             switch self {
             case let .string(value):
@@ -160,7 +160,7 @@ extension CWRawData {
 // MARK: - Subscripts
 
 extension CWRawData {
-    public subscript(dynamicMember member: String) -> CWRawData? {
+    public internal(set) subscript(dynamicMember member: String) -> CWRawData? {
         get {
             return self[member]
         }
@@ -169,7 +169,7 @@ extension CWRawData {
         }
     }
 
-    public subscript(key: String) -> CWRawData? {
+    public internal(set) subscript(key: String) -> CWRawData? {
         get {
             guard case let .dictionary(dictionary) = self else {
                 return nil
@@ -185,7 +185,7 @@ extension CWRawData {
         }
     }
 
-    public subscript(offset: Int) -> CWRawData? {
+    public internal(set) subscript(offset: Int) -> CWRawData? {
         get {
             guard case let .array(array) = self, array.indices.contains(offset) else {
                 return nil
@@ -233,7 +233,7 @@ extension CWRawData: Equatable {
 
 // MARK: - Collection
 
-extension CWRawData: MutableCollection {
+extension CWRawData: Collection {
     public enum Index: Comparable, Hashable {
         public enum Key: Comparable, Hashable {
             case offset(Int)
@@ -342,7 +342,7 @@ extension CWRawData: MutableCollection {
         }
     }
 
-    public subscript(index: Index) -> (key: Index.Key, value: CWRawData) {
+    public internal(set) subscript(index: Index) -> (key: Index.Key, value: CWRawData) {
         get {
             let key = self.key(for: index)
             return (key, self[key]!)
@@ -354,7 +354,7 @@ extension CWRawData: MutableCollection {
         }
     }
 
-    public subscript(key: Index.Key) -> CWRawData? {
+    public internal(set) subscript(key: Index.Key) -> CWRawData? {
         get {
             switch key {
             case let .offset(offset):
