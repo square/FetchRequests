@@ -57,10 +57,10 @@ extension Model {
     }
 
     private class func validateCanUpdate(_ originalModel: Model) throws -> Model {
-        var data = originalModel.data
-        data.updatedAt?.object = Date().timeIntervalSince1970
+        var data = originalModel.data.dictionary ?? [:]
+        data["updatedAt"] = Date().timeIntervalSince1970
 
-        guard let model = self.init(data: data) else {
+        guard let json = CWRawData(data), let model = self.init(data: json) else {
             throw ModelError.cannotInflate
         }
 
