@@ -12,7 +12,7 @@ import FetchRequests
 
 class Model: NSObject {
     typealias ID = String
-    typealias RawData = CWRawData
+    typealias RawData = CWJSON
 
     @objc dynamic
     private(set) var id: ID

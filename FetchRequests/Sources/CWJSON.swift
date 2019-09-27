@@ -1,5 +1,5 @@
 //
-//  CWRawDataRepresentable.swift
+//  CWJSON.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 9/19/19.
@@ -8,52 +8,10 @@
 
 import Foundation
 
-/// A class of types whose instances hold raw data of that entity
-public protocol CWRawDataRepresentable {
-    typealias RawData = CWRawData
-
-    /// Initialize a fetchable object from raw data
-    init?(data: RawData)
-
-    /// The underlying data of the entity associated with `self`.
-    var data: RawData { get }
-}
-
-// MARK: - CWRawData
-
-private let nsBool: NSNumber = true as NSNumber
-private let cfBool: CFBoolean = true as CFBoolean
-
-private extension NSNumber {
-    var isBool: Bool {
-        return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
-    }
-
-    var isFloatingPoint: Bool {
-        return CFNumberIsFloatType(self as CFNumber)
-    }
-
-    var expectedType: NumberType {
-        if isBool {
-            return .boolean
-        } else if isFloatingPoint {
-            return .floatingPoint
-        } else {
-            return .integer
-        }
-    }
-
-    enum NumberType {
-        case integer
-        case floatingPoint
-        case boolean
-    }
-}
-
 /// This represents raw data within the FetchRequests framework
 /// It exists to work around compiler/runtime bugs around pointers in closure thunks
 @dynamicMemberLookup
-public enum CWRawData {
+public enum CWJSON {
     case string(String)
     case dictionary([String: Any])
     case array([Any])
@@ -64,7 +22,7 @@ public enum CWRawData {
     public init?(_ value: Any) {
         if let value = value as? Data {
             self.init(data: value)
-        } else if let value = value as? CWRawData {
+        } else if let value = value as? CWJSON {
             self = value
         } else if let value = value as? String {
             self = .string(value)
@@ -72,11 +30,11 @@ public enum CWRawData {
             self = .bool(value.boolValue)
         } else if let value = value as? NSNumber {
             self = .number(value)
-        } else if let value = value as? [CWRawData] {
+        } else if let value = value as? [CWJSON] {
             self = .array(value.map { $0.object })
         } else if let value = value as? [Any] {
             self = .array(value)
-        } else if let value = value as? [String: CWRawData] {
+        } else if let value = value as? [String: CWJSON] {
             self = .dictionary(value.reduce(into: [:]) { memo, kvp in
                 memo[kvp.key] = kvp.value.object
             })
@@ -114,7 +72,7 @@ public enum CWRawData {
 
 // MARK: - Getters
 
-extension CWRawData {
+extension CWJSON {
     public internal(set) var object: Any {
         get {
             switch self {
@@ -138,7 +96,7 @@ extension CWRawData {
             }
         }
         set {
-            let expected = CWRawData(newValue)
+            let expected = CWJSON(newValue)
             self[.value(isStart: true)] = expected
         }
     }
@@ -189,8 +147,8 @@ extension CWRawData {
 
 // MARK: - Subscripts
 
-extension CWRawData {
-    public internal(set) subscript(dynamicMember member: String) -> CWRawData? {
+extension CWJSON {
+    public internal(set) subscript(dynamicMember member: String) -> CWJSON? {
         get {
             return self[member]
         }
@@ -199,12 +157,12 @@ extension CWRawData {
         }
     }
 
-    public internal(set) subscript(key: String) -> CWRawData? {
+    public internal(set) subscript(key: String) -> CWJSON? {
         get {
             guard case let .dictionary(dictionary) = self else {
                 return nil
             }
-            return dictionary[key].flatMap { CWRawData($0) }
+            return dictionary[key].flatMap { CWJSON($0) }
         }
         set {
             guard case var .dictionary(dictionary) = self else {
@@ -215,12 +173,12 @@ extension CWRawData {
         }
     }
 
-    public internal(set) subscript(offset: Int) -> CWRawData? {
+    public internal(set) subscript(offset: Int) -> CWJSON? {
         get {
             guard case let .array(array) = self, array.indices.contains(offset) else {
                 return nil
             }
-            return CWRawData(array[offset])
+            return CWJSON(array[offset])
         }
         set {
             guard case var .array(array) = self, array.indices.contains(offset) else {
@@ -234,8 +192,8 @@ extension CWRawData {
 
 // MARK: - Equatable
 
-extension CWRawData: Equatable {
-    public static func == (lhs: CWRawData, rhs: CWRawData) -> Bool {
+extension CWJSON: Equatable {
+    public static func == (lhs: CWJSON, rhs: CWJSON) -> Bool {
         switch (lhs, rhs) {
         case let (.string(lhs), .string(rhs)):
             return lhs == rhs
@@ -263,7 +221,7 @@ extension CWRawData: Equatable {
 
 // MARK: - Collection
 
-extension CWRawData: Collection {
+extension CWJSON: Collection {
     public enum Index: Comparable, Hashable {
         public enum Key: Comparable, Hashable {
             case offset(Int)
@@ -372,7 +330,7 @@ extension CWRawData: Collection {
         }
     }
 
-    public internal(set) subscript(index: Index) -> (key: Index.Key, value: CWRawData) {
+    public internal(set) subscript(index: Index) -> (key: Index.Key, value: CWJSON) {
         get {
             let key = self.key(for: index)
             return (key, self[key]!)
@@ -384,7 +342,7 @@ extension CWRawData: Collection {
         }
     }
 
-    public internal(set) subscript(key: Index.Key) -> CWRawData? {
+    public internal(set) subscript(key: Index.Key) -> CWJSON? {
         get {
             switch key {
             case let .offset(offset):
@@ -420,7 +378,7 @@ extension CWRawData: Collection {
 
 // MARK: - Literals
 
-extension CWRawData: ExpressibleByDictionaryLiteral {
+extension CWJSON: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Any)...) {
         let data: [String: Any] = elements.reduce(into: [:]) { memo, element in
             memo[element.0] = element.1
@@ -429,38 +387,38 @@ extension CWRawData: ExpressibleByDictionaryLiteral {
     }
 }
 
-extension CWRawData: ExpressibleByArrayLiteral {
+extension CWJSON: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Any...) {
         let data: [Any] = elements
         self = .array(data)
     }
 }
 
-extension CWRawData: ExpressibleByStringLiteral {
+extension CWJSON: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self = .string(value)
     }
 }
 
-extension CWRawData: ExpressibleByBooleanLiteral {
+extension CWJSON: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: Bool) {
         self = .bool(value)
     }
 }
 
-extension CWRawData: ExpressibleByFloatLiteral {
+extension CWJSON: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Double) {
         self = .number(NSNumber(value: value))
     }
 }
 
-extension CWRawData: ExpressibleByIntegerLiteral {
+extension CWJSON: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
         self = .number(NSNumber(value: value))
     }
 }
 
-extension CWRawData: ExpressibleByNilLiteral {
+extension CWJSON: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self = .null
     }
@@ -468,15 +426,15 @@ extension CWRawData: ExpressibleByNilLiteral {
 
 // MARK: - Codable
 
-public enum CWRawDataError: Error {
+public enum CWJSONError: Error {
     case invalidContent
 }
 
 private extension Dictionary where Key == String, Value == Any {
-    func encodableDictionary() throws -> [String: CWRawData] {
+    func encodableDictionary() throws -> [String: CWJSON] {
         return try reduce(into: [:]) { memo, kvp in
-            guard let value = CWRawData(kvp.value) else {
-                throw CWRawDataError.invalidContent
+            guard let value = CWJSON(kvp.value) else {
+                throw CWJSONError.invalidContent
             }
             memo[kvp.key] = value
         }
@@ -484,17 +442,17 @@ private extension Dictionary where Key == String, Value == Any {
 }
 
 private extension Array where Element == Any {
-    func encodableArray() throws -> [CWRawData] {
+    func encodableArray() throws -> [CWJSON] {
         return try map { element in
-            guard let value = CWRawData(element) else {
-                throw CWRawDataError.invalidContent
+            guard let value = CWJSON(element) else {
+                throw CWJSONError.invalidContent
             }
             return value
         }
     }
 }
 
-extension CWRawData: Encodable {
+extension CWJSON: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
@@ -531,7 +489,7 @@ extension CWRawData: Encodable {
     }
 }
 
-extension CWRawData: Decodable {
+extension CWJSON: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -543,9 +501,9 @@ extension CWRawData: Decodable {
             object = bool
         } else if let string = try? container.decode(String.self) {
             object = string
-        } else if let array = try? container.decode([CWRawData].self) {
+        } else if let array = try? container.decode([CWJSON].self) {
             object = array
-        } else if let dictionary = try? container.decode([String: CWRawData].self) {
+        } else if let dictionary = try? container.decode([String: CWJSON].self) {
             object = dictionary
         } else {
             var signedNumber: NSNumber? {
@@ -589,14 +547,45 @@ extension CWRawData: Decodable {
             }
 
             guard let number = signedNumber ?? unsignedNumber ?? floatingPointNumber else {
-                throw CWRawDataError.invalidContent
+                throw CWJSONError.invalidContent
             }
             object = number
         }
 
-        guard let data = CWRawData(object) else {
-            throw CWRawDataError.invalidContent
+        guard let data = CWJSON(object) else {
+            throw CWJSONError.invalidContent
         }
         self = data
+    }
+}
+
+// MARK: - NSNumber Helpers
+
+private let nsBool: NSNumber = true as NSNumber
+private let cfBool: CFBoolean = true as CFBoolean
+
+private extension NSNumber {
+    var isBool: Bool {
+        return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
+    }
+
+    var isFloatingPoint: Bool {
+        return CFNumberIsFloatType(self as CFNumber)
+    }
+
+    var expectedType: NumberType {
+        if isBool {
+            return .boolean
+        } else if isFloatingPoint {
+            return .floatingPoint
+        } else {
+            return .integer
+        }
+    }
+
+    enum NumberType {
+        case integer
+        case floatingPoint
+        case boolean
     }
 }

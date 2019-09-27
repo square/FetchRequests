@@ -60,7 +60,7 @@ extension Model {
         var data = originalModel.data.dictionary ?? [:]
         data["updatedAt"] = Date().timeIntervalSince1970
 
-        guard let json = CWRawData(data), let model = self.init(data: json) else {
+        guard let json = CWJSON(data), let model = self.init(data: json) else {
             throw ModelError.cannotInflate
         }
 

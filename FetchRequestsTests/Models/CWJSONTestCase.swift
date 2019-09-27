@@ -1,5 +1,5 @@
 //
-//  CWRawDataTestCase.swift
+//  CWJSONTestCase.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 9/20/19.
@@ -9,14 +9,14 @@
 import XCTest
 @testable import FetchRequests
 
-class CWRawDataTestCase: XCTestCase {
+class CWJSONTestCase: XCTestCase {
 }
 
 // MARK: - Values
 
-extension CWRawDataTestCase {
+extension CWJSONTestCase {
     func testInvalidGetters() {
-        let enumValue = CWRawData.null
+        let enumValue = CWJSON.null
 
         XCTAssertNotNil(enumValue.null)
         XCTAssertNil(enumValue.bool)
@@ -31,10 +31,10 @@ extension CWRawDataTestCase {
     }
 
     func testBoolean() {
-        let enumValue = CWRawData.bool(true)
-        let boolRepresentable: CWRawData = true
-        let nsnumberBoolInit = CWRawData(NSNumber(value: true))
-        let nsnumberNumberInit = CWRawData(NSNumber(value: 1))
+        let enumValue = CWJSON.bool(true)
+        let boolRepresentable: CWJSON = true
+        let nsnumberBoolInit = CWJSON(NSNumber(value: true))
+        let nsnumberNumberInit = CWJSON(NSNumber(value: 1))
 
         XCTAssertTrue(enumValue.bool ?? false)
         XCTAssertTrue(boolRepresentable.bool ?? false)
@@ -45,10 +45,10 @@ extension CWRawDataTestCase {
     }
 
     func testNumber() {
-        let enumValue = CWRawData.number(1)
-        let intRepresentable: CWRawData = 1
-        let floatRepresentable: CWRawData = 1.0
-        let numberInit = CWRawData(NSNumber(value: 1))
+        let enumValue = CWJSON.number(1)
+        let intRepresentable: CWJSON = 1
+        let floatRepresentable: CWJSON = 1.0
+        let numberInit = CWJSON(NSNumber(value: 1))
 
         XCTAssertNil(enumValue.bool)
         XCTAssertEqual(enumValue.int, 1)
@@ -62,23 +62,23 @@ extension CWRawDataTestCase {
     }
 
     func testNull() {
-        let enumValue = CWRawData.null
-        let nilRepresentable: CWRawData = nil
-        let nsnullValue = CWRawData(NSNull())
+        let enumValue = CWJSON.null
+        let nilRepresentable: CWJSON = nil
+        let nsnullValue = CWJSON(NSNull())
 
-        XCTAssertNotNil(CWRawData.null)
+        XCTAssertNotNil(CWJSON.null)
         XCTAssertNotNil(enumValue.null)
-        XCTAssertEqual(enumValue, CWRawData.null)
-        XCTAssertEqual(nilRepresentable, CWRawData.null)
-        XCTAssertEqual(nsnullValue, CWRawData.null)
+        XCTAssertEqual(enumValue, CWJSON.null)
+        XCTAssertEqual(nilRepresentable, CWJSON.null)
+        XCTAssertEqual(nsnullValue, CWJSON.null)
     }
 
     func testString() {
         let string = "hello"
 
-        let enumValue = CWRawData.string("hello")
-        let stringRepresentable: CWRawData = "hello"
-        let stringInit = CWRawData(string)
+        let enumValue = CWJSON.string("hello")
+        let stringRepresentable: CWJSON = "hello"
+        let stringInit = CWJSON(string)
 
         XCTAssertEqual(enumValue, stringRepresentable)
         XCTAssertEqual(enumValue.string, string)
@@ -89,9 +89,9 @@ extension CWRawDataTestCase {
     func testArray() {
         let array: [Any] = ["abc", 1]
 
-        let enumValue = CWRawData.array(["abc", 1])
-        let arrayRepresentable: CWRawData = ["abc", 1]
-        let arrayInit = CWRawData(array)
+        let enumValue = CWJSON.array(["abc", 1])
+        let arrayRepresentable: CWJSON = ["abc", 1]
+        let arrayInit = CWJSON(array)
 
         XCTAssertEqual(enumValue, arrayRepresentable)
         XCTAssertEqual(enumValue.array as NSArray?, array as NSArray)
@@ -102,9 +102,9 @@ extension CWRawDataTestCase {
     func testDictionary() {
         let dict: [String: Any] = ["abc": 1, "def": "ghi"]
 
-        let enumValue = CWRawData.dictionary(["abc": 1, "def": "ghi"])
-        let dictRepresentable: CWRawData = ["abc": 1, "def": "ghi"]
-        let dictInit = CWRawData(dict)
+        let enumValue = CWJSON.dictionary(["abc": 1, "def": "ghi"])
+        let dictRepresentable: CWJSON = ["abc": 1, "def": "ghi"]
+        let dictInit = CWJSON(dict)
 
         XCTAssertEqual(enumValue, dictRepresentable)
         XCTAssertEqual(enumValue.dictionary as NSDictionary?, dict as NSDictionary)
@@ -115,9 +115,9 @@ extension CWRawDataTestCase {
 
 // MARK: - Subscripts
 
-extension CWRawDataTestCase {
+extension CWJSONTestCase {
     func testGetKeyedValues() {
-        let data: CWRawData = [
+        let data: CWJSON = [
             "id": 1,
             "integers": [0, 1, 2],
             "foo": [
@@ -139,7 +139,7 @@ extension CWRawDataTestCase {
     }
 
     func testSetKeyedValues() {
-        var data: CWRawData = [
+        var data: CWJSON = [
             "id": 1,
             "integers": [0, 1, 2],
             "foo": [
@@ -171,34 +171,34 @@ extension CWRawDataTestCase {
     }
 
     func testMultiItemCollections() {
-        let dict: CWRawData = ["abc": "def", "ghi": 2]
+        let dict: CWJSON = ["abc": "def", "ghi": 2]
         let keyedReducer: Int = dict.reduce(into: 0) { memo, _ in memo += 1 }
         XCTAssertEqual(keyedReducer, 2)
         XCTAssertEqual(dict.count, 2)
 
-        let array: CWRawData = [0, "abc", NSNull()]
+        let array: CWJSON = [0, "abc", NSNull()]
         let offsetReducer: Int = array.reduce(into: 0) { memo, _ in memo += 1 }
         XCTAssertEqual(offsetReducer, 3)
         XCTAssertEqual(array.count, 3)
     }
 
     func testMultiItemCollectionIndexSetter() {
-        var soloDict: CWRawData = ["foo": "bar"]
-        soloDict[soloDict.startIndex] = (key: .key("foo"), value: CWRawData(1))
+        var soloDict: CWJSON = ["foo": "bar"]
+        soloDict[soloDict.startIndex] = (key: .key("foo"), value: CWJSON(1))
 
         XCTAssertEqual(soloDict.count, 1)
         XCTAssertEqual(soloDict.foo?.int, 1)
 
-        var soloArray: CWRawData = [0]
-        soloArray[soloArray.startIndex] = (key: .offset(0), value: CWRawData(1))
+        var soloArray: CWJSON = [0]
+        soloArray[soloArray.startIndex] = (key: .offset(0), value: CWJSON(1))
         XCTAssertEqual(soloArray[0]?.int, 1)
     }
 
     func testCollectionOfOne() {
-        var value: CWRawData = true
+        var value: CWJSON = true
 
-        let fetchedStart = value[CWRawData.Index.Key.value(isStart: true)]
-        let fetchedEnd = value[CWRawData.Index.Key.value(isStart: false)]
+        let fetchedStart = value[CWJSON.Index.Key.value(isStart: true)]
+        let fetchedEnd = value[CWJSON.Index.Key.value(isStart: false)]
         XCTAssertTrue(fetchedStart?.bool ?? false)
         XCTAssertNil(fetchedEnd)
 
@@ -217,10 +217,10 @@ extension CWRawDataTestCase {
 
 // MARK: - Initialization
 
-extension CWRawDataTestCase {
+extension CWJSONTestCase {
     func testInitSelf() {
-        let value: CWRawData = 1
-        let newValue = CWRawData(value)
+        let value: CWJSON = 1
+        let newValue = CWJSON(value)
 
         XCTAssertEqual(value, newValue)
     }
@@ -229,12 +229,12 @@ extension CWRawDataTestCase {
         let dict: [String: Any] = ["foo": "bar", "baz": [1, 2, 3]]
 
         let data = try JSONSerialization.data(withJSONObject: dict)
-        let jsonFromData = CWRawData(data)
+        let jsonFromData = CWJSON(data)
 
         guard let jsonString = String(data: data, encoding: .utf8) else {
             throw URLError(.cannotDecodeRawData)
         }
-        let jsonFromString = CWRawData(parsing: jsonString)
+        let jsonFromString = CWJSON(parsing: jsonString)
 
         XCTAssertNotNil(jsonFromData)
         XCTAssertEqual(jsonFromData, jsonFromString)
@@ -245,9 +245,9 @@ extension CWRawDataTestCase {
 
 // MARK: - Codable
 
-extension CWRawDataTestCase {
+extension CWJSONTestCase {
     func testCanEncodeContent() throws {
-        guard let json: CWRawData = CWRawData(sourceJSON) else {
+        guard let json: CWJSON = CWJSON(sourceJSON) else {
             throw URLError(.cannotDecodeContentData)
         }
         let encoder = JSONEncoder()
@@ -257,7 +257,7 @@ extension CWRawDataTestCase {
         XCTAssertFalse(encodedResult.isEmpty)
 
         let decoder = JSONDecoder()
-        let decodedResult = try decoder.decode(CWRawData.self, from: encodedResult)
+        let decodedResult = try decoder.decode(CWJSON.self, from: encodedResult)
 
         validate(data: decodedResult)
     }
@@ -267,13 +267,13 @@ extension CWRawDataTestCase {
         let sourceData = try JSONSerialization.data(withJSONObject: json)
 
         let decoder = JSONDecoder()
-        let decodedResult = try decoder.decode(CWRawData.self, from: sourceData)
+        let decodedResult = try decoder.decode(CWJSON.self, from: sourceData)
 
         validate(data: decodedResult)
     }
 
     func testCanEncodeToTheWire() throws {
-        guard let json: CWRawData = CWRawData(sourceJSON) else {
+        guard let json: CWJSON = CWJSON(sourceJSON) else {
             throw URLError(.cannotDecodeContentData)
         }
 
@@ -289,7 +289,7 @@ extension CWRawDataTestCase {
     }
 
     func testCanEncodeToKeyedArchiver() throws {
-        guard let json: CWRawData = CWRawData(sourceJSON) else {
+        guard let json: CWJSON = CWJSON(sourceJSON) else {
             throw URLError(.cannotDecodeContentData)
         }
 
@@ -300,7 +300,7 @@ extension CWRawDataTestCase {
 
         let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
         unarchiver.requiresSecureCoding = true
-        let rawUnarchivedData = unarchiver.decodeDecodable(CWRawData.self, forKey: NSKeyedArchiveRootObjectKey)
+        let rawUnarchivedData = unarchiver.decodeDecodable(CWJSON.self, forKey: NSKeyedArchiveRootObjectKey)
 
         guard let unarchivedData = rawUnarchivedData else {
             throw URLError(.cannotDecodeContentData)
@@ -320,7 +320,7 @@ extension CWRawDataTestCase {
         ]
     }
 
-    private func validate(data: CWRawData) {
+    private func validate(data: CWJSON) {
         XCTAssertEqual(data.count, 2)
         XCTAssertNotNil(data.nullable?.null)
         XCTAssertEqual(data.elements?.count, 4)
