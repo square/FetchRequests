@@ -36,9 +36,9 @@ extension CWRawDataTestCase {
         let nsnumberBoolInit = CWRawData(NSNumber(value: true))
         let nsnumberNumberInit = CWRawData(NSNumber(value: 1))
 
-        XCTAssertTrue(enumValue.bool!)
-        XCTAssertTrue(boolRepresentable.bool!)
-        XCTAssertTrue(nsnumberBoolInit!.bool!)
+        XCTAssertTrue(enumValue.bool ?? false)
+        XCTAssertTrue(boolRepresentable.bool ?? false)
+        XCTAssertTrue(nsnumberBoolInit?.bool ?? false)
         XCTAssertEqual(enumValue, nsnumberBoolInit)
         XCTAssertEqual(enumValue, boolRepresentable)
         XCTAssertNotEqual(nsnumberBoolInit, nsnumberNumberInit)
@@ -199,7 +199,7 @@ extension CWRawDataTestCase {
 
         let fetchedStart = value[CWRawData.Index.Key.value(isStart: true)]
         let fetchedEnd = value[CWRawData.Index.Key.value(isStart: false)]
-        XCTAssertTrue(fetchedStart!.bool!)
+        XCTAssertTrue(fetchedStart?.bool ?? false)
         XCTAssertNil(fetchedEnd)
 
         XCTAssertEqual(value.count, 1)
@@ -215,7 +215,7 @@ extension CWRawDataTestCase {
     }
 }
 
-// MARK: - Miscellaneous
+// MARK: - Initialization
 
 extension CWRawDataTestCase {
     func testInitSelf() {
@@ -231,12 +231,82 @@ extension CWRawDataTestCase {
         let data = try JSONSerialization.data(withJSONObject: dict)
         let jsonFromData = CWRawData(data)
 
-        let jsonString = String(data: data, encoding: .utf8)!
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw URLError(.cannotDecodeRawData)
+        }
         let jsonFromString = CWRawData(parsing: jsonString)
 
         XCTAssertNotNil(jsonFromData)
         XCTAssertEqual(jsonFromData, jsonFromString)
 
-        XCTAssert(jsonFromData?.baz?[0]?.int == 1)
+        XCTAssertEqual(jsonFromData?.baz?[0]?.int, 1)
+    }
+}
+
+// MARK: - Codable
+
+extension CWRawDataTestCase {
+    func testCanEncodeContent() throws {
+        guard let json: CWRawData = CWRawData(sourceJSON) else {
+            throw URLError(.cannotDecodeContentData)
+        }
+        let encoder = JSONEncoder()
+        let encodedResult = try encoder.encode(json)
+
+        XCTAssertNotNil(encodedResult)
+        XCTAssertFalse(encodedResult.isEmpty)
+
+        let decoder = JSONDecoder()
+        let decodedResult = try decoder.decode(CWRawData.self, from: encodedResult)
+
+        validate(data: decodedResult)
+    }
+
+    func testCanDecodeDataFromWire() throws {
+        let json = sourceJSON
+        let sourceData = try JSONSerialization.data(withJSONObject: json)
+
+        let decoder = JSONDecoder()
+        let decodedResult = try decoder.decode(CWRawData.self, from: sourceData)
+
+        validate(data: decodedResult)
+    }
+
+    func testCanEncodeToTheWire() throws {
+        guard let json: CWRawData = CWRawData(sourceJSON) else {
+            throw URLError(.cannotDecodeContentData)
+        }
+
+        let encoder = JSONEncoder()
+        let encodedResult = try encoder.encode(json)
+
+        let rawDecodedResult = try JSONSerialization.jsonObject(with: encodedResult)
+        guard let decodedResult = rawDecodedResult as? [String: Any] else {
+            throw URLError(.cannotParseResponse)
+        }
+
+        XCTAssertEqual(sourceJSON as NSDictionary, decodedResult as NSDictionary)
+    }
+
+    private var sourceJSON: [String: Any] {
+        return [
+            "elements": [
+                1,
+                2.5,
+                "string",
+                true,
+            ],
+            "nullable": NSNull(),
+        ]
+    }
+
+    private func validate(data: CWRawData) {
+        XCTAssertEqual(data.count, 2)
+        XCTAssertNotNil(data.nullable?.null)
+        XCTAssertEqual(data.elements?.count, 4)
+        XCTAssertEqual(data.elements?[0]?.int, 1)
+        XCTAssertEqual(data.elements?[1]?.double, 2.5)
+        XCTAssertEqual(data.elements?[2]?.string, "string")
+        XCTAssertTrue(data.elements?[3]?.bool ?? false)
     }
 }
