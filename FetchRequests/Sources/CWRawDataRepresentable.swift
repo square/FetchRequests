@@ -28,6 +28,26 @@ private extension NSNumber {
     var isBool: Bool {
         return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
     }
+
+    var isFloatingPoint: Bool {
+        return CFNumberIsFloatType(self as CFNumber)
+    }
+
+    var expectedType: NumberType {
+        if isBool {
+            return .boolean
+        } else if isFloatingPoint {
+            return .floatingPoint
+        } else {
+            return .integer
+        }
+    }
+
+    enum NumberType {
+        case integer
+        case floatingPoint
+        case boolean
+    }
 }
 
 /// This represents raw data within the FetchRequests framework
@@ -52,8 +72,14 @@ public enum CWRawData {
             self = .bool(value.boolValue)
         } else if let value = value as? NSNumber {
             self = .number(value)
+        } else if let value = value as? [CWRawData] {
+            self = .array(value.map { $0.object })
         } else if let value = value as? [Any] {
             self = .array(value)
+        } else if let value = value as? [String: CWRawData] {
+            self = .dictionary(value.reduce(into: [:]) { memo, kvp in
+                memo[kvp.key] = kvp.value.object
+            })
         } else if let value = value as? [String: Any] {
             self = .dictionary(value)
         } else if let _ = value as? NSNull {
@@ -127,6 +153,10 @@ extension CWRawData {
 
     public var int: Int? {
         return number?.intValue
+    }
+
+    public var int64: Int64? {
+        return number?.int64Value
     }
 
     public var float: Float? {
@@ -433,5 +463,140 @@ extension CWRawData: ExpressibleByIntegerLiteral {
 extension CWRawData: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self = .null
+    }
+}
+
+// MARK: - Codable
+
+public enum CWRawDataError: Error {
+    case invalidContent
+}
+
+private extension Dictionary where Key == String, Value == Any {
+    func encodableDictionary() throws -> [String: CWRawData] {
+        return try reduce(into: [:]) { memo, kvp in
+            guard let value = CWRawData(kvp.value) else {
+                throw CWRawDataError.invalidContent
+            }
+            memo[kvp.key] = value
+        }
+    }
+}
+
+private extension Array where Element == Any {
+    func encodableArray() throws -> [CWRawData] {
+        return try map { element in
+            guard let value = CWRawData(element) else {
+                throw CWRawDataError.invalidContent
+            }
+            return value
+        }
+    }
+}
+
+extension CWRawData: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        switch self {
+        case let .dictionary(dictionary):
+            let value = try dictionary.encodableDictionary()
+            try container.encode(value)
+
+        case let .array(array):
+            let value = try array.encodableArray()
+            try container.encode(value)
+
+        case let .string(string):
+            try container.encode(string)
+
+        case let .number(number):
+            switch number.expectedType {
+            case .boolean:
+                try container.encode(number.boolValue)
+
+            case .floatingPoint:
+                try container.encode(number.doubleValue)
+
+            case .integer:
+                try container.encode(number.int64Value)
+            }
+
+        case let .bool(bool):
+            try container.encode(bool)
+
+        case .null:
+            try container.encodeNil()
+        }
+    }
+}
+
+extension CWRawData: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        let object: Any
+
+        if container.decodeNil() {
+            object = NSNull()
+        } else if let bool = try? container.decode(Bool.self) {
+            object = bool
+        } else if let string = try? container.decode(String.self) {
+            object = string
+        } else if let array = try? container.decode([CWRawData].self) {
+            object = array
+        } else if let dictionary = try? container.decode([String: CWRawData].self) {
+            object = dictionary
+        } else {
+            var signedNumber: NSNumber? {
+                if let int = try? container.decode(Int64.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(Int32.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(Int16.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(Int8.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(Int.self) {
+                    return NSNumber(value: int)
+                } else {
+                    return nil
+                }
+            }
+            var unsignedNumber: NSNumber? {
+                if let int = try? container.decode(UInt64.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(UInt32.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(UInt16.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(UInt8.self) {
+                    return NSNumber(value: int)
+                } else if let int = try? container.decode(UInt.self) {
+                    return NSNumber(value: int)
+                } else {
+                    return nil
+                }
+            }
+            var floatingPointNumber: NSNumber? {
+                if let double = try? container.decode(Double.self) {
+                    return NSNumber(value: double)
+                } else if let float = try? container.decode(Float.self) {
+                    return NSNumber(value: float)
+                } else {
+                    return nil
+                }
+            }
+
+            guard let number = signedNumber ?? unsignedNumber ?? floatingPointNumber else {
+                throw CWRawDataError.invalidContent
+            }
+            object = number
+        }
+
+        guard let data = CWRawData(object) else {
+            throw CWRawDataError.invalidContent
+        }
+        self = data
     }
 }
