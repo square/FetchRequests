@@ -30,23 +30,23 @@ private class Token: CWInvalidatableToken {
 }
 
 extension CWTestObject: CWFetchableObjectProtocol {
-    func observeDataChanges(_ handler: @escaping (CWTestObject) -> Void) -> CWInvalidatableToken {
+    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
         let token = Token(parent: self)
         dataObservers[token.uuid] = handler
         return token
     }
 
-    func observeIsDeletedChanges(_ handler: @escaping (CWTestObject) -> Void) -> CWInvalidatableToken {
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
         return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }
-            handler(object)
+            handler()
         }
     }
 
     static func entityID(from data: RawData) -> ID? {
-        return data["id"] as? ID
+        return data.id?.string
     }
 }
 

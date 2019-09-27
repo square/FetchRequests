@@ -16,7 +16,7 @@ class CWFetchableObjectProtocolTestCase: XCTestCase {
 
         XCTAssertFalse(data == newData)
 
-        newData["test"] = 2
+        newData.test = 2
 
         XCTAssertTrue(data == newData)
     }

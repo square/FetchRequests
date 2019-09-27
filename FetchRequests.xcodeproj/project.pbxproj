@@ -114,10 +114,16 @@
 		47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* CWPausableFetchedResultsControllerTestCase.swift */; };
 		47B31B572330697500D6EB66 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* CWPaginatingFetchedResultsControllerTestCase.swift */; };
 		47B31B582330697700D6EB66 /* CWFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* CWFetchedResultsControllerTestCase.swift */; };
-		47D33F072334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
-		47D33F082334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
-		47D33F092334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
-		47D33F0A2334163100E247E4 /* CWRawDataRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */; };
+		47C4ECE52335E969004F16D0 /* CWJSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */; };
+		47C4ECE62335E969004F16D0 /* CWJSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */; };
+		47C4ECE72335E969004F16D0 /* CWJSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */; };
+		47C4ECE923361358004F16D0 /* CWLoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */; };
+		47C4ECEA23361AF6004F16D0 /* CWLoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */; };
+		47C4ECEB23361AF7004F16D0 /* CWLoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */; };
+		47D33F072334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
+		47D33F082334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
+		47D33F092334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
+		47D33F0A2334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,7 +193,9 @@
 		47B31B502330671E00D6EB66 /* CWTestObject+FetchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CWTestObject+FetchRequests.swift"; sourceTree = "<group>"; };
 		47B4771722C6D7860008C56E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		47B4771822C6D7860008C56E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWRawDataRepresentable.swift; sourceTree = "<group>"; };
+		47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWJSONTestCase.swift; sourceTree = "<group>"; };
+		47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWLoggingTestCase.swift; sourceTree = "<group>"; };
+		47D33F062334163100E247E4 /* CWJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWJSON.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -307,7 +315,7 @@
 				47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */,
 				471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */,
 				471C509322C6D18D007F73E9 /* CWFetchableObject.swift */,
-				47D33F062334163100E247E4 /* CWRawDataRepresentable.swift */,
+				47D33F062334163100E247E4 /* CWJSON.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -369,6 +377,8 @@
 		471C50B322C6D337007F73E9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */,
+				47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */,
 				471C50B422C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift */,
 				471C50B522C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift */,
 			);
@@ -675,7 +685,7 @@
 				471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */,
 				471C50A722C6D18D007F73E9 /* simplediff.swift in Sources */,
 				471C509922C6D18D007F73E9 /* Logging.swift in Sources */,
-				47D33F072334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
+				47D33F072334163100E247E4 /* CWJSON.swift in Sources */,
 				471C50A522C6D18D007F73E9 /* CWFetchableEntityID.swift in Sources */,
 				471C50A422C6D18D007F73E9 /* CWFetchableObject.swift in Sources */,
 			);
@@ -690,11 +700,13 @@
 				47B31B562330697200D6EB66 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
 				471C50BC22C6D337007F73E9 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				471C50BF22C6D337007F73E9 /* CWFetchRequestAssociationTestCase.swift in Sources */,
+				47C4ECE52335E969004F16D0 /* CWJSONTestCase.swift in Sources */,
 				47B31B572330697500D6EB66 /* CWPaginatingFetchedResultsControllerTestCase.swift in Sources */,
 				471C50C022C6D337007F73E9 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
 				47B31B582330697700D6EB66 /* CWFetchedResultsControllerTestCase.swift in Sources */,
 				47B31B542330696D00D6EB66 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47B31B4F2330649300D6EB66 /* CWTestObject+Associations.swift in Sources */,
+				47C4ECE923361358004F16D0 /* CWLoggingTestCase.swift in Sources */,
 				47B31B552330697000D6EB66 /* CWFetchedResultsControllerWrapperTestCase.swift in Sources */,
 				471C50BE22C6D337007F73E9 /* CWTestObject.swift in Sources */,
 			);
@@ -718,7 +730,7 @@
 				47A6ECDA22CA8FA80034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ECDB22CA8FA80034A854 /* simplediff.swift in Sources */,
 				47A6ECDC22CA8FA80034A854 /* Logging.swift in Sources */,
-				47D33F0A2334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
+				47D33F0A2334163100E247E4 /* CWJSON.swift in Sources */,
 				47A6ECDD22CA8FA80034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ECDE22CA8FA80034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -742,7 +754,7 @@
 				47A6ED0B22CA905A0034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ED0C22CA905A0034A854 /* simplediff.swift in Sources */,
 				47A6ED0D22CA905A0034A854 /* Logging.swift in Sources */,
-				47D33F092334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
+				47D33F092334163100E247E4 /* CWJSON.swift in Sources */,
 				47A6ED0E22CA905A0034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ED0F22CA905A0034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -757,11 +769,13 @@
 				47A6ED1D22CA90640034A854 /* CWTestObject+Associations.swift in Sources */,
 				47A6ED1E22CA90640034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1F22CA90640034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
+				47C4ECE72335E969004F16D0 /* CWJSONTestCase.swift in Sources */,
 				47A6ED2022CA90640034A854 /* CWTestObject+FetchableObject.swift in Sources */,
 				47A6ED2122CA90640034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED2222CA90640034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */,
 				47B31B532330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
 				47A6ED2322CA90640034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
+				47C4ECEB23361AF7004F16D0 /* CWLoggingTestCase.swift in Sources */,
 				47A6ED2422CA90640034A854 /* CWTestObject.swift in Sources */,
 				47A6ED2522CA90640034A854 /* CWFetchedResultsControllerTestCase.swift in Sources */,
 			);
@@ -785,7 +799,7 @@
 				47A6ED3C22CA90A20034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				47A6ED3D22CA90A20034A854 /* simplediff.swift in Sources */,
 				47A6ED3E22CA90A20034A854 /* Logging.swift in Sources */,
-				47D33F082334163100E247E4 /* CWRawDataRepresentable.swift in Sources */,
+				47D33F082334163100E247E4 /* CWJSON.swift in Sources */,
 				47A6ED3F22CA90A20034A854 /* CWFetchableEntityID.swift in Sources */,
 				47A6ED4022CA90A20034A854 /* CWFetchableObject.swift in Sources */,
 			);
@@ -800,11 +814,13 @@
 				47A6ED4E22CA90A40034A854 /* CWTestObject+Associations.swift in Sources */,
 				47A6ED4F22CA90A40034A854 /* CWCollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5022CA90A40034A854 /* CWPausableFetchedResultsControllerTestCase.swift in Sources */,
+				47C4ECE62335E969004F16D0 /* CWJSONTestCase.swift in Sources */,
 				47A6ED5122CA90A40034A854 /* CWTestObject+FetchableObject.swift in Sources */,
 				47A6ED5222CA90A40034A854 /* CWFetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED5322CA90A40034A854 /* CWFetchRequestAssociationTestCase.swift in Sources */,
 				47B31B522330671E00D6EB66 /* CWTestObject+FetchRequests.swift in Sources */,
 				47A6ED5422CA90A40034A854 /* CWFetchableObjectProtocolTestCase.swift in Sources */,
+				47C4ECEA23361AF6004F16D0 /* CWLoggingTestCase.swift in Sources */,
 				47A6ED5522CA90A40034A854 /* CWTestObject.swift in Sources */,
 				47A6ED5622CA90A40034A854 /* CWFetchedResultsControllerTestCase.swift in Sources */,
 			);

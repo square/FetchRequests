@@ -20,6 +20,17 @@ public protocol CWIdentifiable {
     var id: ID { get }
 }
 
+/// A class of types whose instances hold raw data of that entity
+public protocol CWRawDataRepresentable {
+    typealias RawData = CWJSON
+
+    /// Initialize a fetchable object from raw data
+    init?(data: RawData)
+
+    /// The underlying data of the entity associated with `self`.
+    var data: RawData { get }
+}
+
 /// A class of types that should be fetchable via CWFetchRequests
 public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable
     where ID: Comparable
@@ -34,10 +45,10 @@ public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepre
     static func entityID(from data: RawData) -> ID?
 
     /// Listen for changes to the underlying data of `self`
-    func observeDataChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
+    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
 
     /// Listen for changes to whether `self` is deleted
-    func observeIsDeletedChanges(_ handler: @escaping (Self) -> Void) -> CWInvalidatableToken
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
 
     /// Enforce listening for changes to the underlying data of `self`
     func listenForUpdates()

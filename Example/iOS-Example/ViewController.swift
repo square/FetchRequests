@@ -81,7 +81,7 @@ extension ViewController {
             fatalError("Cell reuse failed")
         }
         let model = controller.object(at: indexPath)
-        cell.textLabel?.text = model.objectID
+        cell.textLabel?.text = model.id
         cell.detailTextLabel?.text = model.createdAt.description
         return cell
     }
