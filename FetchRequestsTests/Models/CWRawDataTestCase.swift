@@ -288,6 +288,26 @@ extension CWRawDataTestCase {
         XCTAssertEqual(sourceJSON as NSDictionary, decodedResult as NSDictionary)
     }
 
+    func testCanEncodeToKeyedArchiver() throws {
+        guard let json: CWRawData = CWRawData(sourceJSON) else {
+            throw URLError(.cannotDecodeContentData)
+        }
+
+        let archiver = NSKeyedArchiver()
+        archiver.requiresSecureCoding = true
+        try archiver.encodeEncodable(json, forKey: NSKeyedArchiveRootObjectKey)
+        let data = archiver.encodedData
+
+        let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
+        unarchiver.requiresSecureCoding = true
+        let rawUnarchivedData = unarchiver.decodeDecodable(CWRawData.self, forKey: NSKeyedArchiveRootObjectKey)
+
+        guard let unarchivedData = rawUnarchivedData else {
+            throw URLError(.cannotDecodeContentData)
+        }
+        validate(data: unarchivedData)
+    }
+
     private var sourceJSON: [String: Any] {
         return [
             "elements": [
