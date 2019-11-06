@@ -181,8 +181,12 @@ extension CWJSON {
             return CWJSON(array[offset])
         }
         set {
-            guard case var .array(array) = self, array.indices.contains(offset) else {
+            guard case var .array(array) = self, offset >= 0 else {
                 return
+            }
+            while array.count <= offset {
+                // Fill in any gaps with NSNull
+                array.append(NSNull())
             }
             array[offset] = newValue?.object ?? NSNull()
             self = .array(array)
