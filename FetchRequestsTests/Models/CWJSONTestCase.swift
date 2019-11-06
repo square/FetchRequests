@@ -158,15 +158,19 @@ extension CWJSONTestCase {
         XCTAssertEqual(data.integers?[0]?.int, 1)
 
         data.id?.foo = "bar"
-        data.integers?[3] = 1
+        data.integers?[4] = 1
 
         XCTAssertNil(data.id?.foo)
-        XCTAssertNil(data.integers?[3])
+        XCTAssertEqual(data.integers?[3]?.null, NSNull())
+        XCTAssertEqual(data.integers?[4]?.int, 1)
+        XCTAssertNil(data.integers?[5])
 
         data.foo?.bar?.object = "bop"
+        data.foo?.baz?.inner = "boo"
         data.indexed?[0]?.object = ["firstValue": false]
 
         XCTAssertEqual(data.foo?.bar?.string, "bop")
+        XCTAssertNil(data.foo?.baz)
         XCTAssertEqual(data.indexed?[0]?.firstValue?.bool, false)
     }
 
