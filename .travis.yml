@@ -8,9 +8,9 @@ env:
     - PROJECT=FetchRequests.xcodeproj
     - RUN_TESTS="YES"
   matrix:
-    - SCHEME="FetchRequests-iOS" DESTINATION="OS=12.2,name=iPhone XS"
-    - SCHEME="FetchRequests-tvOS" DESTINATION="OS=12.2,name=Apple TV 4K"
-    - SCHEME="FetchRequests-watchOS" DESTINATION="OS=5.2,name=Apple Watch Series 4 - 44mm" RUN_TESTS="NO"
+    - SCHEME="FetchRequests-iOS" DESTINATION="name=iPhone 11 Pro"
+    - SCHEME="FetchRequests-tvOS" DESTINATION="name=Apple TV 4K"
+    - SCHEME="FetchRequests-watchOS" DESTINATION="name=Apple Watch Series 5 - 44mm" RUN_TESTS="NO"
     - SCHEME="FetchRequests-macOS" DESTINATION="arch=x86_64"
 script:
   - set -o pipefail
