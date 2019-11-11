@@ -148,7 +148,7 @@ extension CWJSON {
 // MARK: - Subscripts
 
 extension CWJSON {
-    public internal(set) subscript(dynamicMember member: String) -> CWJSON? {
+    public subscript(dynamicMember member: String) -> CWJSON? {
         get {
             return self[member]
         }
@@ -157,7 +157,7 @@ extension CWJSON {
         }
     }
 
-    public internal(set) subscript(key: String) -> CWJSON? {
+    public subscript(key: String) -> CWJSON? {
         get {
             guard case let .dictionary(dictionary) = self else {
                 return nil
@@ -173,7 +173,7 @@ extension CWJSON {
         }
     }
 
-    public internal(set) subscript(offset: Int) -> CWJSON? {
+    public subscript(offset: Int) -> CWJSON? {
         get {
             guard case let .array(array) = self, array.indices.contains(offset) else {
                 return nil
@@ -334,7 +334,7 @@ extension CWJSON: Collection {
         }
     }
 
-    public internal(set) subscript(index: Index) -> (key: Index.Key, value: CWJSON) {
+    public subscript(index: Index) -> (key: Index.Key, value: CWJSON) {
         get {
             let key = self.key(for: index)
             return (key, self[key]!)
@@ -346,7 +346,7 @@ extension CWJSON: Collection {
         }
     }
 
-    public internal(set) subscript(key: Index.Key) -> CWJSON? {
+    public subscript(key: Index.Key) -> CWJSON? {
         get {
             switch key {
             case let .offset(offset):
