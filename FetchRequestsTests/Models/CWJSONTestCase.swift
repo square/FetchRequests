@@ -364,6 +364,12 @@ extension CWJSONTestCase {
         XCTAssertEqual(boxed["integers"]?[1]?.object as? Int, 1)
     }
 
+    func testEquatability() {
+        let data = CWBoxedJSON(complexJSON)
+        let otherData = CWBoxedJSON(complexJSON)
+        XCTAssertEqual(data, otherData)
+    }
+
     func testConditionalBridge() {
         let data = complexJSON
         let boxed = data as CWBoxedJSON

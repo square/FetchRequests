@@ -30,6 +30,13 @@ public class CWBoxedJSON: NSObject {
     public subscript(offset: Int) -> CWBoxedJSON? {
         return json[offset] as CWBoxedJSON?
     }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? CWBoxedJSON else {
+            return super.isEqual(object)
+        }
+        return json == other.json
+    }
 }
 
 //swiftlint:disable identifier_name
