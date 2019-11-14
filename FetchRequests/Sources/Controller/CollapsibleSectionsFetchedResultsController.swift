@@ -1,5 +1,5 @@
 //
-//  CWCollapsibleSectionsFetchedResultsController.swift
+//  CollapsibleSectionsFetchedResultsController.swift
 //  Crew
 //
 //  Created by Adam Proschek on 2/10/17.
@@ -18,26 +18,26 @@ public struct SectionCollapseConfig: Equatable {
     }
 }
 
-public protocol CWCollapsibleSectionsFetchedResultsControllerDelegate: class {
-    associatedtype FetchedObject: CWFetchableObject
+public protocol CollapsibleSectionsFetchedResultsControllerDelegate: class {
+    associatedtype FetchedObject: FetchableObject
 
-    func controllerWillChangeContent(_ controller: CWCollapsibleSectionsFetchedResultsController<FetchedObject>)
-    func controllerDidChangeContent(_ controller: CWCollapsibleSectionsFetchedResultsController<FetchedObject>)
+    func controllerWillChangeContent(_ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>)
+    func controllerDidChangeContent(_ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>)
 
     func controller(
-        _ controller: CWCollapsibleSectionsFetchedResultsController<FetchedObject>,
+        _ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     )
     func controller(
-        _ controller: CWCollapsibleSectionsFetchedResultsController<FetchedObject>,
-        didChange section: CWCollapsibleResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>,
+        didChange section: CollapsibleResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     )
 }
 
-public struct CWCollapsibleResultsSection<FetchedObject: CWFetchableObject>: Equatable {
-    fileprivate let section: CWFetchedResultsSection<FetchedObject>
+public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatable {
+    fileprivate let section: FetchedResultsSection<FetchedObject>
     private let config: SectionCollapseConfig?
     public let isCollapsed: Bool
 
@@ -56,7 +56,7 @@ public struct CWCollapsibleResultsSection<FetchedObject: CWFetchableObject>: Equ
     }
 
     init(
-        section: CWFetchedResultsSection<FetchedObject>,
+        section: FetchedResultsSection<FetchedObject>,
         collapsed: Bool,
         config: SectionCollapseConfig? = nil
     ) {
@@ -82,16 +82,16 @@ public struct CWCollapsibleResultsSection<FetchedObject: CWFetchableObject>: Equ
     }
 }
 
-public class CWCollapsibleSectionsFetchedResultsController<FetchedObject: CWFetchableObject>: NSObject {
-    public typealias BackingFetchController = CWFetchedResultsController<FetchedObject>
-    public typealias Section = CWCollapsibleResultsSection<FetchedObject>
+public class CollapsibleSectionsFetchedResultsController<FetchedObject: FetchableObject>: NSObject {
+    public typealias BackingFetchController = FetchedResultsController<FetchedObject>
+    public typealias Section = CollapsibleResultsSection<FetchedObject>
     public typealias SectionCollapseCheck = (_ section: BackingFetchController.Section) -> Bool
     public typealias SectionCollapseConfigCheck = (_ section: BackingFetchController.Section) -> SectionCollapseConfig?
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
     private var changedSectionsDuringContentChange: Set<String> = []
     private var deletedSectionsDuringContentChange: Set<String> = []
-    private var previousSectionsDuringContentChange: [CWCollapsibleResultsSection<FetchedObject>] = []
+    private var previousSectionsDuringContentChange: [CollapsibleResultsSection<FetchedObject>] = []
 
     //swiftlint:disable:next identifier_name
     private var collapsedSectionsModifiedDuringContentChange: Set<String> = []
@@ -107,8 +107,8 @@ public class CWCollapsibleSectionsFetchedResultsController<FetchedObject: CWFetc
 
     private var sectionConfigs: [String: SectionCollapseConfig] = [:]
 
-    public var sections: [CWCollapsibleResultsSection<FetchedObject>] = []
-    public var request: CWFetchRequest<FetchedObject> {
+    public var sections: [CollapsibleResultsSection<FetchedObject>] = []
+    public var request: FetchRequest<FetchedObject> {
         return fetchController.request
     }
 
@@ -134,14 +134,14 @@ public class CWCollapsibleSectionsFetchedResultsController<FetchedObject: CWFetc
     }
 
     public init(
-        request: CWFetchRequest<FetchedObject>,
+        request: FetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true,
         initialSectionCollapseCheck: @escaping SectionCollapseCheck = { _ in false },
         sectionConfigCheck: @escaping SectionCollapseConfigCheck = { _ in return nil }
     ) {
-        fetchController = CWFetchedResultsController<FetchedObject>(
+        fetchController = FetchedResultsController<FetchedObject>(
             request: request,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
@@ -154,7 +154,7 @@ public class CWCollapsibleSectionsFetchedResultsController<FetchedObject: CWFetc
         fetchController.setDelegate(self)
     }
 
-    public func setDelegate<Delegate: CWCollapsibleSectionsFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<Delegate: CollapsibleSectionsFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             CollapsibleSectionsFetchResultsDelegate($0)
         }
@@ -166,8 +166,8 @@ public class CWCollapsibleSectionsFetchedResultsController<FetchedObject: CWFetc
 }
 
 // MARK: - Helper Methods
-public extension CWCollapsibleSectionsFetchedResultsController {
-    func update(section: CWCollapsibleResultsSection<FetchedObject>, maximumNumberOfItemsToDisplay max: Int, whenExceedingMax: Int? = nil) {
+public extension CollapsibleSectionsFetchedResultsController {
+    func update(section: CollapsibleResultsSection<FetchedObject>, maximumNumberOfItemsToDisplay max: Int, whenExceedingMax: Int? = nil) {
         guard let sectionIndex = sections.firstIndex(of: section) else {
             return
         }
@@ -240,7 +240,7 @@ public extension CWCollapsibleSectionsFetchedResultsController {
             sectionNamesCheckedForInitialCollapse.insert(section.name)
         }
 
-        return CWCollapsibleResultsSection(
+        return CollapsibleResultsSection(
             section: section,
             collapsed: collapsedSectionNames.contains(section.name),
             config: sectionConfigs[section.name]
@@ -249,7 +249,7 @@ public extension CWCollapsibleSectionsFetchedResultsController {
 }
 
 // MARK: - Fetch Methods
-public extension CWCollapsibleSectionsFetchedResultsController {
+public extension CollapsibleSectionsFetchedResultsController {
     func performFetch(completion: (() -> Void)? = nil) {
         fetchController.performFetch {
             completion?()
@@ -257,9 +257,9 @@ public extension CWCollapsibleSectionsFetchedResultsController {
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
-extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControllerDelegate {
-    public func controllerWillChangeContent(_ controller: CWFetchedResultsController<FetchedObject>) {
+// MARK: - FetchedResultsControllerDelegate
+extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerDelegate {
+    public func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>) {
         collapsedSectionsModifiedDuringContentChange.removeAll()
         changedSectionsDuringContentChange.removeAll()
         deletedSectionsDuringContentChange.removeAll()
@@ -268,7 +268,7 @@ extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControl
         delegate?.controllerWillChangeContent(self)
     }
 
-    public func controllerDidChangeContent(_ controller: CWFetchedResultsController<FetchedObject>) {
+    public func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>) {
         let sectionsToNotify = collapsedSectionsModifiedDuringContentChange.filter { section in
             return !changedSectionsDuringContentChange.contains(section) && !deletedSectionsDuringContentChange.contains(section)
         }
@@ -279,7 +279,7 @@ extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControl
                 continue
             }
 
-            let change: CWFetchedResultsChange = .update(location: index)
+            let change: FetchedResultsChange = .update(location: index)
             delegate?.controller(self, didChange: section, for: change)
         }
 
@@ -292,9 +292,9 @@ extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControl
     }
 
     public func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
+        _ controller: FetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
         switch change {
         case let .insert(indexPath):
@@ -340,11 +340,11 @@ extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControl
     }
 
     public func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
-        didChange section: CWFetchedResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: FetchedResultsController<FetchedObject>,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     ) {
-        let sectionToNotify: CWCollapsibleResultsSection<FetchedObject>
+        let sectionToNotify: CollapsibleResultsSection<FetchedObject>
         var isDelete = false
         var isInsert = false
 
@@ -385,17 +385,17 @@ extension CWCollapsibleSectionsFetchedResultsController: CWFetchedResultsControl
     }
 }
 
-private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: CWFetchableObject>: CWCollapsibleSectionsFetchedResultsControllerDelegate {
-    typealias Controller = CWCollapsibleSectionsFetchedResultsController<FetchedObject>
-    typealias Section = CWCollapsibleResultsSection<FetchedObject>
+private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableObject>: CollapsibleSectionsFetchedResultsControllerDelegate {
+    typealias Controller = CollapsibleSectionsFetchedResultsController<FetchedObject>
+    typealias Section = CollapsibleResultsSection<FetchedObject>
 
     private let willChange: (_ controller: Controller) -> Void
     private let didChange: (_ controller: Controller) -> Void
 
-    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: CWFetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: Controller, _ section: Section, _ change: CWFetchedResultsChange<Int>) -> Void
+    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: CWCollapsibleSectionsFetchedResultsControllerDelegate>(
+    init<Parent: CollapsibleSectionsFetchedResultsControllerDelegate>(
         _ parent: Parent
     ) where Parent.FetchedObject == FetchedObject {
         willChange = { [weak parent] controller in
@@ -424,7 +424,7 @@ private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: CWFetchable
     func controller(
         _ controller: Controller,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
         self.changeObject(controller, object, change)
     }
@@ -432,7 +432,7 @@ private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: CWFetchable
     func controller(
         _ controller: Controller,
         didChange section: Section,
-        for change: CWFetchedResultsChange<Int>
+        for change: FetchedResultsChange<Int>
     ) {
         self.changeSection(controller, section, change)
     }

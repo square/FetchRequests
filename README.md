@@ -30,8 +30,8 @@ FetchRequests is an eventing library inspired by NSFetchedResultsController and 
 FetchRequests can be used for any combination of networking, database, and file queries.
 It is best when backed by something like a [WebSocket](https://en.wikipedia.org/wiki/WebSocket) where you're expecting your data to live update.
 
-To get started, you create a `CWFetchRequest` which explains your data access patterns.
-The `CWFetchedResultsController` is the interface to access the your data.
+To get started, you create a `FetchRequest` which explains your data access patterns.
+The `FetchedResultsController` is the interface to access the your data.
 It will automatically cache your associated values for the lifetime of that controller.
 If a memory pressure event occurs, it will release its hold on those objects, allowing them to be deinited.
 

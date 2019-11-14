@@ -8,16 +8,16 @@
 
 import Foundation
 
-internal protocol CWInternalFetchResultsControllerProtocol: class, CWFetchedResultsControllerProtocol {
+internal protocol InternalFetchResultsControllerProtocol: class, FetchedResultsControllerProtocol {
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 
-public protocol CWFetchedResultsControllerProtocol {
-    associatedtype FetchedObject: CWFetchableObject
+public protocol FetchedResultsControllerProtocol {
+    associatedtype FetchedObject: FetchableObject
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
-    typealias Section = CWFetchedResultsSection<FetchedObject>
+    typealias Section = FetchedResultsSection<FetchedObject>
 
-    var request: CWFetchRequest<FetchedObject> { get }
+    var request: FetchRequest<FetchedObject> { get }
 
     var hasFetchedObjects: Bool { get }
     var sections: [Section] { get }
@@ -36,7 +36,7 @@ public protocol CWFetchedResultsControllerProtocol {
 
 // MARK: - Index Paths
 
-public extension CWFetchedResultsControllerProtocol {
+public extension FetchedResultsControllerProtocol {
     func performFetch() {
         performFetch(completion: {})
     }
@@ -132,7 +132,7 @@ public extension CWFetchedResultsControllerProtocol {
 
 // MARK: - Index Path Convenience methods
 
-public extension CWFetchedResultsControllerProtocol {
+public extension FetchedResultsControllerProtocol {
     func getIndexPath(before indexPath: IndexPath) -> IndexPath? {
         guard 0..<sections.count ~= indexPath.section else {
             return nil
@@ -197,7 +197,7 @@ extension RandomAccessCollection where Index: Strideable {
 
 // MARK: - Section Names
 
-extension CWFetchableObjectProtocol where Self: NSObject {
+extension FetchableObjectProtocol where Self: NSObject {
     func sectionName(forKeyPath keyPath: KeyPath<Self, String>?) -> String {
         guard let keyPath = keyPath else {
             return ""

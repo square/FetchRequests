@@ -1,5 +1,5 @@
 //
-//  CWTestObject+FetchRequests.swift
+//  TestObject+FetchRequests.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 9/16/19.
@@ -9,12 +9,12 @@
 import Foundation
 import FetchRequests
 
-extension CWFetchRequest where FetchedObject: CWTestObject {
+extension FetchRequest where FetchedObject: TestObject {
     convenience init(
         request: @escaping Request,
         objectCreationNotification: Notification.Name? = nil,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = []
+        associations: [FetchRequestAssociation<FetchedObject>] = []
     ) {
         let objectCreationNotification = objectCreationNotification ?? FetchedObject.objectWasCreated()
 
@@ -34,13 +34,13 @@ extension CWFetchRequest where FetchedObject: CWTestObject {
     }
 }
 
-extension CWPaginatingFetchRequest where FetchedObject: CWTestObject {
+extension PaginatingFetchRequest where FetchedObject: TestObject {
     convenience init(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,
         objectCreationNotification: Notification.Name? = nil,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = []
+        associations: [FetchRequestAssociation<FetchedObject>] = []
     ) {
         let objectCreationNotification = objectCreationNotification ?? FetchedObject.objectWasCreated()
 

@@ -9,15 +9,15 @@
 import Foundation
 import FetchRequests
 
-// MARK: - CWFetchableObjectProtocol
+// MARK: - FetchableObjectProtocol
 
-private class Token: CWInvalidatableToken {
-    init(parent: CWTestObject) {
+private class Token: InvalidatableToken {
+    init(parent: TestObject) {
         self.parent = parent
     }
 
     let uuid = UUID()
-    private weak var parent: CWTestObject?
+    private weak var parent: TestObject?
 
     func invalidate() {
         parent?.dataObservers[uuid] = nil
@@ -29,14 +29,14 @@ private class Token: CWInvalidatableToken {
     }
 }
 
-extension CWTestObject: CWFetchableObjectProtocol {
-    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+extension TestObject: FetchableObjectProtocol {
+    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         let token = Token(parent: self)
         dataObservers[token.uuid] = handler
         return token
     }
 
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
@@ -52,12 +52,12 @@ extension CWTestObject: CWFetchableObjectProtocol {
 
 // MARK: - Event Notifications
 
-extension CWTestObject {
+extension TestObject {
     static func objectWasCreated() -> Notification.Name {
-        return Notification.Name("CWTestObject.objectWasCreated")
+        return Notification.Name("TestObject.objectWasCreated")
     }
 
     static func dataWasCleared() -> Notification.Name {
-        return Notification.Name("CWTestObject.dataWasCleared")
+        return Notification.Name("TestObject.dataWasCleared")
     }
 }

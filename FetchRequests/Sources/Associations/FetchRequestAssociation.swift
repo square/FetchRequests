@@ -1,5 +1,5 @@
 //
-//  CWFetchRequestAssociation.swift
+//  FetchRequestAssociation.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/23/18.
@@ -8,22 +8,22 @@
 
 import Foundation
 
-public enum CWAssociationReplacement<T> {
+public enum AssociationReplacement<T> {
     case same
     case changed(newValue: T)
     case invalid
 }
 
 /// Map an associated value's key to object
-public class CWFetchRequestAssociation<FetchedObject: CWFetchableObject> {
+public class FetchRequestAssociation<FetchedObject: FetchableObject> {
     /// Fetch associated values given a list of parent objects
     public typealias AssocationRequestByParent<AssociatedEntity> = (_ objects: [FetchedObject], _ completion: @escaping ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
     /// Fetch associated values given a list of associated IDs
     public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = (_ objects: [AssociatedEntityID], _ completion: @escaping ([AssociatedEntity]) -> Void) -> Void
     /// Event that represents the creation of an associated value object
-    public typealias CreationObserved<Value, Comparison> = (Value?, Comparison) -> CWAssociationReplacement<Value>
+    public typealias CreationObserved<Value, Comparison> = (Value?, Comparison) -> AssociationReplacement<Value>
     /// Start observing a source object
-    public typealias TokenGenerator<Source, Token: CWObservableToken> = (Source) -> Token?
+    public typealias TokenGenerator<Source, Token: ObservableToken> = (Source) -> Token?
 
     internal typealias AssociationKeyPath = PartialKeyPath<FetchedObject>
     internal typealias ReferenceGenerator = (FetchedObject) -> AssociatedValueReference
@@ -78,7 +78,7 @@ public class CWFetchRequestAssociation<FetchedObject: CWFetchableObject> {
 
 // MARK: - Basic Associations
 
-public extension CWFetchRequestAssociation {
+public extension FetchRequestAssociation {
     /// Association by non-optional entity ID
     convenience init<AssociatedEntity, AssociatedEntityID: Equatable>(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
@@ -130,13 +130,13 @@ public extension CWFetchRequestAssociation {
 
 // MARK: - Observed Creation Associations
 
-public extension CWFetchRequestAssociation {
+public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
+        AssociatedEntity: FetchableObject,
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
-        Token: CWObservableToken
+        Token: ObservableToken
     > (
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
@@ -196,10 +196,10 @@ public extension CWFetchRequestAssociation {
 
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
+        AssociatedEntity: FetchableObject,
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
-        Token: CWObservableToken
+        Token: ObservableToken
     > (
         keyPath: KeyPath<FetchedObject, AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
@@ -259,9 +259,9 @@ public extension CWFetchRequestAssociation {
 
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
+        AssociatedEntity: FetchableObject,
         AssociatedEntityID: Equatable,
-        Token: CWObservableToken
+        Token: ObservableToken
     > (
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
@@ -283,9 +283,9 @@ public extension CWFetchRequestAssociation {
 
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
+        AssociatedEntity: FetchableObject,
         AssociatedEntityID: Equatable,
-        Token: CWObservableToken
+        Token: ObservableToken
     >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
@@ -308,11 +308,11 @@ public extension CWFetchRequestAssociation {
 
 // MARK: - Observed Creation by RawData Associations
 
-public extension CWFetchRequestAssociation {
+public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
-        Token: CWObservableToken
+        AssociatedEntity: FetchableObject,
+        Token: ObservableToken
     > (
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID>,
@@ -399,8 +399,8 @@ public extension CWFetchRequestAssociation {
 
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
-        Token: CWObservableToken
+        AssociatedEntity: FetchableObject,
+        Token: ObservableToken
     > (
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID?>,
@@ -492,11 +492,11 @@ public extension CWFetchRequestAssociation {
 
 // MARK: - Observed Creation Array Associations
 
-public extension CWFetchRequestAssociation {
+public extension FetchRequestAssociation {
     /// Array association by non-optional entity IDs whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
-        Token: CWObservableToken
+        AssociatedEntity: FetchableObject,
+        Token: ObservableToken
     > (
         for associatedType: Array<AssociatedEntity>.Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]>,
@@ -596,8 +596,8 @@ public extension CWFetchRequestAssociation {
 
     /// Array association by optional entity IDs whose creation event can also be observed
     convenience init<
-        AssociatedEntity: CWFetchableObject,
-        Token: CWObservableToken
+        AssociatedEntity: FetchableObject,
+        Token: ObservableToken
     > (
         for associatedType: Array<AssociatedEntity>.Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]?>,
@@ -696,13 +696,13 @@ public extension CWFetchRequestAssociation {
     }
 }
 
-// MARK: - CWFetchableEntityID Associations
+// MARK: - FetchableEntityID Associations
 
-public extension CWFetchRequestAssociation {
+public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
-        EntityID: CWFetchableEntityID,
-        Token: CWObservableToken
+        EntityID: FetchableEntityID,
+        Token: ObservableToken
     > (
         keyPath: KeyPath<FetchedObject, EntityID>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
@@ -773,8 +773,8 @@ public extension CWFetchRequestAssociation {
 
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
-        EntityID: CWFetchableEntityID,
-        Token: CWObservableToken
+        EntityID: FetchableEntityID,
+        Token: ObservableToken
     > (
         keyPath: KeyPath<FetchedObject, EntityID?>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
@@ -850,7 +850,7 @@ public extension CWFetchRequestAssociation {
 
 // MARK: - Helpers
 
-private extension Sequence where Iterator.Element: CWFetchableObjectProtocol {
+private extension Sequence where Iterator.Element: FetchableObjectProtocol {
     func createLookupTable() -> [Iterator.Element.ID: Iterator.Element] {
         return reduce(into: [:]) { memo, entry in
             memo[entry.id] = entry

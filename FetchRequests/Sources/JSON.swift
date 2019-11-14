@@ -1,5 +1,5 @@
 //
-//  CWJSON.swift
+//  JSON.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 9/19/19.
@@ -11,7 +11,7 @@ import Foundation
 /// This represents raw data within the FetchRequests framework
 /// It exists to work around compiler/runtime bugs around pointers in closure thunks
 @dynamicMemberLookup
-public enum CWJSON {
+public enum JSON {
     case string(String)
     case dictionary([String: Any])
     case array([Any])
@@ -22,7 +22,7 @@ public enum CWJSON {
     public init?(_ value: Any) {
         if let value = value as? Data {
             self.init(data: value)
-        } else if let value = value as? CWJSON {
+        } else if let value = value as? JSON {
             self = value
         } else if let value = value as? String {
             self = .string(value)
@@ -30,11 +30,11 @@ public enum CWJSON {
             self = .bool(value.boolValue)
         } else if let value = value as? NSNumber {
             self = .number(value)
-        } else if let value = value as? [CWJSON] {
+        } else if let value = value as? [JSON] {
             self = .array(value.map { $0.object })
         } else if let value = value as? [Any] {
             self = .array(value)
-        } else if let value = value as? [String: CWJSON] {
+        } else if let value = value as? [String: JSON] {
             self = .dictionary(value.reduce(into: [:]) { memo, kvp in
                 memo[kvp.key] = kvp.value.object
             })
@@ -72,7 +72,7 @@ public enum CWJSON {
 
 // MARK: - Getters
 
-extension CWJSON {
+extension JSON {
     public internal(set) var object: Any {
         get {
             switch self {
@@ -96,7 +96,7 @@ extension CWJSON {
             }
         }
         set {
-            let expected = CWJSON(newValue)
+            let expected = JSON(newValue)
             self[.value(isStart: true)] = expected
         }
     }
@@ -147,8 +147,8 @@ extension CWJSON {
 
 // MARK: - Subscripts
 
-extension CWJSON {
-    public subscript(dynamicMember member: String) -> CWJSON? {
+extension JSON {
+    public subscript(dynamicMember member: String) -> JSON? {
         get {
             return self[member]
         }
@@ -157,12 +157,12 @@ extension CWJSON {
         }
     }
 
-    public subscript(key: String) -> CWJSON? {
+    public subscript(key: String) -> JSON? {
         get {
             guard case let .dictionary(dictionary) = self else {
                 return nil
             }
-            return dictionary[key].flatMap { CWJSON($0) }
+            return dictionary[key].flatMap { JSON($0) }
         }
         set {
             guard case var .dictionary(dictionary) = self else {
@@ -173,12 +173,12 @@ extension CWJSON {
         }
     }
 
-    public subscript(offset: Int) -> CWJSON? {
+    public subscript(offset: Int) -> JSON? {
         get {
             guard case let .array(array) = self, array.indices.contains(offset) else {
                 return nil
             }
-            return CWJSON(array[offset])
+            return JSON(array[offset])
         }
         set {
             guard case var .array(array) = self, offset >= 0 else {
@@ -196,8 +196,8 @@ extension CWJSON {
 
 // MARK: - Equatable
 
-extension CWJSON: Equatable {
-    public static func == (lhs: CWJSON, rhs: CWJSON) -> Bool {
+extension JSON: Equatable {
+    public static func == (lhs: JSON, rhs: JSON) -> Bool {
         switch (lhs, rhs) {
         case let (.string(lhs), .string(rhs)):
             return lhs == rhs
@@ -225,7 +225,7 @@ extension CWJSON: Equatable {
 
 // MARK: - Collection
 
-extension CWJSON: Collection {
+extension JSON: Collection {
     public enum Index: Comparable, Hashable {
         public enum Key: Comparable, Hashable {
             case offset(Int)
@@ -334,7 +334,7 @@ extension CWJSON: Collection {
         }
     }
 
-    public subscript(index: Index) -> (key: Index.Key, value: CWJSON) {
+    public subscript(index: Index) -> (key: Index.Key, value: JSON) {
         get {
             let key = self.key(for: index)
             return (key, self[key]!)
@@ -346,7 +346,7 @@ extension CWJSON: Collection {
         }
     }
 
-    public subscript(key: Index.Key) -> CWJSON? {
+    public subscript(key: Index.Key) -> JSON? {
         get {
             switch key {
             case let .offset(offset):
@@ -382,7 +382,7 @@ extension CWJSON: Collection {
 
 // MARK: - Literals
 
-extension CWJSON: ExpressibleByDictionaryLiteral {
+extension JSON: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Any)...) {
         let data: [String: Any] = elements.reduce(into: [:]) { memo, element in
             memo[element.0] = element.1
@@ -391,38 +391,38 @@ extension CWJSON: ExpressibleByDictionaryLiteral {
     }
 }
 
-extension CWJSON: ExpressibleByArrayLiteral {
+extension JSON: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Any...) {
         let data: [Any] = elements
         self = .array(data)
     }
 }
 
-extension CWJSON: ExpressibleByStringLiteral {
+extension JSON: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self = .string(value)
     }
 }
 
-extension CWJSON: ExpressibleByBooleanLiteral {
+extension JSON: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: Bool) {
         self = .bool(value)
     }
 }
 
-extension CWJSON: ExpressibleByFloatLiteral {
+extension JSON: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Double) {
         self = .number(NSNumber(value: value))
     }
 }
 
-extension CWJSON: ExpressibleByIntegerLiteral {
+extension JSON: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
         self = .number(NSNumber(value: value))
     }
 }
 
-extension CWJSON: ExpressibleByNilLiteral {
+extension JSON: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self = .null
     }
@@ -430,15 +430,15 @@ extension CWJSON: ExpressibleByNilLiteral {
 
 // MARK: - Codable
 
-public enum CWJSONError: Error {
+public enum JSONError: Error {
     case invalidContent
 }
 
 private extension Dictionary where Key == String, Value == Any {
-    func encodableDictionary() throws -> [String: CWJSON] {
+    func encodableDictionary() throws -> [String: JSON] {
         return try reduce(into: [:]) { memo, kvp in
-            guard let value = CWJSON(kvp.value) else {
-                throw CWJSONError.invalidContent
+            guard let value = JSON(kvp.value) else {
+                throw JSONError.invalidContent
             }
             memo[kvp.key] = value
         }
@@ -446,17 +446,17 @@ private extension Dictionary where Key == String, Value == Any {
 }
 
 private extension Array where Element == Any {
-    func encodableArray() throws -> [CWJSON] {
+    func encodableArray() throws -> [JSON] {
         return try map { element in
-            guard let value = CWJSON(element) else {
-                throw CWJSONError.invalidContent
+            guard let value = JSON(element) else {
+                throw JSONError.invalidContent
             }
             return value
         }
     }
 }
 
-extension CWJSON: Encodable {
+extension JSON: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
@@ -493,7 +493,7 @@ extension CWJSON: Encodable {
     }
 }
 
-extension CWJSON: Decodable {
+extension JSON: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -505,9 +505,9 @@ extension CWJSON: Decodable {
             object = bool
         } else if let string = try? container.decode(String.self) {
             object = string
-        } else if let array = try? container.decode([CWJSON].self) {
+        } else if let array = try? container.decode([JSON].self) {
             object = array
-        } else if let dictionary = try? container.decode([String: CWJSON].self) {
+        } else if let dictionary = try? container.decode([String: JSON].self) {
             object = dictionary
         } else {
             var signedNumber: NSNumber? {
@@ -551,13 +551,13 @@ extension CWJSON: Decodable {
             }
 
             guard let number = signedNumber ?? unsignedNumber ?? floatingPointNumber else {
-                throw CWJSONError.invalidContent
+                throw JSONError.invalidContent
             }
             object = number
         }
 
-        guard let data = CWJSON(object) else {
-            throw CWJSONError.invalidContent
+        guard let data = JSON(object) else {
+            throw JSONError.invalidContent
         }
         self = data
     }

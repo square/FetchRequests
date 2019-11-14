@@ -1,5 +1,5 @@
 //
-//  CWTestObject+Associations.swift
+//  TestObject+Associations.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 3/29/19.
@@ -11,21 +11,21 @@ import Foundation
 
 //swiftlint:disable implicitly_unwrapped_optional
 
-extension CWTestObject {
+extension TestObject {
     func tagString() -> String? {
         return performFault(on: \.tag) { tag in
             fatalError("Cannot perform fallback fault")
         }
     }
 
-    func tagObject() -> CWTestObject? {
-        return performFault(on: \.tagID) { (tagID: String) -> CWTestObject? in
+    func tagObject() -> TestObject? {
+        return performFault(on: \.tagID) { (tagID: String) -> TestObject? in
             fatalError("Cannot perform fallback fault")
         }
     }
 
-    func tagObjectArray() -> [CWTestObject]? {
-        return performFault(on: \.tagIDs) { (tagIDs: [String]) -> [CWTestObject]? in
+    func tagObjectArray() -> [TestObject]? {
+        return performFault(on: \.tagIDs) { (tagIDs: [String]) -> [TestObject]? in
             fatalError("Cannot perform fallback fault")
         }
     }
@@ -33,10 +33,10 @@ extension CWTestObject {
 
 // MARK: - Association Requests
 
-extension CWTestObject {
+extension TestObject {
     enum AssociationRequest {
-        case parents([CWTestObject], completion: ([String: String]) -> Void)
-        case tagIDs([String], completion: ([CWTestObject]) -> Void)
+        case parents([TestObject], completion: ([String: String]) -> Void)
+        case tagIDs([String], completion: ([TestObject]) -> Void)
 
         var parentIDs: [String]! {
             guard case let .parents(objects, _) = self else {
@@ -59,7 +59,7 @@ extension CWTestObject {
             return completion
         }
 
-        var tagIDsCompletion: (([CWTestObject]) -> Void)! {
+        var tagIDsCompletion: (([TestObject]) -> Void)! {
             guard case let .tagIDs(_, completion) = self else {
                 return nil
             }
@@ -68,26 +68,26 @@ extension CWTestObject {
     }
 
     static func fetchRequestAssociations(
-        matching: [PartialKeyPath<CWTestObject>],
+        matching: [PartialKeyPath<TestObject>],
         request: @escaping (AssociationRequest) -> Void
-    ) -> [CWFetchRequestAssociation<CWTestObject>] {
-        let tagString = CWFetchRequestAssociation<CWTestObject>(
+    ) -> [FetchRequestAssociation<TestObject>] {
+        let tagString = FetchRequestAssociation<TestObject>(
             keyPath: \.tag,
             request: { objects, completion in
                 request(.parents(objects, completion: completion))
             }
         )
 
-        let tagObject = CWFetchRequestAssociation<CWTestObject>(
-            for: CWTestObject.self,
+        let tagObject = FetchRequestAssociation<TestObject>(
+            for: TestObject.self,
             keyPath: \.tagID,
             request: { objectIDs, completion in
                 request(.tagIDs(objectIDs, completion: completion))
             }
         )
 
-        let tagObjects = CWFetchRequestAssociation<CWTestObject>(
-            for: [CWTestObject].self,
+        let tagObjects = FetchRequestAssociation<TestObject>(
+            for: [TestObject].self,
             keyPath: \.tagIDs,
             request: { objectIDs, completion in
                 request(.tagIDs(objectIDs, completion: completion))
@@ -104,15 +104,15 @@ extension CWTestObject {
 
 // MARK: - Tokens
 
-class WrappedObservableToken<T>: CWObservableToken {
-    private let notificationToken: CWObservableNotificationCenterToken
+class WrappedObservableToken<T>: ObservableToken {
+    private let notificationToken: ObservableNotificationCenterToken
     private let transform: (Notification) -> T?
 
     init(
         name: Notification.Name,
         transform: @escaping (Notification) -> T?
     ) {
-        notificationToken = CWObservableNotificationCenterToken(name: name)
+        notificationToken = ObservableNotificationCenterToken(name: name)
         self.transform = transform
     }
 
@@ -131,18 +131,18 @@ class WrappedObservableToken<T>: CWObservableToken {
     }
 }
 
-class TestEntityObservableToken: WrappedObservableToken<CWTestObject.RawData> {
-    private let include: (CWTestObject.RawData) -> Bool
+class TestEntityObservableToken: WrappedObservableToken<TestObject.RawData> {
+    private let include: (TestObject.RawData) -> Bool
 
     init(
         name: Notification.Name,
-        include: @escaping (CWTestObject.RawData) -> Bool = { _ in true }
+        include: @escaping (TestObject.RawData) -> Bool = { _ in true }
     ) {
         self.include = include
         super.init(name: name, transform: { $0.object as? Parameter })
     }
 
-    override func observe(handler: @escaping (CWTestObject.RawData) -> Void) {
+    override func observe(handler: @escaping (TestObject.RawData) -> Void) {
         let include = self.include
         super.observe { data in
             guard include(data) else {
@@ -161,14 +161,14 @@ class VoidNotificationObservableToken: WrappedObservableToken<Void> {
 
 // MARK: - Associations
 
-extension CWTestObject {
-    static func fetch(byIDs ids: [CWTestObject.ID]) -> [CWTestObject] {
-        return ids.map { CWTestObject(id: $0) }
+extension TestObject {
+    static func fetch(byIDs ids: [TestObject.ID]) -> [TestObject] {
+        return ids.map { TestObject(id: $0) }
     }
 }
 
-extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
-    convenience init<AssociatedType: CWTestObject>(
+extension FetchRequestAssociation where FetchedObject == TestObject {
+    convenience init<AssociatedType: TestObject>(
         for associatedType: AssociatedType.Type,
         keyPath: KeyPath<FetchedObject, AssociatedType.ID?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
@@ -192,7 +192,7 @@ extension CWFetchRequestAssociation where FetchedObject == CWTestObject {
         )
     }
 
-    convenience init<AssociatedType: CWTestObject>(
+    convenience init<AssociatedType: TestObject>(
         for associatedType: Array<AssociatedType>.Type,
         keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>

@@ -1,5 +1,5 @@
 //
-//  CWTestObject.swift
+//  TestObject.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 2/25/18.
@@ -9,8 +9,8 @@
 import Foundation
 @testable import FetchRequests
 
-final class CWTestObject: NSObject, CWIdentifiable {
-    typealias RawData = CWJSON
+final class TestObject: NSObject, Identifiable {
+    typealias RawData = JSON
 
     @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
@@ -45,7 +45,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
     // MARK: NSObject Overrides
 
     override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? CWTestObject else {
+        guard let other = object as? TestObject else {
             return false
         }
 
@@ -60,7 +60,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
     }
 
     required init?(data: RawData) {
-        guard let id = CWTestObject.entityID(from: data) else {
+        guard let id = TestObject.entityID(from: data) else {
             return nil
         }
         self.id = id
@@ -88,7 +88,7 @@ final class CWTestObject: NSObject, CWIdentifiable {
 
 // MARK: - KVO-able synthetic properties
 
-extension CWTestObject {
+extension TestObject {
     @objc
     dynamic var tagID: String? {
         return String(tag)

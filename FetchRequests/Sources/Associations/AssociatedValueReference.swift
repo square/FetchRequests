@@ -10,13 +10,13 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: CWFetchableObject>: Hashable {
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
     var id: FetchedObject.ID
     var keyPath: PartialKeyPath<FetchedObject>
 }
 
-class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedValueReference {
-    private var observations: [Entity: [CWInvalidatableToken]] = [:]
+class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference {
+    private var observations: [Entity: [InvalidatableToken]] = [:]
 
     fileprivate override func stopObservingValue() {
         observations.values.forEach { $0.forEach { $0.invalidate() } }
@@ -38,7 +38,7 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
         }
     }
 
-    private func observeChanges(for entity: Entity) -> [CWInvalidatableToken] {
+    private func observeChanges(for entity: Entity) -> [InvalidatableToken] {
         entity.listenForUpdates()
 
         let dataObserver = entity.observeDataChanges { [weak self] in
@@ -72,7 +72,7 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
 
 class AssociatedValueReference: NSObject {
     private let creationObserver: FetchRequestObservableToken<Any>?
-    private let creationObserved: (Any?, Any) -> CWAssociationReplacement<Any>
+    private let creationObserved: (Any?, Any) -> AssociationReplacement<Any>
 
     fileprivate(set) var value: Any?
     fileprivate var changeHandler: ((_ invalidate: Bool) -> Void)?
@@ -83,7 +83,7 @@ class AssociatedValueReference: NSObject {
 
     init(
         creationObserver: FetchRequestObservableToken<Any>? = nil,
-        creationObserved: @escaping (Any?, Any) -> CWAssociationReplacement<Any> = { _, _ in .same },
+        creationObserved: @escaping (Any?, Any) -> AssociationReplacement<Any> = { _, _ in .same },
         value: Any? = nil
     ) {
         self.creationObserver = creationObserver

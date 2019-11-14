@@ -1,5 +1,5 @@
 //
-//  CWPaginatingFetchRequest.swift
+//  PaginatingFetchRequest.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/28/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class CWPaginatingFetchRequest<FetchedObject: CWFetchableObject>: CWFetchRequest<FetchedObject> {
+public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchRequest<FetchedObject> {
     public typealias PaginationRequest = (
         _ currentResults: [FetchedObject],
         _ completion: @escaping ([FetchedObject]?) -> Void
@@ -16,12 +16,12 @@ public class CWPaginatingFetchRequest<FetchedObject: CWFetchableObject>: CWFetch
 
     internal let paginationRequest: PaginationRequest
 
-    public init<VoidToken: CWObservableToken, DataToken: CWObservableToken>(
+    public init<VoidToken: ObservableToken, DataToken: ObservableToken>(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,
         objectCreationToken: DataToken,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = [],
+        associations: [FetchRequestAssociation<FetchedObject>] = [],
         dataResetTokens: [VoidToken] = []
     ) where VoidToken.Parameter == Void, DataToken.Parameter == FetchedObject.RawData {
         self.paginationRequest = paginationRequest
@@ -34,7 +34,7 @@ public class CWPaginatingFetchRequest<FetchedObject: CWFetchableObject>: CWFetch
         )
     }
 
-    fileprivate func performPagination<Controller>(in fetchController: Controller) where Controller: CWInternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
+    fileprivate func performPagination<Controller>(in fetchController: Controller) where Controller: InternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
         let currentResults = fetchController.fetchedObjects
         paginationRequest(currentResults) { [weak fetchController] pageResults in
             guard let pageResults = pageResults else {
@@ -45,13 +45,13 @@ public class CWPaginatingFetchRequest<FetchedObject: CWFetchableObject>: CWFetch
     }
 }
 
-public class CWPaginatingFetchedResultsController<
-    FetchedObject: CWFetchableObject
->: CWFetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: CWPaginatingFetchRequest<FetchedObject>
+public class PaginatingFetchedResultsController<
+    FetchedObject: FetchableObject
+>: FetchedResultsController<FetchedObject> {
+    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
 
     public init(
-        request: CWPaginatingFetchRequest<FetchedObject>,
+        request: PaginatingFetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
@@ -71,13 +71,13 @@ public class CWPaginatingFetchedResultsController<
     }
 }
 
-public class CWPausablePaginatingFetchedResultsController<
-    FetchedObject: CWFetchableObject
->: CWPausableFetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: CWPaginatingFetchRequest<FetchedObject>
+public class PausablePaginatingFetchedResultsController<
+    FetchedObject: FetchableObject
+>: PausableFetchedResultsController<FetchedObject> {
+    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
     
     public init(
-        request: CWPaginatingFetchRequest<FetchedObject>,
+        request: PaginatingFetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true

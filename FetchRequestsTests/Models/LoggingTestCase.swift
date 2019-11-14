@@ -1,5 +1,5 @@
 //
-//  CWLoggingTestCase.swift
+//  LoggingTestCase.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/21/19.
@@ -9,13 +9,13 @@
 import XCTest
 @testable import FetchRequests
 
-class CWLoggingTestCase: XCTestCase {
+class LoggingTestCase: XCTestCase {
     func testLogging() {
-        CWLogVerbose("Verbose")
-        CWLogDebug("Debug")
-        CWLogInfo("Info")
-        CWLogWarning("Warning")
-        CWLogError("Error")
+        LogVerbose("Verbose")
+        LogDebug("Debug")
+        LogInfo("Info")
+        LogWarning("Warning")
+        LogError("Error")
     }
 
     func testDiffDebug() {
