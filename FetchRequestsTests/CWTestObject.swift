@@ -15,28 +15,9 @@ final class CWTestObject: NSObject, CWIdentifiable {
     @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
-
-    private var _dataObservers: [UUID: () -> Void] = [:]
-    var dataObservers: [UUID: () -> Void] {
-        get {
-            return synchronized(self) {
-                return _dataObservers
-            }
-        }
-        set {
-            synchronized(self) {
-                _dataObservers = newValue
-            }
-        }
-    }
-
-    var data: RawData = [:] {
+    @objc dynamic var data: RawData = [:] {
         didSet {
             integrate(data: data)
-            guard oldValue != data else {
-                return
-            }
-            dataObservers.values.forEach { $0() }
         }
     }
 
