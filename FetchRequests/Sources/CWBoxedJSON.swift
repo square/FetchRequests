@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc(CWBoxedJSON)
 public class CWBoxedJSON: NSObject {
     internal let json: CWJSON
 
