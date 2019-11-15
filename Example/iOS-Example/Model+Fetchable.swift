@@ -12,13 +12,13 @@ import FetchRequests
 
 // MARK: - Fetch Requests
 
-extension CWFetchableObjectProtocol where Self: Model {
-    static func fetchRequest() -> CWFetchRequest<Self> {
+extension FetchableObjectProtocol where Self: Model {
+    static func fetchRequest() -> FetchRequest<Self> {
         let dataResetTokens: [ModelClearedToken<Self>] = [
             ModelClearedToken(),
         ]
 
-        return CWFetchRequest<Self>(
+        return FetchRequest<Self>(
             request: { completion in
                 completion(fetchAll())
             },
@@ -28,12 +28,12 @@ extension CWFetchableObjectProtocol where Self: Model {
     }
 }
 
-class ModelCreationToken<T: Model>: CWObservableToken {
-    let notificationToken: CWObservableNotificationCenterToken
+class ModelCreationToken<T: Model>: ObservableToken {
+    let notificationToken: ObservableNotificationCenterToken
     let include: (T) -> Bool
 
     init(name: Notification.Name = T.objectWasCreated(), include: @escaping (T) -> Bool = { _ in true }) {
-        notificationToken = CWObservableNotificationCenterToken(name: name)
+        notificationToken = ObservableNotificationCenterToken(name: name)
         self.include = include
     }
 
@@ -55,11 +55,11 @@ class ModelCreationToken<T: Model>: CWObservableToken {
     }
 }
 
-class ModelClearedToken<T: Model>: CWObservableToken {
-    let notificationToken: CWObservableNotificationCenterToken
+class ModelClearedToken<T: Model>: ObservableToken {
+    let notificationToken: ObservableNotificationCenterToken
 
     init() {
-        notificationToken = CWObservableNotificationCenterToken(name: T.dataWasCleared())
+        notificationToken = ObservableNotificationCenterToken(name: T.dataWasCleared())
     }
 
     func invalidate() {

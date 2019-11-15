@@ -1,5 +1,5 @@
 //
-//  CWPausableFetchedResultsControllerTestCase.swift
+//  PausableFetchedResultsControllerTestCase.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/27/18.
@@ -11,35 +11,35 @@ import XCTest
 
 //swiftlint:disable force_try implicitly_unwrapped_optional
 
-class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsControllerTestHarness {
-    private(set) var controller: CWPausableFetchedResultsController<CWTestObject>!
+class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    private(set) var controller: PausableFetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (([CWTestObject]) -> Void)!
+    private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
-    private var associationRequest: CWTestObject.AssociationRequest!
+    private var associationRequest: TestObject.AssociationRequest!
 
-    private var inclusionCheck: ((CWTestObject.RawData) -> Bool)?
+    private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
-    private var changeEvents: [(change: CWFetchedResultsChange<IndexPath>, object: CWTestObject)] = []
+    private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
     private func createFetchRequest(
-        associations: [PartialKeyPath<CWTestObject>] = []
-    ) -> CWFetchRequest<CWTestObject> {
-        let request: CWFetchRequest<CWTestObject>.Request = { [unowned self] completion in
+        associations: [PartialKeyPath<TestObject>] = []
+    ) -> FetchRequest<TestObject> {
+        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
 
-        let desiredAssociations = CWTestObject.fetchRequestAssociations(
+        let desiredAssociations = TestObject.fetchRequestAssociations(
             matching: associations
         ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: CWFetchRequest<CWTestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return CWFetchRequest<CWTestObject>(
+        return FetchRequest<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -60,7 +60,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     }
 
     func testBasicFetch() {
-        controller = CWPausableFetchedResultsController(
+        controller = PausableFetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
@@ -74,13 +74,13 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     }
 
     func testExpectInsertFromBroadcastNotification() {
-        controller = CWPausableFetchedResultsController(
+        controller = PausableFetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
 
-        let initialObjects = ["a", "b", "c"].compactMap { CWTestObject(id: $0) }
+        let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
         try! performFetch(initialObjects)
 
@@ -89,15 +89,15 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         // Broadcast an update event & expect an insert to occur
 
-        let newObject = CWTestObject(id: "d")
+        let newObject = TestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
+        let notification = Notification(name: TestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "d")
 
         changeEvents.removeAll()
@@ -111,13 +111,13 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     }
 
     func testExpectPausedInsertFromBroadcastNotification() {
-        controller = CWPausableFetchedResultsController(
+        controller = PausableFetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
 
-        let initialObjects = ["a", "b", "c"].compactMap { CWTestObject(id: $0) }
+        let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
         try! performFetch(initialObjects)
 
@@ -130,9 +130,9 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         // Broadcast an update event & don't expect an insert to occur
 
-        let newObject = CWTestObject(id: "d")
+        let newObject = TestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
+        let notification = Notification(name: TestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -157,7 +157,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     }
 
     func testResetClearsPaused() {
-        controller = CWPausableFetchedResultsController(
+        controller = PausableFetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
@@ -176,15 +176,15 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
     func testWrappedProperties() {
         let request = createFetchRequest()
 
-        controller = CWPausableFetchedResultsController(
+        controller = PausableFetchedResultsController(
             request: request,
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
 
         let effectiveSortDescriptorKeys = [
-            #selector(getter: CWTestObject.sectionName),
-            #selector(getter: CWTestObject.id),
+            #selector(getter: TestObject.sectionName),
+            #selector(getter: TestObject.id),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])
@@ -193,7 +193,7 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
         XCTAssert(controller.request === request)
         XCTAssertEqual(controller.sortDescriptors.map { $0.key }, effectiveSortDescriptorKeys)
-        XCTAssertEqual(controller.sectionNameKeyPath, \CWTestObject.sectionName)
+        XCTAssertEqual(controller.sectionNameKeyPath, \TestObject.sectionName)
         XCTAssertEqual(controller.associatedFetchSize, 20)
         XCTAssertTrue(controller.hasFetchedObjects)
     }
@@ -201,18 +201,18 @@ class CWPausableFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsCo
 
 // MARK: - Paginating
 
-extension CWPausableFetchedResultsControllerTestCase {
+extension PausableFetchedResultsControllerTestCase {
     func testCanCreatePausableVariation() {
         let baseRequest = createFetchRequest()
 
         var paginationRequests = 0
 
-        let request = CWPaginatingFetchRequest<CWTestObject>(
+        let request = PaginatingFetchRequest<TestObject>(
             request: baseRequest.request,
             paginationRequest: { current, completion in
                 paginationRequests += 1
 
-                let newObject = CWTestObject(id: paginationRequests.description)
+                let newObject = TestObject(id: paginationRequests.description)
 
                 completion([newObject])
             },
@@ -220,7 +220,7 @@ extension CWPausableFetchedResultsControllerTestCase {
             associations: baseRequest.associations
         )
 
-        let controller = CWPausablePaginatingFetchedResultsController(
+        let controller = PausablePaginatingFetchedResultsController(
             request: request,
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
@@ -246,13 +246,13 @@ extension CWPausableFetchedResultsControllerTestCase {
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
+// MARK: - FetchedResultsControllerDelegate
 
-extension CWPausableFetchedResultsControllerTestCase: CWPausableFetchedResultsControllerDelegate {
+extension PausableFetchedResultsControllerTestCase: PausableFetchedResultsControllerDelegate {
     func controller(
-        _ controller: CWPausableFetchedResultsController<CWTestObject>,
-        didChange object: CWTestObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        _ controller: PausableFetchedResultsController<TestObject>,
+        didChange object: TestObject,
+        for change: FetchedResultsChange<IndexPath>
     ) {
         changeEvents.append((change: change, object: object))
     }

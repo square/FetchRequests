@@ -1,5 +1,5 @@
 //
-//  CWFetchRequest.swift
+//  FetchRequest.swift
 //  Crew
 //
 //  Created by Adam Lickel on 7/7/16.
@@ -8,25 +8,25 @@
 
 import Foundation
 
-// MARK: - CWFetchRequest
+// MARK: - FetchRequest
 
-public class CWFetchRequest<FetchedObject: CWFetchableObject> {
+public class FetchRequest<FetchedObject: FetchableObject> {
     public typealias Request = (_ completion: @escaping ([FetchedObject]) -> Void) -> Void
     public typealias CreationInclusionCheck = (_ rawData: FetchedObject.RawData) -> Bool
 
     internal let request: Request
     internal let objectCreationToken: FetchRequestObservableToken<FetchedObject.RawData>
     internal let creationInclusionCheck: CreationInclusionCheck
-    internal let associations: [CWFetchRequestAssociation<FetchedObject>]
+    internal let associations: [FetchRequestAssociation<FetchedObject>]
     internal let dataResetTokens: [FetchRequestObservableToken<Void>]
 
-    internal let associationsByKeyPath: [CWFetchRequestAssociation<FetchedObject>.AssociationKeyPath: CWFetchRequestAssociation<FetchedObject>]
+    internal let associationsByKeyPath: [FetchRequestAssociation<FetchedObject>.AssociationKeyPath: FetchRequestAssociation<FetchedObject>]
 
-    public init<VoidToken: CWObservableToken, DataToken: CWObservableToken>(
+    public init<VoidToken: ObservableToken, DataToken: ObservableToken>(
         request: @escaping Request,
         objectCreationToken: DataToken,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
-        associations: [CWFetchRequestAssociation<FetchedObject>] = [],
+        associations: [FetchRequestAssociation<FetchedObject>] = [],
         dataResetTokens: [VoidToken] = []
     ) where VoidToken.Parameter == Void, DataToken.Parameter == FetchedObject.RawData {
         self.request = request

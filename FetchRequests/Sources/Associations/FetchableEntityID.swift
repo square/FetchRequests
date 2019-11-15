@@ -1,5 +1,5 @@
 //
-//  CWFetchableEntityID.swift
+//  FetchableEntityID.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/28/18.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-public protocol CWFetchableEntityID: Hashable {
-    associatedtype FetchableEntity: CWFetchableObject
+public protocol FetchableEntityID: Hashable {
+    associatedtype FetchableEntity: FetchableObject
 
     init?(from entity: FetchableEntity)
 
@@ -20,7 +20,7 @@ public protocol CWFetchableEntityID: Hashable {
     static func fetch(byIDs objectIDs: [Self], completion: @escaping ([FetchableEntity]) -> Void)
 }
 
-extension CWFetchableEntityID {
+extension FetchableEntityID {
     static func fetch(byID objectID: Self) -> FetchableEntity? {
         return self.fetch(byIDs: [objectID]).first
     }

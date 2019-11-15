@@ -1,5 +1,5 @@
 //
-//  CWFetchedResultsControllerTestCase.swift
+//  FetchedResultsControllerTestCase.swift
 //  Crew
 //
 //  Created by Adam Lickel on 2/1/16.
@@ -10,35 +10,35 @@ import XCTest
 @testable import FetchRequests
 
 //swiftlint:disable force_try implicitly_unwrapped_optional
-class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsControllerTestHarness {
-    private(set) var controller: CWFetchedResultsController<CWTestObject>!
+class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    private(set) var controller: FetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (([CWTestObject]) -> Void)!
+    private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
-    private var associationRequest: CWTestObject.AssociationRequest!
+    private var associationRequest: TestObject.AssociationRequest!
 
-    private var inclusionCheck: ((CWTestObject.RawData) -> Bool)?
+    private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
-    private var changeEvents: [(change: CWFetchedResultsChange<IndexPath>, object: CWTestObject)] = []
+    private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
     private func createFetchRequest(
-        associations: [PartialKeyPath<CWTestObject>] = []
-    ) -> CWFetchRequest<CWTestObject> {
-        let request: CWFetchRequest<CWTestObject>.Request = { [unowned self] completion in
+        associations: [PartialKeyPath<TestObject>] = []
+    ) -> FetchRequest<TestObject> {
+        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
 
-        let desiredAssociations = CWTestObject.fetchRequestAssociations(
+        let desiredAssociations = TestObject.fetchRequestAssociations(
             matching: associations
         ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: CWFetchRequest<CWTestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return CWFetchRequest<CWTestObject>(
+        return FetchRequest<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -61,7 +61,7 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
     }
 
     func testBasicFetch() {
-        controller = CWFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
 
         let objectIDs = ["a", "b", "c"]
 
@@ -91,7 +91,7 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
     }
 
     func testFetchAvoidsReplacingInstances() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
@@ -99,8 +99,8 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -112,8 +112,8 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
         // Replace our instances
 
         let secondaryObjectIDs = ["z", "a", "c", "b", "d"]
-        let secondaryObjects = secondaryObjectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let secondaryObjects = secondaryObjectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -134,10 +134,10 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
     }
 
     func testBasicFetchWithSortDescriptors() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(keyPath: \CWTestObject.id, ascending: false),
+                NSSortDescriptor(keyPath: \TestObject.id, ascending: false),
             ],
             debounceInsertsAndReloads: false
         )
@@ -158,17 +158,17 @@ class CWFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsController
 
 // MARK: - Sections
 
-extension CWFetchedResultsControllerTestCase {
+extension FetchedResultsControllerTestCase {
     func testFetchingIntoSections() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
 
         let objectIDs = ["a", "b", "c"]
-        var objects = zip(objectIDs, objectIDs.reversed()).compactMap { CWTestObject(id: $0, sectionName: $1) }
-        objects.append(CWTestObject(id: "d", sectionName: "b"))
+        var objects = zip(objectIDs, objectIDs.reversed()).compactMap { TestObject(id: $0, sectionName: $1) }
+        objects.append(TestObject(id: "d", sectionName: "b"))
 
         try! performFetch(objects)
 
@@ -206,7 +206,7 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testFetchingIntoSectionsAvoidsReplacingInstances() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
@@ -215,9 +215,9 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectSectionPairs = [("a", "a"), ("b", "b"), ("d", "b"), ("c", "c")]
-        let objects = objectSectionPairs.compactMap { pair -> CWTestObject? in
+        let objects = objectSectionPairs.compactMap { pair -> TestObject? in
             let (id, sectionName) = pair
-            let object = CWTestObject(id: id, tag: currentTag, sectionName: sectionName)
+            let object = TestObject(id: id, tag: currentTag, sectionName: sectionName)
 
             currentTag += 1
 
@@ -231,9 +231,9 @@ extension CWFetchedResultsControllerTestCase {
         // Replace our instances
 
         let secondaryObjectSectionPairs = [("z", "a"), ("a", "a"), ("c", "b"), ("b", "c"), ("d", "c")]
-        let secondaryObjects = secondaryObjectSectionPairs.compactMap { pair -> CWTestObject? in
+        let secondaryObjects = secondaryObjectSectionPairs.compactMap { pair -> TestObject? in
             let (id, sectionName) = pair
-            let object = CWTestObject(id: id, tag: currentTag, sectionName: sectionName)
+            let object = TestObject(id: id, tag: currentTag, sectionName: sectionName)
 
             currentTag += 1
 
@@ -253,19 +253,19 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testFetchingIntoSectionsWithSortDescriptors() {
-        controller = CWFetchedResultsController<CWTestObject>(
+        controller = FetchedResultsController<TestObject>(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(keyPath: \CWTestObject.id, ascending: true),
+                NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
 
         let objectSectionPairs = [("z", "a"), ("a", "a"), ("c", "c"), ("b", "b"), ("d", "b")]
-        let objects = objectSectionPairs.compactMap { pair -> CWTestObject? in
+        let objects = objectSectionPairs.compactMap { pair -> TestObject? in
             let (id, sectionName) = pair
-            let object = CWTestObject(id: id, sectionName: sectionName)
+            let object = TestObject(id: id, sectionName: sectionName)
 
             return object
         }
@@ -284,10 +284,10 @@ extension CWFetchedResultsControllerTestCase {
 
 // MARK: - Associated Values
 
-extension CWFetchedResultsControllerTestCase {
+extension FetchedResultsControllerTestCase {
     func testFetchingAssociatedObjects() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tag]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
         controller.associatedFetchSize = 3
@@ -336,8 +336,8 @@ extension CWFetchedResultsControllerTestCase {
 
     #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tag]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -373,8 +373,8 @@ extension CWFetchedResultsControllerTestCase {
     #endif
 
     func testAssociatedObjectsInvalidatedFromKVO() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tag]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -410,8 +410,8 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testMissingAssociatedObjectsInvalidatedFromNotifications() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tagID]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -419,8 +419,8 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c", "d"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -437,7 +437,7 @@ extension CWFetchedResultsControllerTestCase {
         XCTAssertEqual(associationRequest.tagIDs, ["0", "1", "2", "3"])
 
         associationRequest.tagIDsCompletion(
-            [CWTestObject(id: "1"), CWTestObject(id: "2"), CWTestObject(id: "3")]
+            [TestObject(id: "1"), TestObject(id: "2"), TestObject(id: "3")]
         )
 
         associationRequest = nil
@@ -446,15 +446,15 @@ extension CWFetchedResultsControllerTestCase {
         // Broadcast tagID 0
 
         inclusionCheck = { json in
-            CWTestObject.entityID(from: json) != "0"
+            TestObject.entityID(from: json) != "0"
         }
 
-        let updateName = CWTestObject.objectWasCreated()
-        let update: CWTestObject.RawData = ["id": "0", "updatedAt": 1]
+        let updateName = TestObject.objectWasCreated()
+        let update: TestObject.RawData = ["id": "0", "updatedAt": 1]
         NotificationCenter.default.post(name: updateName, object: update)
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // Fetch associated value on A
@@ -467,12 +467,12 @@ extension CWFetchedResultsControllerTestCase {
 
 // MARK: - Observed Events
 
-extension CWFetchedResultsControllerTestCase {
+extension FetchedResultsControllerTestCase {
     private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sortDescriptors: [
-                NSSortDescriptor(key: #keyPath(CWTestObject.tag), ascending: true),
+                NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
@@ -481,9 +481,9 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectSectionPairs = [("z", "a"), ("a", "a"), ("c", "c"), ("b", "b"), ("d", "c")]
-        let objects = objectSectionPairs.compactMap { pair -> CWTestObject? in
+        let objects = objectSectionPairs.compactMap { pair -> TestObject? in
             let (id, sectionName) = pair
-            let object = CWTestObject(id: id, tag: currentTag, sectionName: sectionName)
+            let object = TestObject(id: id, tag: currentTag, sectionName: sectionName)
 
             currentTag += 1
 
@@ -565,7 +565,7 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testDeleteFromKVO() {
-        controller = CWFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -581,13 +581,13 @@ extension CWFetchedResultsControllerTestCase {
         XCTAssertEqual(controller.sections[0].fetchedIDs, ["b", "c"])
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "a")
     }
 
     func testAssociatedObjectDeleteFromKVO() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tagID]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -595,8 +595,8 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -608,7 +608,7 @@ extension CWFetchedResultsControllerTestCase {
         // Fault on A
 
         let faultedAssociatedObject = getObjectAtIndex(0, withObjectID: "a").tagObject()
-        let associatedObject = CWTestObject(id: "0")
+        let associatedObject = TestObject(id: "0")
 
         XCTAssertNil(faultedAssociatedObject)
 
@@ -623,7 +623,7 @@ extension CWFetchedResultsControllerTestCase {
         associatedObject.isDeleted = true
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "a")
 
         // We should *not* fault here & our object should be nil
@@ -634,8 +634,8 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testAssociatedObjectArrayDeleteFromKVO() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tagIDs]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -643,8 +643,8 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c", "d"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -656,7 +656,7 @@ extension CWFetchedResultsControllerTestCase {
         // Fault on A
 
         let faultedAssociatedObject = getObjectAtIndex(0, withObjectID: "a").tagObjectArray()
-        let associatedObject = CWTestObject(id: "1")
+        let associatedObject = TestObject(id: "1")
 
         XCTAssertNil(faultedAssociatedObject)
 
@@ -671,7 +671,7 @@ extension CWFetchedResultsControllerTestCase {
         associatedObject.isDeleted = true
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "b")
 
         // We should *not* fault here & our object should be nil
@@ -683,14 +683,14 @@ extension CWFetchedResultsControllerTestCase {
 
     func testExpectNoReloadFromKVO() {
         // We need a custom controller so that sort descriptors is "empty"
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
 
         let objectSectionPairs = [("z", "a"), ("a", "a"), ("c", "c"), ("b", "b"), ("d", "c")]
-        let objects = objectSectionPairs.compactMap { CWTestObject(id: $0, sectionName: $1) }
+        let objects = objectSectionPairs.compactMap { TestObject(id: $0, sectionName: $1) }
 
         try! performFetch(objects)
 
@@ -716,7 +716,7 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testExpectReloadFromKVO() {
-        controller = CWFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -728,13 +728,13 @@ extension CWFetchedResultsControllerTestCase {
         controller.fetchedObjects.first?.data = ["id": "a", "key": "value"]
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 0, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "a")
     }
 
     func testExpectReloadFromAssociatedObjectKVO() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tagID]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -742,8 +742,8 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -755,7 +755,7 @@ extension CWFetchedResultsControllerTestCase {
         // Fault on A
 
         let faultedAssociatedObject = getObjectAtIndex(0, withObjectID: "a").tagObject()
-        let associatedObject = CWTestObject(id: "1")
+        let associatedObject = TestObject(id: "1")
 
         XCTAssertNil(faultedAssociatedObject)
 
@@ -770,7 +770,7 @@ extension CWFetchedResultsControllerTestCase {
         associatedObject.data = ["id": "1", "key": "value", "updatedAt": 1]
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "b")
 
         // We should *not* fault here & our object should be non-nil
@@ -781,8 +781,8 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testExpectReloadFromAssociatedObjectArrayKVO() {
-        controller = CWFetchedResultsController(
-            request: createFetchRequest(associations: [\CWTestObject.tagIDs]),
+        controller = FetchedResultsController(
+            request: createFetchRequest(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -790,8 +790,8 @@ extension CWFetchedResultsControllerTestCase {
         var currentTag = 0
 
         let objectIDs = ["a", "b", "c", "d"]
-        let objects = objectIDs.compactMap { id -> CWTestObject? in
-            let object = CWTestObject(id: id, tag: currentTag)
+        let objects = objectIDs.compactMap { id -> TestObject? in
+            let object = TestObject(id: id, tag: currentTag)
 
             currentTag += 1
 
@@ -803,7 +803,7 @@ extension CWFetchedResultsControllerTestCase {
         // Fault on A
 
         let faultedAssociatedObject = getObjectAtIndex(0, withObjectID: "a").tagObjectArray()
-        let associatedObject = CWTestObject(id: "1")
+        let associatedObject = TestObject(id: "1")
 
         XCTAssertNil(faultedAssociatedObject)
 
@@ -818,7 +818,7 @@ extension CWFetchedResultsControllerTestCase {
         associatedObject.data = ["id": "1", "key": "value", "updatedAt": 1]
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.update(location: IndexPath(item: 1, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "b")
 
         // We should *not* fault here & our object should be non-nil
@@ -829,13 +829,13 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testExpectInsertFromBroadcastNotification() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
 
-        let initialObjects = ["a", "b", "c"].compactMap { CWTestObject(id: $0) }
+        let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
         try! performFetch(initialObjects)
 
@@ -844,15 +844,15 @@ extension CWFetchedResultsControllerTestCase {
 
         // Broadcast an update event & expect an insert to occur
 
-        let newObject = CWTestObject(id: "d")
+        let newObject = TestObject(id: "d")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data)
+        let notification = Notification(name: TestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "d")
 
         changeEvents.removeAll()
@@ -866,13 +866,13 @@ extension CWFetchedResultsControllerTestCase {
     }
 
     func testExpectNoInsertFromBroadcastNotification() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
 
-        let initialObjects = ["a", "b", "c"].compactMap { CWTestObject(id: $0) }
+        let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
         try! performFetch(initialObjects)
 
@@ -881,14 +881,14 @@ extension CWFetchedResultsControllerTestCase {
 
         // Broadcast an update event & expect an insert check to occur, but no insert
 
-        let newObject = CWTestObject(id: "d")
+        let newObject = TestObject(id: "d")
 
         inclusionCheck = { json in
-            CWTestObject.entityID(from: json) != newObject.id
+            TestObject.entityID(from: json) != newObject.id
         }
 
         let update = newObject.data
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: update)
+        let notification = Notification(name: TestObject.objectWasCreated(), object: update)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -905,17 +905,17 @@ extension CWFetchedResultsControllerTestCase {
 
 // MARK: - IndexPath Math
 
-extension CWFetchedResultsControllerTestCase {
+extension FetchedResultsControllerTestCase {
     private func setupController() {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: createFetchRequest(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
 
         let objectIDs = ["a", "b", "c"]
-        var objects = objectIDs.map { CWTestObject(id: $0, sectionName: "a") }
-        objects.append(CWTestObject(id: "d", sectionName: "b"))
+        var objects = objectIDs.map { TestObject(id: $0, sectionName: "a") }
+        objects.append(TestObject(id: "d", sectionName: "b"))
 
         try! performFetch(objects)
     }
@@ -923,14 +923,14 @@ extension CWFetchedResultsControllerTestCase {
     func testIndexPathNilForMissingObject() {
         setupController()
 
-        let object = CWTestObject(id: "e")
+        let object = TestObject(id: "e")
         XCTAssertNil(controller.indexPath(for: object))
     }
 
     func testIndexPathAvailableForObject() {
         setupController()
 
-        let object = CWTestObject(id: "b")
+        let object = TestObject(id: "b")
         XCTAssertEqual(controller.indexPath(for: object), IndexPath(item: 1, section: 0))
     }
 
@@ -989,13 +989,13 @@ extension CWFetchedResultsControllerTestCase {
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
+// MARK: - FetchedResultsControllerDelegate
 
-extension CWFetchedResultsControllerTestCase: CWFetchedResultsControllerDelegate {
+extension FetchedResultsControllerTestCase: FetchedResultsControllerDelegate {
     func controller(
-        _ controller: CWFetchedResultsController<CWTestObject>,
-        didChange object: CWTestObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        _ controller: FetchedResultsController<TestObject>,
+        didChange object: TestObject,
+        for change: FetchedResultsChange<IndexPath>
     ) {
         changeEvents.append((change: change, object: object))
     }

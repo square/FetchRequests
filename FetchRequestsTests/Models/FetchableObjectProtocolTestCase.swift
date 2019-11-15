@@ -1,5 +1,5 @@
 //
-//  CWFetchableObjectProtocolTestCase.swift
+//  FetchableObjectProtocolTestCase.swift
 //  Crew-iOSTests
 //
 //  Created by Adam Lickel on 9/28/18.
@@ -9,10 +9,10 @@
 import XCTest
 @testable import FetchRequests
 
-class CWFetchableObjectProtocolTestCase: XCTestCase {
+class FetchableObjectProtocolTestCase: XCTestCase {
     func testDataEquality() {
-        let data: CWTestObject.RawData = ["id": "1", "test": 2]
-        var newData: CWTestObject.RawData = ["id": "1", "test": 3]
+        let data: TestObject.RawData = ["id": "1", "test": 2]
+        var newData: TestObject.RawData = ["id": "1", "test": 3]
 
         XCTAssertFalse(data == newData)
 

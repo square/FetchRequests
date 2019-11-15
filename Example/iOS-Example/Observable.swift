@@ -34,7 +34,7 @@ class Observable<Value> {
         self.wrappedValue = wrappedValue
     }
 
-    func observe(handler: @escaping (Change<Value>) -> Void) -> CWInvalidatableToken {
+    func observe(handler: @escaping (Change<Value>) -> Void) -> InvalidatableToken {
         let token = Token(parent: self)
         observers.mutate { value in
             value[token.uuid] = handler
@@ -44,7 +44,7 @@ class Observable<Value> {
 }
 
 extension Observable where Value: Equatable {
-    func observeChanges(handler: @escaping (Change<Value>) -> Void) -> CWInvalidatableToken {
+    func observeChanges(handler: @escaping (Change<Value>) -> Void) -> InvalidatableToken {
         return observe { change in
             guard change.oldValue != change.newValue else {
                 return
@@ -54,7 +54,7 @@ extension Observable where Value: Equatable {
     }
 }
 
-private class Token<Value>: CWInvalidatableToken {
+private class Token<Value>: InvalidatableToken {
     let uuid = UUID()
     private weak var parent: Observable<Value>?
 

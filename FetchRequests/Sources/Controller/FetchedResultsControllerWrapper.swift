@@ -1,5 +1,5 @@
 //
-//  CWFetchedResultsControllerWrapper.swift
+//  FetchedResultsControllerWrapper.swift
 //  Crew
 //
 //  Created by Adam Proschek on 1/26/17.
@@ -8,21 +8,21 @@
 
 import Foundation
 
-public class CWFetchedResultsControllerWrapper<FetchedObject: CWFetchableObject> {
-    public typealias Section = CWFetchedResultsSection<FetchedObject>
+public class FetchedResultsControllerWrapper<FetchedObject: FetchableObject> {
+    public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
-    private let controller: CWFetchedResultsController<FetchedObject>
+    private let controller: FetchedResultsController<FetchedObject>
     private let changeCompletion: () -> Void
 
     public init(
-        request: CWFetchRequest<FetchedObject>,
+        request: FetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true,
         didChange completion: @escaping () -> Void
     ) {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: request,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
@@ -37,7 +37,7 @@ public class CWFetchedResultsControllerWrapper<FetchedObject: CWFetchableObject>
 
 // MARK: - Wrapper Functions
 
-extension CWFetchedResultsControllerWrapper: CWFetchedResultsControllerProtocol {
+extension FetchedResultsControllerWrapper: FetchedResultsControllerProtocol {
     public func performFetch(completion: @escaping () -> Void) {
         controller.performFetch(completion: completion)
     }
@@ -46,7 +46,7 @@ extension CWFetchedResultsControllerWrapper: CWFetchedResultsControllerProtocol 
         controller.reset()
     }
 
-    public var request: CWFetchRequest<FetchedObject> {
+    public var request: FetchRequest<FetchedObject> {
         return controller.request
     }
 
@@ -84,10 +84,10 @@ extension CWFetchedResultsControllerWrapper: CWFetchedResultsControllerProtocol 
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
+// MARK: - FetchedResultsControllerDelegate
 
-extension CWFetchedResultsControllerWrapper: CWFetchedResultsControllerDelegate {
-    public func controllerDidChangeContent(_ controller: CWFetchedResultsController<FetchedObject>) {
+extension FetchedResultsControllerWrapper: FetchedResultsControllerDelegate {
+    public func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>) {
         changeCompletion()
     }
 }

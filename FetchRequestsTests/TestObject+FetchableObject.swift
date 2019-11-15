@@ -11,8 +11,8 @@ import FetchRequests
 
 // MARK: - CWFetchableObjectProtocol
 
-extension CWTestObject: CWFetchableObjectProtocol {
-    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+extension TestObject: FetchableObjectProtocol {
+    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         return self.observe(\.data, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
@@ -21,7 +21,7 @@ extension CWTestObject: CWFetchableObjectProtocol {
         }
     }
 
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
@@ -37,7 +37,7 @@ extension CWTestObject: CWFetchableObjectProtocol {
 
 // MARK: - Event Notifications
 
-extension CWTestObject {
+extension TestObject {
     static func objectWasCreated() -> Notification.Name {
         return Notification.Name("CWTestObject.objectWasCreated")
     }

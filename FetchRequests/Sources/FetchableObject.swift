@@ -1,5 +1,5 @@
 //
-//  CWFetchableObject.swift
+//  FetchableObject.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 3/14/18.
@@ -8,12 +8,12 @@
 
 import Foundation
 
-/// A class of types that should be fetchable via CWFetchRequests
-public typealias CWFetchableObject = NSObject & CWFetchableObjectProtocol
+/// A class of types that should be fetchable via FetchRequests
+public typealias FetchableObject = NSObject & FetchableObjectProtocol
 
 /// A class of types whose instances hold the value of an entity with stable identity.
 /// This exists purely to support targetting OSes that bundle Swift before v5.1
-public protocol CWIdentifiable {
+public protocol Identifiable {
     /// A type representing the stable identity of the entity associated with `self`.
     associatedtype ID: Hashable
     /// The stable identity of the entity associated with `self`.
@@ -21,8 +21,8 @@ public protocol CWIdentifiable {
 }
 
 /// A class of types whose instances hold raw data of that entity
-public protocol CWRawDataRepresentable {
-    typealias RawData = CWJSON
+public protocol RawDataRepresentable {
+    typealias RawData = JSON
 
     /// Initialize a fetchable object from raw data
     init?(data: RawData)
@@ -31,8 +31,8 @@ public protocol CWRawDataRepresentable {
     var data: RawData { get }
 }
 
-/// A class of types that should be fetchable via CWFetchRequests
-public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepresentable
+/// A class of types that should be fetchable via FetchRequests
+public protocol FetchableObjectProtocol: class, Identifiable, RawDataRepresentable
     where ID: Comparable
 {
     /// Has this object been marked as deleted?
@@ -45,15 +45,15 @@ public protocol CWFetchableObjectProtocol: class, CWIdentifiable, CWRawDataRepre
     static func entityID(from data: RawData) -> ID?
 
     /// Listen for changes to the underlying data of `self`
-    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
+    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken
 
     /// Listen for changes to whether `self` is deleted
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken
 
     /// Enforce listening for changes to the underlying data of `self`
     func listenForUpdates()
 }
 
-extension CWFetchableObjectProtocol {
+extension FetchableObjectProtocol {
     public func listenForUpdates() {}
 }

@@ -8,47 +8,47 @@
 
 import Foundation
 
-public protocol CWPausableFetchedResultsControllerDelegate: class {
-    associatedtype FetchedObject: CWFetchableObject
+public protocol PausableFetchedResultsControllerDelegate: class {
+    associatedtype FetchedObject: FetchableObject
 
-    func controllerWillChangeContent(_ controller: CWPausableFetchedResultsController<FetchedObject>)
-    func controllerDidChangeContent(_ controller: CWPausableFetchedResultsController<FetchedObject>)
+    func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
+    func controllerDidChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
 
     func controller(
-        _ controller: CWPausableFetchedResultsController<FetchedObject>,
+        _ controller: PausableFetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     )
     func controller(
-        _ controller: CWPausableFetchedResultsController<FetchedObject>,
-        didChange section: CWFetchedResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: PausableFetchedResultsController<FetchedObject>,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     )
 }
 
-public extension CWPausableFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: CWPausableFetchedResultsController<FetchedObject>) {}
-    func controllerDidChangeContent(_ controller: CWPausableFetchedResultsController<FetchedObject>) {}
+public extension PausableFetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>) {}
+    func controllerDidChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>) {}
 
     func controller(
-        _ controller: CWPausableFetchedResultsController<FetchedObject>,
+        _ controller: PausableFetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
     }
 
     func controller(
-        _ controller: CWPausableFetchedResultsController<FetchedObject>,
-        didChange section: CWFetchedResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: PausableFetchedResultsController<FetchedObject>,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     ) {
     }
 }
 
-public class CWPausableFetchedResultsController<FetchedObject: CWFetchableObject> {
-    private let controller: CWFetchedResultsController<FetchedObject>
+public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
+    private let controller: FetchedResultsController<FetchedObject>
 
-    public typealias Section = CWFetchedResultsSection<FetchedObject>
+    public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
     private var hasFetchedObjectsSnapshot: Bool?
@@ -76,12 +76,12 @@ public class CWPausableFetchedResultsController<FetchedObject: CWFetchableObject
     private var delegate: PausableFetchResultsDelegate<FetchedObject>?
 
     public init(
-        request: CWFetchRequest<FetchedObject>,
+        request: FetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        controller = CWFetchedResultsController(
+        controller = FetchedResultsController(
             request: request,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
@@ -92,7 +92,7 @@ public class CWPausableFetchedResultsController<FetchedObject: CWFetchableObject
 
 // MARK: - Wrapper Functions
 
-extension CWPausableFetchedResultsController: CWFetchedResultsControllerProtocol {
+extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     public func performFetch(completion: @escaping () -> Void) {
         controller.performFetch(completion: completion)
     }
@@ -102,7 +102,7 @@ extension CWPausableFetchedResultsController: CWFetchedResultsControllerProtocol
         isPaused = false
     }
 
-    public var request: CWFetchRequest<FetchedObject> {
+    public var request: FetchRequest<FetchedObject> {
         return controller.request
     }
 
@@ -135,7 +135,7 @@ extension CWPausableFetchedResultsController: CWFetchedResultsControllerProtocol
         return sectionsSnapshot ?? controller.sections
     }
 
-    public func setDelegate<Delegate: CWPausableFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<Delegate: PausableFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             PausableFetchResultsDelegate($0, pausableController: self)
         }
@@ -148,9 +148,9 @@ extension CWPausableFetchedResultsController: CWFetchedResultsControllerProtocol
     }
 }
 
-// MARK: - CWInternalFetchResultsControllerProtocol
+// MARK: - InternalFetchResultsControllerProtocol
 
-extension CWPausableFetchedResultsController: CWInternalFetchResultsControllerProtocol {
+extension PausableFetchedResultsController: InternalFetchResultsControllerProtocol {
     internal func manuallyInsert(objects: [FetchedObject], emitChanges: Bool = true) {
         controller.manuallyInsert(objects: objects, emitChanges: emitChanges)
     }
@@ -158,20 +158,20 @@ extension CWPausableFetchedResultsController: CWInternalFetchResultsControllerPr
 
 // MARK: - PausableFetchResultsDelegate
 
-internal class PausableFetchResultsDelegate<FetchedObject: CWFetchableObject>: CWFetchedResultsControllerDelegate {
-    typealias ParentController = CWFetchedResultsController<FetchedObject>
-    typealias PausableController = CWPausableFetchedResultsController<FetchedObject>
-    typealias Section = CWFetchedResultsSection<FetchedObject>
+internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
+    typealias ParentController = FetchedResultsController<FetchedObject>
+    typealias PausableController = PausableFetchedResultsController<FetchedObject>
+    typealias Section = FetchedResultsSection<FetchedObject>
 
     private weak var pausableController: PausableController?
 
     private let willChange: (_ controller: PausableController) -> Void
     private let didChange: (_ controller: PausableController) -> Void
 
-    private let changeObject: (_ controller: PausableController, _ object: FetchedObject, _ change: CWFetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: PausableController, _ section: Section, _ change: CWFetchedResultsChange<Int>) -> Void
+    private let changeObject: (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: CWPausableFetchedResultsControllerDelegate>(
+    init<Parent: PausableFetchedResultsControllerDelegate>(
         _ parent: Parent,
         pausableController: PausableController
     ) where Parent.FetchedObject == FetchedObject {
@@ -209,7 +209,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: CWFetchableObject>: C
     func controller(
         _ controller: ParentController,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
         guard let pausableController = pausableController, !pausableController.isPaused else {
             return
@@ -220,7 +220,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: CWFetchableObject>: C
     func controller(
         _ controller: ParentController,
         didChange section: Section,
-        for change: CWFetchedResultsChange<Int>
+        for change: FetchedResultsChange<Int>
     ) {
         guard let pausableController = pausableController, !pausableController.isPaused else {
             return

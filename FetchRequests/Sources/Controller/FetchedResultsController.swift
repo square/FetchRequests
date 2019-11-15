@@ -1,5 +1,5 @@
 //
-//  CWFetchedResultsController.swift
+//  FetchedResultsController.swift
 //  Crew
 //
 //  Created by Adam Lickel on 2/1/16.
@@ -17,14 +17,14 @@ import WatchKit
 
 // MARK: - Delegate
 
-public enum CWFetchedResultsChange<Location: Equatable>: Equatable {
+public enum FetchedResultsChange<Location: Equatable>: Equatable {
     case insert(location: Location)
     case delete(location: Location)
     case update(location: Location)
 
     case move(from: Location, to: Location)
 
-    public static func == (lhs: CWFetchedResultsChange<Location>, rhs: CWFetchedResultsChange<Location>) -> Bool {
+    public static func == (lhs: FetchedResultsChange<Location>, rhs: FetchedResultsChange<Location>) -> Bool {
         switch (lhs, rhs) {
         case let (.insert(left), .insert(right)):
             return left == right
@@ -44,54 +44,54 @@ public enum CWFetchedResultsChange<Location: Equatable>: Equatable {
     }
 }
 
-public protocol CWFetchedResultsControllerDelegate: class {
-    associatedtype FetchedObject: CWFetchableObject
+public protocol FetchedResultsControllerDelegate: class {
+    associatedtype FetchedObject: FetchableObject
 
-    func controllerWillChangeContent(_ controller: CWFetchedResultsController<FetchedObject>)
-    func controllerDidChangeContent(_ controller: CWFetchedResultsController<FetchedObject>)
+    func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>)
+    func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>)
 
     func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
+        _ controller: FetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     )
     func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
-        didChange section: CWFetchedResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: FetchedResultsController<FetchedObject>,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     )
 }
 
-public extension CWFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: CWFetchedResultsController<FetchedObject>) {}
-    func controllerDidChangeContent(_ controller: CWFetchedResultsController<FetchedObject>) {}
+public extension FetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>) {}
+    func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>) {}
 
     func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
+        _ controller: FetchedResultsController<FetchedObject>,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
     }
 
     func controller(
-        _ controller: CWFetchedResultsController<FetchedObject>,
-        didChange section: CWFetchedResultsSection<FetchedObject>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: FetchedResultsController<FetchedObject>,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
     ) {
     }
 }
 
-internal class FetchResultsDelegate<FetchedObject: CWFetchableObject>: CWFetchedResultsControllerDelegate {
-    typealias Controller = CWFetchedResultsController<FetchedObject>
-    typealias Section = CWFetchedResultsSection<FetchedObject>
+internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
+    typealias Controller = FetchedResultsController<FetchedObject>
+    typealias Section = FetchedResultsSection<FetchedObject>
 
     private let willChange: (_ controller: Controller) -> Void
     private let didChange: (_ controller: Controller) -> Void
 
-    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: CWFetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: Controller, _ section: Section, _ change: CWFetchedResultsChange<Int>) -> Void
+    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: CWFetchedResultsControllerDelegate>(
+    init<Parent: FetchedResultsControllerDelegate>(
         _ parent: Parent
     ) where Parent.FetchedObject == FetchedObject {
         willChange = { [weak parent] controller in
@@ -120,7 +120,7 @@ internal class FetchResultsDelegate<FetchedObject: CWFetchableObject>: CWFetched
     func controller(
         _ controller: Controller,
         didChange object: FetchedObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
         self.changeObject(controller, object, change)
     }
@@ -128,7 +128,7 @@ internal class FetchResultsDelegate<FetchedObject: CWFetchableObject>: CWFetched
     func controller(
         _ controller: Controller,
         didChange section: Section,
-        for change: CWFetchedResultsChange<Int>
+        for change: FetchedResultsChange<Int>
     ) {
         self.changeSection(controller, section, change)
     }
@@ -136,13 +136,13 @@ internal class FetchResultsDelegate<FetchedObject: CWFetchableObject>: CWFetched
 
 // MARK: - Errors
 
-public enum CWFetchedResultsError: Error {
+public enum FetchedResultsError: Error {
     case objectNotFound
 }
 
 // MARK: - Sections
 
-public struct CWFetchedResultsSection<FetchedObject: CWFetchableObject>: Equatable {
+public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable {
     public let name: String
     public fileprivate(set) var objects: [FetchedObject]
 
@@ -156,24 +156,24 @@ public struct CWFetchedResultsSection<FetchedObject: CWFetchableObject>: Equatab
     }
 }
 
-// MARK: - CWFetchedResultsController
+// MARK: - FetchedResultsController
 
-public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObject, CWFetchedResultsControllerProtocol {
-    public typealias Section = CWFetchedResultsSection<FetchedObject>
+public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
+    public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
-    public private(set) var request: CWFetchRequest<FetchedObject>
+    public private(set) var request: FetchRequest<FetchedObject>
     public let sortDescriptors: [NSSortDescriptor]
     public let sectionNameKeyPath: SectionNameKeyPath?
 
-    private var observationTokens: [ObjectIdentifier: [CWInvalidatableToken]] = [:]
+    private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
     private let memoryPressureToken: FetchRequestObservableToken<Notification>? = {
         #if canImport(UIKit) && !os(watchOS)
         return FetchRequestObservableToken(
-            token: CWObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
+            token: ObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
         )
         #else
         return nil
@@ -212,7 +212,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
     private lazy var context: Context<FetchedObject> = {
         return Context { [weak self] keyPath, objectID in
             guard let `self` = self else {
-                throw CWFetchedResultsError.objectNotFound
+                throw FetchedResultsError.objectNotFound
             }
 
             return try self.associatedValue(with: keyPath, forObjectID: objectID)
@@ -220,7 +220,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
     }()
 
     public init(
-        request: CWFetchRequest<FetchedObject>,
+        request: FetchRequest<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
@@ -278,7 +278,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
         }
     }
 
-    public func setDelegate<Delegate: CWFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<Delegate: FetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             FetchResultsDelegate($0)
         }
@@ -322,7 +322,7 @@ public class CWFetchedResultsController<FetchedObject: CWFetchableObject>: NSObj
 
 // MARK: Fetches
 
-public extension CWFetchedResultsController {
+public extension FetchedResultsController {
     func performFetch(completion: @escaping () -> Void) {
         startObservingNotificationsIfNeeded()
 
@@ -347,7 +347,7 @@ public extension CWFetchedResultsController {
 
 // MARK: Associated Values
 
-private extension CWFetchedResultsController {
+private extension FetchedResultsController {
     func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
         let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
 
@@ -356,11 +356,11 @@ private extension CWFetchedResultsController {
         }
 
         guard let index = fetchedObjects.firstIndex(where: { $0.id == objectID }) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         guard let association = request.associationsByKeyPath[keyPath] else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         let objects: [FetchedObject]
@@ -416,7 +416,7 @@ private extension CWFetchedResultsController {
 
 // MARK: Contents
 
-private extension CWFetchedResultsController {
+private extension FetchedResultsController {
     func assignAssociatedValues(
         _ values: [FetchedObject.ID: Any],
         with keyPath: PartialKeyPath<FetchedObject>,
@@ -545,7 +545,7 @@ private extension CWFetchedResultsController {
 
     func delete(_ object: FetchedObject, emitChanges: Bool = true) throws {
         guard let indexPath = indexPath(for: object), let fetchIndex = fetchIndex(for: indexPath) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         performChanges(emitChanges: emitChanges) {
@@ -620,7 +620,7 @@ private extension CWFetchedResultsController {
 
     func reload(_ object: FetchedObject, emitChanges: Bool = true) throws {
         guard let indexPath = indexPath(for: object) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         performChanges(emitChanges: emitChanges) {
@@ -652,7 +652,7 @@ private extension CWFetchedResultsController {
 
     func move(_ object: FetchedObject, emitChanges: Bool = true) throws {
         guard let indexPath = indexPath(for: object) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         try move(object, from: indexPath, emitChanges: emitChanges)
@@ -660,15 +660,15 @@ private extension CWFetchedResultsController {
 
     func move(_ object: FetchedObject, fromSectionName sectionName: String, emitChanges: Bool = true) throws {
         guard !sections.isEmpty else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
         guard sectionIndex < sections.count else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
         guard let itemIndex = sections[sectionIndex].objects.firstIndex(of: object) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         let indexPath = IndexPath(item: itemIndex, section: sectionIndex)
@@ -677,7 +677,7 @@ private extension CWFetchedResultsController {
 
     func move(_ object: FetchedObject, from fromIndexPath: IndexPath, emitChanges: Bool = true) throws {
         guard let oldFetchIndex = fetchIndex(for: fromIndexPath), object == self.object(at: fromIndexPath) else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         performChanges(emitChanges: emitChanges) {
@@ -847,7 +847,7 @@ private extension CWFetchedResultsController {
     func startObserving(_ object: FetchedObject) {
         assert(Thread.isMainThread)
 
-        var observations: [CWInvalidatableToken] = []
+        var observations: [InvalidatableToken] = []
 
         for association in request.associations {
             let keyPath = association.keyPath
@@ -974,7 +974,7 @@ private extension CWFetchedResultsController {
 
 // MARK: - Object Updates
 
-private extension CWFetchedResultsController {
+private extension FetchedResultsController {
     func observedObjectUpdate(_ data: FetchedObject.RawData) {
         guard let id = FetchedObject.entityID(from: data) else {
             return
@@ -994,7 +994,7 @@ private extension CWFetchedResultsController {
 
 // MARK: - Debouncing
 
-private extension CWFetchedResultsController {
+private extension FetchedResultsController {
     func enqueueReload(of object: FetchedObject, emitChanges: Bool = true) {
         assert(Thread.isMainThread)
 
@@ -1033,15 +1033,15 @@ private extension CWFetchedResultsController {
     }
 }
 
-internal extension CWFetchedResultsController {
+internal extension FetchedResultsController {
     var listeningForInserts: Bool {
         return request.objectCreationToken.isObserving
     }
 }
 
-// MARK: - CWInternalFetchResultsControllerProtocol
+// MARK: - InternalFetchResultsControllerProtocol
 
-extension CWFetchedResultsController: CWInternalFetchResultsControllerProtocol {
+extension FetchedResultsController: InternalFetchResultsControllerProtocol {
     internal func manuallyInsert(objects: [FetchedObject], emitChanges: Bool = true) {
         assert(Thread.isMainThread)
 
@@ -1065,7 +1065,7 @@ extension CWFetchedResultsController: CWInternalFetchResultsControllerProtocol {
 
 // MARK: Delegate Change Events
 
-private extension CWFetchedResultsController {
+private extension FetchedResultsController {
     func performChanges(emitChanges: Bool = true, changes: () -> Void) {
         assert(Thread.isMainThread)
         let delegate = self.delegate
@@ -1150,7 +1150,7 @@ private extension CWFetchedResultsController {
 
 // MARK: - Associated Values Extensions
 
-private class Context<FetchedObject: CWFetchableObject>: NSObject {
+private class Context<FetchedObject: FetchableObject>: NSObject {
     typealias Wrapped = (_ keyPath: PartialKeyPath<FetchedObject>, _ objectID: FetchedObject.ID) throws -> Any?
 
     let wrapped: Wrapped
@@ -1176,7 +1176,7 @@ private struct AssociatedKeys {
     static var context = "context"
 }
 
-private extension CWFetchableObjectProtocol where Self: NSObject {
+private extension FetchableObjectProtocol where Self: NSObject {
     weak var context: Context<Self>? {
         get {
             let weakContainer = objc_getAssociatedObject(self, &AssociatedKeys.context) as? Weak<Context<Self>>
@@ -1194,7 +1194,7 @@ private extension CWFetchableObjectProtocol where Self: NSObject {
 
     func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self>) throws -> Value? {
         guard let context = context else {
-            throw CWFetchedResultsError.objectNotFound
+            throw FetchedResultsError.objectNotFound
         }
 
         if let rawValue = try context.associatedValue(with: keyPath, forObjectID: id) {
@@ -1207,8 +1207,8 @@ private extension CWFetchableObjectProtocol where Self: NSObject {
 
 // MARK: Fetchable Entity IDs
 
-public extension CWFetchableObjectProtocol where Self: NSObject {
-    func performFault<EntityID: CWFetchableEntityID>(
+public extension FetchableObjectProtocol where Self: NSObject {
+    func performFault<EntityID: FetchableEntityID>(
         on keyPath: KeyPath<Self, EntityID>,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
@@ -1222,7 +1222,7 @@ public extension CWFetchableObjectProtocol where Self: NSObject {
         return performFault(on: keyPath, fallback: fallback)
     }
 
-    func performFault<EntityID: CWFetchableEntityID>(
+    func performFault<EntityID: FetchableEntityID>(
         on keyPath: KeyPath<Self, EntityID?>,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
@@ -1239,8 +1239,8 @@ public extension CWFetchableObjectProtocol where Self: NSObject {
 
 // MARK: Fetchable Entity ID Arrays
 
-public extension CWFetchableObjectProtocol where Self: NSObject {
-    func performFault<EntityID: CWFetchableEntityID>(
+public extension FetchableObjectProtocol where Self: NSObject {
+    func performFault<EntityID: FetchableEntityID>(
         on keyPath: KeyPath<Self, [EntityID]>,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
@@ -1254,7 +1254,7 @@ public extension CWFetchableObjectProtocol where Self: NSObject {
         return performFault(on: keyPath, fallback: fallback)
     }
 
-    func performFault<EntityID: CWFetchableEntityID>(
+    func performFault<EntityID: FetchableEntityID>(
         on keyPath: KeyPath<Self, [EntityID]?>,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
@@ -1271,7 +1271,7 @@ public extension CWFetchableObjectProtocol where Self: NSObject {
 
 // MARK: Raw Entity IDs
 
-public extension CWFetchableObjectProtocol where Self: NSObject {
+public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
         on keyPath: KeyPath<Self, EntityID>,
         fallback: (EntityID) -> Entity?
@@ -1307,7 +1307,7 @@ public extension CWFetchableObjectProtocol where Self: NSObject {
 
 // MARK: - Raw Entity ID Arrays
 
-public extension CWFetchableObjectProtocol where Self: NSObject {
+public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
         on keyPath: KeyPath<Self, [EntityID]>,
         fallback: ([EntityID]) -> [Entity]?
