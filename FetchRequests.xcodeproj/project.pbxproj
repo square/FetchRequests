@@ -124,6 +124,10 @@
 		47D33F082334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
 		47D33F092334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
 		47D33F0A2334163100E247E4 /* CWJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* CWJSON.swift */; };
+		47FB808F237CE816008F5438 /* CWBoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* CWBoxedJSON.swift */; };
+		47FB8090237CE816008F5438 /* CWBoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* CWBoxedJSON.swift */; };
+		47FB8091237CE816008F5438 /* CWBoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* CWBoxedJSON.swift */; };
+		47FB8092237CE816008F5438 /* CWBoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* CWBoxedJSON.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -196,6 +200,7 @@
 		47C4ECE42335E969004F16D0 /* CWJSONTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWJSONTestCase.swift; sourceTree = "<group>"; };
 		47C4ECE823361358004F16D0 /* CWLoggingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWLoggingTestCase.swift; sourceTree = "<group>"; };
 		47D33F062334163100E247E4 /* CWJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWJSON.swift; sourceTree = "<group>"; };
+		47FB808E237CE816008F5438 /* CWBoxedJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CWBoxedJSON.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,6 +321,7 @@
 				471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */,
 				471C509322C6D18D007F73E9 /* CWFetchableObject.swift */,
 				47D33F062334163100E247E4 /* CWJSON.swift */,
+				47FB808E237CE816008F5438 /* CWBoxedJSON.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -675,6 +681,7 @@
 				471C509A22C6D18D007F73E9 /* CWObservableToken.swift in Sources */,
 				471C50A322C6D18D007F73E9 /* CWFetchedResultsControllerWrapper.swift in Sources */,
 				47A6ED7822CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
+				47FB808F237CE816008F5438 /* CWBoxedJSON.swift in Sources */,
 				471C509B22C6D18D007F73E9 /* AssociatedValueReference.swift in Sources */,
 				471C509F22C6D18D007F73E9 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */,
 				471C50A122C6D18D007F73E9 /* CWFetchRequest.swift in Sources */,
@@ -720,6 +727,7 @@
 				47A6ECD122CA8FA80034A854 /* CWObservableToken.swift in Sources */,
 				47A6ECD222CA8FA80034A854 /* CWFetchedResultsControllerWrapper.swift in Sources */,
 				47A6ED7922CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
+				47FB8092237CE816008F5438 /* CWBoxedJSON.swift in Sources */,
 				47A6ECD322CA8FA80034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ECD422CA8FA80034A854 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ECD522CA8FA80034A854 /* CWFetchRequest.swift in Sources */,
@@ -744,6 +752,7 @@
 				47A6ED0222CA905A0034A854 /* CWObservableToken.swift in Sources */,
 				47A6ED0322CA905A0034A854 /* CWFetchedResultsControllerWrapper.swift in Sources */,
 				47A6ED7A22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
+				47FB8091237CE816008F5438 /* CWBoxedJSON.swift in Sources */,
 				47A6ED0422CA905A0034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ED0522CA905A0034A854 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ED0622CA905A0034A854 /* CWFetchRequest.swift in Sources */,
@@ -789,6 +798,7 @@
 				47A6ED3322CA90A20034A854 /* CWObservableToken.swift in Sources */,
 				47A6ED3422CA90A20034A854 /* CWFetchedResultsControllerWrapper.swift in Sources */,
 				47A6ED7B22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
+				47FB8090237CE816008F5438 /* CWBoxedJSON.swift in Sources */,
 				47A6ED3522CA90A20034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ED3622CA90A20034A854 /* CWCollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ED3722CA90A20034A854 /* CWFetchRequest.swift in Sources */,

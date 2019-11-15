@@ -116,8 +116,8 @@ extension CWJSONTestCase {
 // MARK: - Subscripts
 
 extension CWJSONTestCase {
-    func testGetKeyedValues() {
-        let data: CWJSON = [
+    private var complexJSON: CWJSON {
+        return [
             "id": 1,
             "integers": [0, 1, 2],
             "foo": [
@@ -128,6 +128,10 @@ extension CWJSONTestCase {
                 ["secondValue": true],
             ],
         ]
+    }
+
+    func testGetKeyedValues() {
+        let data = complexJSON
 
         XCTAssertEqual(data.id?.int, 1)
         XCTAssertEqual(data.integers?[0]?.int, 0)
@@ -332,5 +336,55 @@ extension CWJSONTestCase {
         XCTAssertEqual(data.elements?[1]?.double, 2.5)
         XCTAssertEqual(data.elements?[2]?.string, "string")
         XCTAssertTrue(data.elements?[3]?.bool ?? false)
+    }
+}
+
+// MARK: - Boxing
+
+extension CWJSONTestCase {
+    func testBoxing() {
+        let data = complexJSON
+
+        let boxed = data as CWBoxedJSON
+        XCTAssertEqual(boxed.json, data)
+    }
+
+    func testUnboxing() {
+        let data = complexJSON
+
+        let boxed = data as CWBoxedJSON
+        let unboxed = boxed as CWJSON
+        XCTAssertEqual(unboxed, data)
+    }
+
+    func testAccessors() {
+        let data = complexJSON
+        let boxed = data as CWBoxedJSON
+
+        XCTAssertEqual(boxed["integers"]?[1]?.object as? Int, 1)
+    }
+
+    func testEquatability() {
+        let data = CWBoxedJSON(complexJSON)
+        let otherData = CWBoxedJSON(complexJSON)
+        XCTAssertEqual(data, otherData)
+    }
+
+    func testConditionalBridge() {
+        let data = complexJSON
+        let boxed = data as CWBoxedJSON
+
+        var result: CWJSON?
+        let success = CWJSON._conditionallyBridgeFromObjectiveC(boxed, result: &result)
+
+        XCTAssertTrue(success)
+        XCTAssertNotNil(result)
+    }
+
+    func testUnconditionalBridge() {
+        let data = complexJSON
+        let boxed = data as CWBoxedJSON
+
+        _ = CWJSON._unconditionallyBridgeFromObjectiveC(boxed)
     }
 }
