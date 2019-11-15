@@ -12,7 +12,7 @@ import FetchRequests
 
 class Model: NSObject {
     typealias ID = String
-    typealias RawData = CWJSON
+    typealias RawData = JSON
 
     @objc dynamic
     private(set) var id: ID
@@ -102,12 +102,12 @@ extension Model {
 
 // MARK: - CWFetchableObjectProtocol
 
-extension Model: CWFetchableObjectProtocol {
-    func observeDataChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+extension Model: FetchableObjectProtocol {
+    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         return _data.observeChanges { change in handler() }
     }
 
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> CWInvalidatableToken {
+    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
         return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return

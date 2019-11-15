@@ -615,7 +615,7 @@ private extension FetchedResultsController {
             }
         }
 
-        LogVerbose("Inserted \(objects.count) objects")
+        CWLogVerbose("Inserted \(objects.count) objects")
     }
 
     func reload(_ object: FetchedObject, emitChanges: Bool = true) throws {
@@ -647,7 +647,7 @@ private extension FetchedResultsController {
             }
         }
 
-        LogVerbose("Reloaded \(objects.count) objects")
+        CWLogVerbose("Reloaded \(objects.count) objects")
     }
 
     func move(_ object: FetchedObject, emitChanges: Bool = true) throws {
@@ -870,7 +870,7 @@ private extension FetchedResultsController {
                     self.enqueueReload(of: object)
                 }
             } catch {
-                LogInfo("Failed to reload object \(object)?!")
+                CWLogInfo("Failed to reload object \(object)?!")
             }
         }
 
@@ -907,7 +907,7 @@ private extension FetchedResultsController {
                     try self.move(object)
                 }
             } catch {
-                LogInfo("Failed to move object \(object)?!")
+                CWLogInfo("Failed to move object \(object)?!")
             }
         }
 
@@ -1002,7 +1002,7 @@ private extension FetchedResultsController {
             do {
                 try reload(object, emitChanges: emitChanges)
             } catch {
-                LogError("Failed to reload object: \(error)")
+                CWLogError("Failed to reload object: \(error)")
             }
             return
         }
@@ -1281,7 +1281,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
         do {
             return try getAssociatedValue(with: keyPath)
         } catch {
-            LogInfo("Failed to fetch \(keyPath) in batch")
+            CWLogInfo("Failed to fetch \(keyPath) in batch")
         }
 
         return fallback(entityID)
@@ -1298,7 +1298,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
         do {
             return try getAssociatedValue(with: keyPath)
         } catch {
-            LogInfo("Failed to fetch \(keyPath) in batch")
+            CWLogInfo("Failed to fetch \(keyPath) in batch")
         }
 
         return fallback(entityID)
@@ -1320,7 +1320,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
         do {
             return try getAssociatedValue(with: keyPath)
         } catch {
-            LogInfo("Failed to fetch \(keyPath) in batch")
+            CWLogInfo("Failed to fetch \(keyPath) in batch")
         }
 
         return fallback(entityID)
@@ -1341,7 +1341,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
         do {
             return try getAssociatedValue(with: keyPath)
         } catch {
-            LogInfo("Failed to fetch \(keyPath) in batch")
+            CWLogInfo("Failed to fetch \(keyPath) in batch")
         }
 
         return fallback(entityID)

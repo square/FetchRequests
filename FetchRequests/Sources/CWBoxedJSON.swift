@@ -1,5 +1,5 @@
 //
-//  BoxedJSON.swift
+//  CWBoxedJSON.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 11/13/19.
@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(BoxedJSON)
-public class BoxedJSON: NSObject {
+public class CWBoxedJSON: NSObject {
     internal let json: JSON
 
     public init(_ json: JSON) {
@@ -22,32 +22,32 @@ public class BoxedJSON: NSObject {
     }
 
     @objc
-    public subscript(key: String) -> BoxedJSON? {
-        return json[key] as BoxedJSON?
+    public subscript(key: String) -> CWBoxedJSON? {
+        return json[key] as CWBoxedJSON?
     }
 
     @objc
-    public subscript(offset: Int) -> BoxedJSON? {
-        return json[offset] as BoxedJSON?
+    public subscript(offset: Int) -> CWBoxedJSON? {
+        return json[offset] as CWBoxedJSON?
     }
 }
 
 //swiftlint:disable identifier_name
 
 extension JSON: _ObjectiveCBridgeable {
-    public func _bridgeToObjectiveC() -> BoxedJSON {
-        return BoxedJSON(self)
+    public func _bridgeToObjectiveC() -> CWBoxedJSON {
+        return CWBoxedJSON(self)
     }
 
     public static func _forceBridgeFromObjectiveC(
-      _ source: BoxedJSON,
+      _ source: CWBoxedJSON,
       result: inout JSON?
     ) {
         result = source.json
     }
 
     public static func _conditionallyBridgeFromObjectiveC(
-      _ source: BoxedJSON,
+      _ source: CWBoxedJSON,
       result: inout JSON?
     ) -> Bool {
         result = source.json
@@ -55,7 +55,7 @@ extension JSON: _ObjectiveCBridgeable {
     }
 
     public static func _unconditionallyBridgeFromObjectiveC(
-        _ source: BoxedJSON?
+        _ source: CWBoxedJSON?
     ) -> JSON {
       var result: JSON?
       _forceBridgeFromObjectiveC(source!, result: &result)
