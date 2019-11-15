@@ -1,5 +1,5 @@
 //
-//  CWBoxedJSON.swift
+//  BoxedJSON.swift
 //  FetchRequests
 //
 //  Created by Adam Lickel on 11/13/19.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-@objc(BoxedJSON)
-public class CWBoxedJSON: NSObject {
+@objc(CWBoxedJSON)
+public class BoxedJSON: NSObject {
     internal let json: JSON
 
     public init(_ json: JSON) {
@@ -22,17 +22,17 @@ public class CWBoxedJSON: NSObject {
     }
 
     @objc
-    public subscript(key: String) -> CWBoxedJSON? {
-        return json[key] as CWBoxedJSON?
+    public subscript(key: String) -> BoxedJSON? {
+        return json[key] as BoxedJSON?
     }
 
     @objc
-    public subscript(offset: Int) -> CWBoxedJSON? {
-        return json[offset] as CWBoxedJSON?
+    public subscript(offset: Int) -> BoxedJSON? {
+        return json[offset] as BoxedJSON?
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? CWBoxedJSON else {
+        guard let other = object as? BoxedJSON else {
             return super.isEqual(object)
         }
         return json == other.json
@@ -42,19 +42,19 @@ public class CWBoxedJSON: NSObject {
 //swiftlint:disable identifier_name
 
 extension JSON: _ObjectiveCBridgeable {
-    public func _bridgeToObjectiveC() -> CWBoxedJSON {
-        return CWBoxedJSON(self)
+    public func _bridgeToObjectiveC() -> BoxedJSON {
+        return BoxedJSON(self)
     }
 
     public static func _forceBridgeFromObjectiveC(
-      _ source: CWBoxedJSON,
+      _ source: BoxedJSON,
       result: inout JSON?
     ) {
         result = source.json
     }
 
     public static func _conditionallyBridgeFromObjectiveC(
-      _ source: CWBoxedJSON,
+      _ source: BoxedJSON,
       result: inout JSON?
     ) -> Bool {
         result = source.json
@@ -62,7 +62,7 @@ extension JSON: _ObjectiveCBridgeable {
     }
 
     public static func _unconditionallyBridgeFromObjectiveC(
-        _ source: CWBoxedJSON?
+        _ source: BoxedJSON?
     ) -> JSON {
       var result: JSON?
       _forceBridgeFromObjectiveC(source!, result: &result)

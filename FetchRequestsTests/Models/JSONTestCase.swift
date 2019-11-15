@@ -345,14 +345,14 @@ extension JSONTestCase {
     func testBoxing() {
         let data = complexJSON
 
-        let boxed = data as CWBoxedJSON
+        let boxed = data as BoxedJSON
         XCTAssertEqual(boxed.json, data)
     }
 
     func testUnboxing() {
         let data = complexJSON
 
-        let boxed = data as CWBoxedJSON
+        let boxed = data as BoxedJSON
         let unboxed = boxed as JSON
         XCTAssertEqual(unboxed, data)
     }
@@ -360,19 +360,19 @@ extension JSONTestCase {
     func testAccessors() {
         let data = complexJSON
 
-        let boxed = data as CWBoxedJSON
+        let boxed = data as BoxedJSON
         XCTAssertEqual(boxed["integers"]?[1]?.object as? Int, 1)
     }
 
     func testEquatability() {
-        let data = CWBoxedJSON(complexJSON)
-        let otherData = CWBoxedJSON(complexJSON)
+        let data = BoxedJSON(complexJSON)
+        let otherData = BoxedJSON(complexJSON)
         XCTAssertEqual(data, otherData)
     }
 
     func testConditionalBridge() {
         let data = complexJSON
-        let boxed = data as CWBoxedJSON
+        let boxed = data as BoxedJSON
 
         var result: JSON?
         let success = JSON._conditionallyBridgeFromObjectiveC(boxed, result: &result)
@@ -383,7 +383,7 @@ extension JSONTestCase {
 
     func testUnconditionalBridge() {
         let data = complexJSON
-        let boxed = data as CWBoxedJSON
+        let boxed = data as BoxedJSON
         _ = JSON._unconditionallyBridgeFromObjectiveC(boxed)
     }
 }
