@@ -2,12 +2,12 @@
 
 FetchRequests is an eventing library inspired by NSFetchedResultsController and written in Swift.
 
-[![Build Status](https://img.shields.io/travis/crewos/FetchRequests.svg)](https://travis-ci.org/crewos/FetchRequests)
+[![Build Status](https://img.shields.io/travis/crewos/FetchRequests/master.svg)](https://travis-ci.org/crewos/FetchRequests)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FetchRequests.svg)](https://cocoapods.org/pods/FetchRequests)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Platform](https://img.shields.io/cocoapods/p/FetchRequests.svg?style=flat)](https://cocoapods.org/pods/FetchRequests)
 [![Pod License](http://img.shields.io/cocoapods/l/FetchRequests.svg?style=flat)](https://opensource.org/licenses/MIT)
-[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests.svg)](https://codecov.io/gh/crewos/FetchRequests)
+[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests/master.svg)](https://codecov.io/gh/crewos/FetchRequests)
 
 - [Features](#features)
 - [Usage](#usage)
@@ -63,7 +63,7 @@ Everything is in place to remove this restriction, but the swift compiler crashe
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 1.0'
+pod 'FetchRequests', '~> 2.0'
 ```
 
 ### Carthage
@@ -71,7 +71,7 @@ pod 'FetchRequests', '~> 1.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```ogdl
-github "crewos/FetchRequests" ~> 1.0
+github "crewos/FetchRequests" ~> 2.0
 ```
 
 ### Swift Package Manager
@@ -80,7 +80,7 @@ Install with [Swift Package Manager](https://swift.org/package-manager/) by addi
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/crewos/FetchRequests.git", from: "1.0.0")
+    .package(url: "https://github.com/crewos/FetchRequests.git", from: "2.0.0")
 ]
 ```
 
