@@ -11,11 +11,11 @@ import XCTest
 
 class LoggingTestCase: XCTestCase {
     func testLogging() {
-        LogVerbose("Verbose")
-        LogDebug("Debug")
-        LogInfo("Info")
-        LogWarning("Warning")
-        LogError("Error")
+        CWLogVerbose("Verbose")
+        CWLogDebug("Debug")
+        CWLogInfo("Info")
+        CWLogWarning("Warning")
+        CWLogError("Error")
     }
 
     func testDiffDebug() {
