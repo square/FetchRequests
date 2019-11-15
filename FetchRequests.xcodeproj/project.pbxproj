@@ -562,7 +562,7 @@
 		471C506322C6D0DB007F73E9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = CW;
+				CLASSPREFIX = "";
 				LastSwiftUpdateCheck = 1100;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Speramus Inc.";
