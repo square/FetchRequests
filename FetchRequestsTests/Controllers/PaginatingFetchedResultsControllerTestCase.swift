@@ -1,5 +1,5 @@
 //
-//  CWPaginatingFetchedResultsControllerTestCase.swift
+//  PaginatingFetchedResultsControllerTestCase.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/27/18.
@@ -11,39 +11,45 @@ import XCTest
 
 //swiftlint:disable force_try implicitly_unwrapped_optional
 
-class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResultsControllerTestHarness {
-    private(set) var controller: CWPaginatingFetchedResultsController<CWTestObject>!
+class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    private(set) var controller: PaginatingFetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (([CWTestObject]) -> Void)!
+    private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
-    private var paginationCurrentResults: [CWTestObject]!
-    private var paginationCompletion: (([CWTestObject]?) -> Void)!
+    private var paginationCurrentResults: [TestObject]!
+    private var paginationCompletion: (([TestObject]?) -> Void)!
 
-    private var associationRequest: CWTestObject.AssociationRequest!
+    private var associationRequest: TestObject.AssociationRequest!
 
-    private var inclusionCheck: ((CWTestObject.RawData) -> Bool)?
+    private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
-    private var changeEvents: [(change: CWFetchedResultsChange<IndexPath>, object: CWTestObject)] = []
+    private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
-    private func createFetchRequest(associations: [PartialKeyPath<CWTestObject>] = []) -> CWPaginatingFetchRequest<CWTestObject> {
-        let request: CWPaginatingFetchRequest<CWTestObject>.Request = { [unowned self] completion in
+    private func createFetchRequest(
+        associations: [PartialKeyPath<TestObject>] = []
+    ) -> PaginatingFetchRequest<TestObject> {
+        let request: PaginatingFetchRequest<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        let paginationRequest: CWPaginatingFetchRequest<CWTestObject>.PaginationRequest = { [unowned self] currentResults, completion in
+        let paginationRequest: PaginatingFetchRequest<TestObject>.PaginationRequest = { [unowned self] currentResults, completion in
             self.paginationCurrentResults = currentResults
             self.paginationCompletion = completion
         }
-        let allAssociations = CWTestObject.fetchRequestAssociations { [unowned self] associationRequest in
+
+        let desiredAssociations = TestObject.fetchRequestAssociations(
+            matching: associations
+        ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
-        let desiredAssociations = allAssociations.filter { associations.contains($0.keyPath) }
 
-        return CWPaginatingFetchRequest<CWTestObject>(
+        let inclusionCheck: PaginatingFetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+            return self.inclusionCheck?(json) ?? true
+        }
+
+        return PaginatingFetchRequest<TestObject>(
             request: request,
             paginationRequest: paginationRequest,
-            creationInclusionCheck: { [unowned self] json in
-                return self.inclusionCheck?(json) ?? true
-            },
+            creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
         )
     }
@@ -66,7 +72,7 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
     }
 
     func testBasicFetch() {
-        controller = CWPaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
 
         let objectIDs = ["a", "b", "c"]
 
@@ -77,7 +83,7 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
     }
 
     func testPaginationTriggersLoad() {
-        controller = CWPaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         // Fetch some objects
@@ -101,14 +107,14 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs + paginationObjectIDs)
 
         XCTAssertEqual(changeEvents.count, 2)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "d")
-        XCTAssertEqual(changeEvents[1].change, CWFetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
-        XCTAssertEqual(changeEvents[1].object.objectID, "f")
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
+        XCTAssertEqual(changeEvents[0].object.id, "d")
+        XCTAssertEqual(changeEvents[1].change, FetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
+        XCTAssertEqual(changeEvents[1].object.id, "f")
     }
 
     func testPaginationDoesNotDisableInserts() {
-        controller = CWPaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         // Fetch some objects
@@ -135,9 +141,9 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
 
         // Trigger insert
 
-        let newObject = CWTestObject(id: "e")
+        let newObject = TestObject(id: "e")
 
-        let notification = Notification(name: CWTestObject.objectWasCreated(), object: newObject.data, userInfo: newObject.data)
+        let notification = Notification(name: TestObject.objectWasCreated(), object: newObject.data)
         NotificationCenter.default.post(notification)
 
         XCTAssertNil(fetchCompletion)
@@ -148,18 +154,18 @@ class CWPaginatingFetchedResultsControllerTestCase: XCTestCase, CWFetchedResults
         XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "b", "c", "d", "e", "f"])
 
         XCTAssertEqual(changeEvents.count, 1)
-        XCTAssertEqual(changeEvents[0].change, CWFetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
-        XCTAssertEqual(changeEvents[0].object.objectID, "e")
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
+        XCTAssertEqual(changeEvents[0].object.id, "e")
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
+// MARK: - FetchedResultsControllerDelegate
 
-extension CWPaginatingFetchedResultsControllerTestCase: CWFetchedResultsControllerDelegate {
+extension PaginatingFetchedResultsControllerTestCase: FetchedResultsControllerDelegate {
     func controller(
-        _ controller: CWFetchedResultsController<CWTestObject>,
-        didChange object: CWTestObject,
-        for change: CWFetchedResultsChange<IndexPath>
+        _ controller: FetchedResultsController<TestObject>,
+        didChange object: TestObject,
+        for change: FetchedResultsChange<IndexPath>
     ) {
         changeEvents.append((change: change, object: object))
     }
@@ -167,14 +173,14 @@ extension CWPaginatingFetchedResultsControllerTestCase: CWFetchedResultsControll
 
 // MARK: - Helper Functions
 
-private extension CWPaginatingFetchedResultsControllerTestCase {
+private extension PaginatingFetchedResultsControllerTestCase {
     func performPagination(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) {
-        let objects = objectIDs.compactMap { CWTestObject(id: $0) }
+        let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         performPagination(objects, file: file, line: line)
     }
 
-    func performPagination(_ objects: [CWTestObject], file: StaticString = #file, line: UInt = #line) {
+    func performPagination(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) {
         controller.performPagination()
 
         self.paginationCompletion(objects)

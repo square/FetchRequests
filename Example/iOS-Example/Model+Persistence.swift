@@ -19,7 +19,7 @@ enum ModelError: Error {
 
 extension Model {
     func rawObjectEventUpdated() -> Notification.Name {
-        return Notification.Name("\(NSStringFromClass(type(of: self))).rawObjectEventUpdated.\(objectID)")
+        return Notification.Name("\(NSStringFromClass(type(of: self))).rawObjectEventUpdated.\(id)")
     }
 
     class func objectWasCreated() -> Notification.Name {
@@ -57,10 +57,10 @@ extension Model {
     }
 
     private class func validateCanUpdate(_ originalModel: Model) throws -> Model {
-        var data = originalModel.data
+        var data = originalModel.data.dictionary ?? [:]
         data["updatedAt"] = Date().timeIntervalSince1970
 
-        guard let model = self.init(data: data) else {
+        guard let json = JSON(data), let model = self.init(data: json) else {
             throw ModelError.cannotInflate
         }
 
@@ -68,11 +68,13 @@ extension Model {
             throw ModelError.invalidDate
         }
 
-        guard let existing = self.fetch(byID: model.objectID) else {
+        guard let existing = self.fetch(byID: model.id) else {
             // First instance
             return model
         }
-        guard existing.updatedAt <= model.updatedAt, existing.createdAt == model.createdAt else {
+        guard existing.updatedAt <= model.updatedAt,
+            existing.createdAt == model.createdAt else
+        {
             throw ModelError.invalidDate
         }
 
@@ -84,13 +86,13 @@ extension Model {
         let model = try validateCanUpdate(originalModel)
 
         updateStorage {
-            $0[model.objectID] = model.data
+            $0[model.id] = model.data.object
         }
 
         NotificationCenter.default.post(
             name: model.rawObjectEventUpdated(),
             object: model,
-            userInfo: model.data
+            userInfo: ["data": model.data]
         )
 
         NotificationCenter.default.post(name: objectWasCreated(), object: model)
@@ -100,7 +102,7 @@ extension Model {
         let model = try validateCanUpdate(originalModel)
 
         updateStorage {
-            $0[model.objectID] = nil
+            $0[model.id] = nil
         }
 
         NotificationCenter.default.post(
@@ -123,15 +125,15 @@ extension Model {
 extension NSObjectProtocol where Self: Model {
     static func fetchAll() -> [Self] {
         return storage.values.lazy.compactMap {
-            $0 as? Self.RawData
+            Self.RawData($0)
         }.compactMap {
             Self(data: $0)
         }
     }
 
-    static func fetch(byID id: Model.ObjectID) -> Self? {
+    static func fetch(byID id: Model.ID) -> Self? {
         return storage[id].flatMap {
-            $0 as? Self.RawData
+            Self.RawData($0)
         }.flatMap {
             Self(data: $0)
         }

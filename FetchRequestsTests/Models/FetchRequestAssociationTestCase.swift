@@ -1,5 +1,5 @@
 //
-//  CWFetchRequestAssociationTestCase.swift
+//  FetchRequestAssociationTestCase.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/28/18.
@@ -9,13 +9,13 @@
 import XCTest
 @testable import FetchRequests
 
-class CWFetchRequestAssociationTestCase: XCTestCase {
-    typealias Association = CWFetchRequestAssociation<CWTestObject>
+class FetchRequestAssociationTestCase: XCTestCase {
+    typealias Association = FetchRequestAssociation<TestObject>
 
-    private var objects: [CWTestObject] = []
+    private var objects: [TestObject] = []
 
     private var objectIDs: [String] {
-        return objects.map { $0.objectID }
+        return objects.map { $0.id }
     }
 
     private var tags: [Int] {
@@ -30,16 +30,16 @@ class CWFetchRequestAssociationTestCase: XCTestCase {
         super.setUp()
 
         objects = [
-            CWTestObject(id: "a", tag: 0),
-            CWTestObject(id: "b", tag: 1),
-            CWTestObject(id: "c", tag: 2),
+            TestObject(id: "a", tag: 0),
+            TestObject(id: "b", tag: 1),
+            TestObject(id: "c", tag: 2),
         ]
     }
 }
 
 // MARK: - Basic Associations
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testBasicNonOptionalAssociation() {
         let expected: [String: Int] = ["a": 2]
 
@@ -62,7 +62,7 @@ extension CWFetchRequestAssociationTestCase {
 
         // Verify we can't observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertFalse(ref.canObserveCreation)
@@ -104,7 +104,7 @@ extension CWFetchRequestAssociationTestCase {
 
         // Verify we can't observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertFalse(ref.canObserveCreation)
@@ -127,19 +127,19 @@ extension CWFetchRequestAssociationTestCase {
 
 // MARK: - Observed Creation Associations
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalAssociation() {
-        let expected: [String: CWTestObject] = ["a": objects[0]]
+        let expected: [String: TestObject] = ["a": objects[0]]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByParent<CWTestObject> = { [unowned self] objects, completion in
+        let request: Association.AssocationRequestByParent<TestObject> = { [unowned self] objects, completion in
             XCTAssertEqual(objects, self.objects)
             calledRequest = true
             completion(expected)
         }
 
         let token = TestObjectTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject, TestObjectTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<TestObject, TestObjectTestToken> = { object in
             token
         }
 
@@ -153,14 +153,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: CWTestObject], expected)
+            XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -171,7 +171,7 @@ extension CWFetchRequestAssociationTestCase {
             calledHandler = true
         }
 
-        token.handler?(CWTestObject(id: "b"))
+        token.handler?(TestObject(id: "b"))
 
         ref.stopObserving()
 
@@ -192,17 +192,17 @@ extension CWFetchRequestAssociationTestCase {
     }
 
     func testCreatableOptionalAssociation() {
-        let expected: [String: CWTestObject] = ["a": objects[0]]
+        let expected: [String: TestObject] = ["a": objects[0]]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByParent<CWTestObject> = { [unowned self] objects, completion in
+        let request: Association.AssocationRequestByParent<TestObject> = { [unowned self] objects, completion in
             XCTAssertEqual(objects, self.objects)
             calledRequest = true
             completion(expected)
         }
 
         let token = TestObjectTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject, TestObjectTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<TestObject, TestObjectTestToken> = { object in
             token
         }
 
@@ -216,14 +216,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: CWTestObject], expected)
+            XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -234,7 +234,7 @@ extension CWFetchRequestAssociationTestCase {
             calledHandler = true
         }
 
-        token.handler?(CWTestObject(id: "b"))
+        token.handler?(TestObject(id: "b"))
 
         ref.stopObserving()
 
@@ -257,24 +257,24 @@ extension CWFetchRequestAssociationTestCase {
 
 // MARK: - Observed Creation by RawData Associations
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalAssociationByRawData() {
-        let expected: [CWTestObject] = [CWTestObject(id: "0")]
+        let expected: [TestObject] = [TestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject.ObjectID, DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<TestObject.ID, DataTestToken> = { object in
             token
         }
 
         let association = Association(
-            for: CWTestObject.self,
+            for: TestObject.self,
             keyPath: \.nonOptionalTagID,
             request: request,
             creationTokenGenerator: tokenGenerator,
@@ -284,14 +284,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: CWTestObject], ["a": expected[0]])
+            XCTAssertEqual(results as? [String: TestObject], ["a": expected[0]])
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -323,22 +323,22 @@ extension CWFetchRequestAssociationTestCase {
     }
 
     func testCreatableOptionalAssociationByRawData() {
-        let expected: [CWTestObject] = [CWTestObject(id: "0")]
+        let expected: [TestObject] = [TestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<CWTestObject.ObjectID, DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<TestObject.ID, DataTestToken> = { object in
             token
         }
 
         let association = Association(
-            for: CWTestObject.self,
+            for: TestObject.self,
             keyPath: \.tagID,
             request: request,
             creationTokenGenerator: tokenGenerator,
@@ -348,14 +348,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: CWTestObject], ["a": expected[0]])
+            XCTAssertEqual(results as? [String: TestObject], ["a": expected[0]])
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -389,28 +389,28 @@ extension CWFetchRequestAssociationTestCase {
 
 // MARK: - Observed Creation Array Associations
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalArrayAssociationByRawData() {
-        let expected: [CWTestObject] = [CWTestObject(id: "0")]
+        let expected: [TestObject] = [TestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ObjectID], DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<[TestObject.ID], DataTestToken> = { object in
             token
         }
 
-        let creationObserved: Association.CreationObserved<[CWTestObject], CWTestObject.RawData> = { lhs, rhs in
+        let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
             return .invalid
         }
 
         let association = Association(
-            for: [CWTestObject].self,
+            for: [TestObject].self,
             keyPath: \.nonOptionalTagIDs,
             request: request,
             creationTokenGenerator: tokenGenerator,
@@ -420,14 +420,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: [CWTestObject]], ["a": expected])
+            XCTAssertEqual(results as? [String: [TestObject]], ["a": expected])
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -459,26 +459,26 @@ extension CWFetchRequestAssociationTestCase {
     }
 
     func testCreatableOptionalArrayAssociationByRawData() {
-        let expected: [CWTestObject] = [CWTestObject(id: "0")]
+        let expected: [TestObject] = [TestObject(id: "0")]
 
         var calledRequest = false
-        let request: Association.AssocationRequestByID<CWTestObject.ObjectID, CWTestObject> = { [unowned self] objectIDs, completion in
+        let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
             calledRequest = true
             completion(expected)
         }
 
         let token = DataTestToken()
-        let tokenGenerator: Association.TokenGenerator<[CWTestObject.ObjectID], DataTestToken> = { object in
+        let tokenGenerator: Association.TokenGenerator<[TestObject.ID], DataTestToken> = { object in
             token
         }
 
-        let creationObserved: Association.CreationObserved<[CWTestObject], CWTestObject.RawData> = { lhs, rhs in
+        let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
             return .invalid
         }
 
         let association = Association(
-            for: [CWTestObject].self,
+            for: [TestObject].self,
             keyPath: \.tagIDs,
             request: request,
             creationTokenGenerator: tokenGenerator,
@@ -488,14 +488,14 @@ extension CWFetchRequestAssociationTestCase {
         // Request an association
 
         association.request(objects) { results in
-            XCTAssertEqual(results as? [String: [CWTestObject]], ["a": expected])
+            XCTAssertEqual(results as? [String: [TestObject]], ["a": expected])
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -527,9 +527,9 @@ extension CWFetchRequestAssociationTestCase {
     }
 }
 
-// MARK: - CWFetchableEntityID Associations
+// MARK: - FetchableEntityID Associations
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testNonOptionalFetchableEntityID() {
         let token = DataTestToken()
         let tokenGenerator: Association.TokenGenerator<TestFetchableEntityID, DataTestToken> = { object in
@@ -544,21 +544,21 @@ extension CWFetchRequestAssociationTestCase {
 
         // Request an association
 
-        let expected: [String: CWTestObject] = objects.reduce(into: [:]) { memo, element in
-            memo[element.objectID] = CWTestObject(id: element.nonOptionalTagID)
+        let expected: [String: TestObject] = objects.reduce(into: [:]) { memo, element in
+            memo[element.id] = TestObject(id: element.nonOptionalTagID)
         }
 
         var calledRequest = false
         association.request(objects) { results in
             calledRequest = true
-            XCTAssertEqual(results as? [String: CWTestObject], expected)
+            XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -603,21 +603,21 @@ extension CWFetchRequestAssociationTestCase {
 
         // Request an association
 
-        let expected: [String: CWTestObject] = objects.reduce(into: [:]) { memo, element in
-            memo[element.objectID] = CWTestObject(id: element.nonOptionalTagID)
+        let expected: [String: TestObject] = objects.reduce(into: [:]) { memo, element in
+            memo[element.id] = TestObject(id: element.nonOptionalTagID)
         }
 
         var calledRequest = false
         association.request(objects) { results in
             calledRequest = true
-            XCTAssertEqual(results as? [String: CWTestObject], expected)
+            XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
         XCTAssertTrue(calledRequest)
 
         // Verify we can observe creation
 
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         let ref = association.referenceGenerator(object)
         XCTAssertTrue(ref.canObserveCreation)
@@ -649,10 +649,10 @@ extension CWFetchRequestAssociationTestCase {
     }
 }
 
-extension CWFetchRequestAssociationTestCase {
+extension FetchRequestAssociationTestCase {
     func testEntityFetchByID() {
         let id = TestFetchableEntityID(id: "a")
-        let object = CWTestObject(id: "a")
+        let object = TestObject(id: "a")
 
         XCTAssertEqual(TestFetchableEntityID.fetch(byID: id), object)
 
@@ -666,8 +666,8 @@ extension CWFetchRequestAssociationTestCase {
     }
 
     func testFaultByEntityID() {
-        let object = CWTestObject(id: "a")
-        let expected = CWTestObject(id: "0")
+        let object = TestObject(id: "a")
+        let expected = TestObject(id: "0")
 
         let optionalResult = object.performFault(on: \.tagEntityID)
         let nonOptionalResult = object.performFault(on: \.nonOptionalTagEntityID)
@@ -677,8 +677,8 @@ extension CWFetchRequestAssociationTestCase {
     }
 
     func testFaultByEntityIDArray() {
-        let object = CWTestObject(id: "a")
-        let expected = [CWTestObject(id: "0")]
+        let object = TestObject(id: "a")
+        let expected = [TestObject(id: "0")]
 
         let optionalResult = object.performFault(on: \.tagArrayEntityID)
         let nonOptionalResult = object.performFault(on: \.nonOptionalTagArrayEntityID)
@@ -690,7 +690,7 @@ extension CWFetchRequestAssociationTestCase {
 
 // MARK: - Helpers
 
-private extension CWTestObject {
+private extension TestObject {
     @objc
     dynamic var nonOptionalTagID: String {
         return String(tag)
@@ -740,8 +740,8 @@ private extension CWTestObject {
     }
 }
 
-private final class TestFetchableEntityID: NSObject, CWFetchableEntityID {
-    let id: CWTestObject.ObjectID
+private final class TestFetchableEntityID: NSObject, FetchableEntityID {
+    let id: TestObject.ID
 
     init(id: String) {
         self.id = id
@@ -761,20 +761,20 @@ private final class TestFetchableEntityID: NSObject, CWFetchableEntityID {
         return hasher.finalize()
     }
 
-    required convenience init(from entity: CWTestObject) {
-        self.init(id: entity.objectID)
+    required convenience init(from entity: TestObject) {
+        self.init(id: entity.id)
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [CWTestObject] {
-        return CWTestObject.fetch(byIDs: objectIDs.map { $0.id })
+    class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
+        return TestObject.fetch(byIDs: objectIDs.map { $0.id })
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping ([CWTestObject]) -> Void) {
+    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping ([TestObject]) -> Void) {
         completion(self.fetch(byIDs: objectIDs))
     }
 }
 
-private class TestToken<Parameter>: CWObservableToken {
+private class TestToken<Parameter>: ObservableToken {
     var handler: ((Parameter) -> Void)?
 
     func observe(handler: @escaping (Parameter) -> Void) {
@@ -786,5 +786,5 @@ private class TestToken<Parameter>: CWObservableToken {
     }
 }
 
-private typealias DataTestToken = TestToken<CWTestObject.RawData>
-private typealias TestObjectTestToken = TestToken<CWTestObject>
+private typealias DataTestToken = TestToken<TestObject.RawData>
+private typealias TestObjectTestToken = TestToken<TestObject>

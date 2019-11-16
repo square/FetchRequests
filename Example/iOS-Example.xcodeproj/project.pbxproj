@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		472E8F6F23388380005045D2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472E8F6E23388380005045D2 /* Observable.swift */; };
+		472E8F7723388E93005045D2 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472E8F7623388E93005045D2 /* Atomic.swift */; };
 		4736ABC822CBE82A00253EB6 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4736ABC722CBE82A00253EB6 /* Model.swift */; };
 		4736ABD022CBE9C600253EB6 /* Model+Fetchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4736ABCF22CBE9C600253EB6 /* Model+Fetchable.swift */; };
 		4736ABD222CBEBDD00253EB6 /* Model+Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4736ABD122CBEBDD00253EB6 /* Model+Persistence.swift */; };
@@ -77,6 +79,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		472E8F6E23388380005045D2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
+		472E8F7623388E93005045D2 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		4736ABC722CBE82A00253EB6 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		4736ABCF22CBE9C600253EB6 /* Model+Fetchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Model+Fetchable.swift"; sourceTree = "<group>"; };
 		4736ABD122CBEBDD00253EB6 /* Model+Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Model+Persistence.swift"; sourceTree = "<group>"; };
@@ -134,6 +138,8 @@
 				4736ABC722CBE82A00253EB6 /* Model.swift */,
 				4736ABCF22CBE9C600253EB6 /* Model+Fetchable.swift */,
 				4736ABD122CBEBDD00253EB6 /* Model+Persistence.swift */,
+				472E8F6E23388380005045D2 /* Observable.swift */,
+				472E8F7623388E93005045D2 /* Atomic.swift */,
 				47ACD19922CBE39700B3F1FE /* Assets.xcassets */,
 				47ACD19B22CBE39700B3F1FE /* LaunchScreen.storyboard */,
 				47ACD19E22CBE39700B3F1FE /* Info.plist */,
@@ -288,6 +294,8 @@
 				4736ABD222CBEBDD00253EB6 /* Model+Persistence.swift in Sources */,
 				47ACD19522CBE39600B3F1FE /* ViewController.swift in Sources */,
 				4736ABD022CBE9C600253EB6 /* Model+Fetchable.swift in Sources */,
+				472E8F6F23388380005045D2 /* Observable.swift in Sources */,
+				472E8F7723388E93005045D2 /* Atomic.swift in Sources */,
 				47ACD19322CBE39600B3F1FE /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

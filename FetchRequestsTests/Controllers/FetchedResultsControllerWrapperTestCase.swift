@@ -1,5 +1,5 @@
 //
-//  CWFetchedResultsControllerWrapperTestCase.swift
+//  FetchedResultsControllerWrapperTestCase.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/27/18.
@@ -11,29 +11,35 @@ import XCTest
 
 //swiftlint:disable force_try implicitly_unwrapped_optional
 
-class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsControllerTestHarness {
-    private(set) var controller: CWFetchedResultsControllerWrapper<CWTestObject>!
+class FetchedResultsControllerWrapperTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    private(set) var controller: FetchedResultsControllerWrapper<TestObject>!
 
-    private(set) var fetchCompletion: (([CWTestObject]) -> Void)!
+    private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
-    private var associationRequest: CWTestObject.AssociationRequest!
+    private var associationRequest: TestObject.AssociationRequest!
 
-    private var inclusionCheck: ((CWTestObject.RawData) -> Bool)?
+    private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
-    private func createFetchRequest(associations: [PartialKeyPath<CWTestObject>] = []) -> CWFetchRequest<CWTestObject> {
-        let request: CWFetchRequest<CWTestObject>.Request = { [unowned self] completion in
+    private func createFetchRequest(
+        associations: [PartialKeyPath<TestObject>] = []
+    ) -> FetchRequest<TestObject> {
+        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        let allAssociations = CWTestObject.fetchRequestAssociations { [unowned self] associationRequest in
+        
+        let desiredAssociations = TestObject.fetchRequestAssociations(
+            matching: associations
+        ) { [unowned self] associationRequest in
             self.associationRequest = associationRequest
         }
-        let desiredAssociations = allAssociations.filter { associations.contains($0.keyPath) }
 
-        return CWFetchRequest<CWTestObject>(
+        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+            return self.inclusionCheck?(json) ?? true
+        }
+
+        return FetchRequest<TestObject>(
             request: request,
-            creationInclusionCheck: { [unowned self] json in
-                return self.inclusionCheck?(json) ?? true
-            },
+            creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
         )
     }
@@ -54,7 +60,7 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
     func testBasicFetch() {
         var calledClosure = false
 
-        controller = CWFetchedResultsControllerWrapper(
+        controller = FetchedResultsControllerWrapper(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         ) {
@@ -68,14 +74,14 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
         XCTAssertTrue(calledClosure)
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
-        XCTAssertEqual(controller.fetchedObjects.map { $0.objectID }, objectIDs)
+        XCTAssertEqual(controller.fetchedObjects.map { $0.id }, objectIDs)
     }
 
     func testWrappedProperties() {
         let request = createFetchRequest()
 
         var calledClosure = false
-        controller = CWFetchedResultsControllerWrapper(
+        controller = FetchedResultsControllerWrapper(
             request: request,
             sortDescriptors: [],
             sectionNameKeyPath: \.sectionName,
@@ -85,8 +91,8 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
         }
 
         let effectiveSortDescriptorKeys = [
-            #selector(getter: CWTestObject.sectionName),
-            #selector(getter: CWTestObject.objectID),
+            #selector(getter: TestObject.sectionName),
+            #selector(getter: TestObject.id),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])
@@ -97,7 +103,7 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
 
         XCTAssert(controller.request === request)
         XCTAssertEqual(controller.sortDescriptors.map { $0.key }, effectiveSortDescriptorKeys)
-        XCTAssertEqual(controller.sectionNameKeyPath, \CWTestObject.sectionName)
+        XCTAssertEqual(controller.sectionNameKeyPath, \TestObject.sectionName)
         XCTAssertEqual(controller.associatedFetchSize, 20)
         XCTAssertTrue(controller.hasFetchedObjects)
     }
@@ -105,7 +111,7 @@ class CWFetchedResultsControllerWrapperTestCase: XCTestCase, CWFetchedResultsCon
     func testWrappedIndexPathFunctions() {
         var calledClosure = false
 
-        controller = CWFetchedResultsControllerWrapper(
+        controller = FetchedResultsControllerWrapper(
             request: createFetchRequest(),
             debounceInsertsAndReloads: false
         ) {

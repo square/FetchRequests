@@ -11,8 +11,8 @@ import UIKit
 import FetchRequests
 
 class ViewController: UITableViewController {
-    private(set) lazy var controller: CWFetchedResultsController<Model> = {
-        let controller: CWFetchedResultsController<Model> = CWFetchedResultsController(
+    private(set) lazy var controller: FetchedResultsController<Model> = {
+        let controller: FetchedResultsController<Model> = FetchedResultsController(
             request: Model.fetchRequest(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: false)]
         )
@@ -81,7 +81,7 @@ extension ViewController {
             fatalError("Cell reuse failed")
         }
         let model = controller.object(at: indexPath)
-        cell.textLabel?.text = model.objectID
+        cell.textLabel?.text = model.id
         cell.detailTextLabel?.text = model.createdAt.description
         return cell
     }
@@ -132,19 +132,19 @@ private extension ViewController {
 
 // MARK: - CWFetchedResultsControllerDelegate
 
-extension ViewController: CWFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: CWFetchedResultsController<Model>) {
+extension ViewController: FetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: FetchedResultsController<Model>) {
         tableView.beginUpdates()
     }
 
-    func controllerDidChangeContent(_ controller: CWFetchedResultsController<Model>) {
+    func controllerDidChangeContent(_ controller: FetchedResultsController<Model>) {
         tableView.endUpdates()
     }
 
     func controller(
-        _ controller: CWFetchedResultsController<Model>,
+        _ controller: FetchedResultsController<Model>,
         didChange object: Model,
-        for change: CWFetchedResultsChange<IndexPath>
+        for change: FetchedResultsChange<IndexPath>
     ) {
         switch change {
         case let .insert(newIndexPath):
@@ -162,9 +162,9 @@ extension ViewController: CWFetchedResultsControllerDelegate {
     }
 
     func controller(
-        _ controller: CWFetchedResultsController<Model>,
-        didChange section: CWFetchedResultsSection<Model>,
-        for change: CWFetchedResultsChange<Int>
+        _ controller: FetchedResultsController<Model>,
+        didChange section: FetchedResultsSection<Model>,
+        for change: FetchedResultsChange<Int>
     ) {
         switch change {
         case let .insert(index):

@@ -57,9 +57,11 @@ excluded:
   - Pods
 
 type_name:
+  excluded:
+    - ID
   max_length:
-      warning: 50
-      error: 60
+    warning: 50
+    error: 60
 modifier_order:
   preferred_modifier_order: [acl, override]
 identifier_name:

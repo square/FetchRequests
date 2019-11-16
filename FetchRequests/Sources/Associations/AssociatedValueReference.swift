@@ -10,13 +10,13 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: CWFetchableObject>: Hashable {
-    var objectID: FetchedObject.ObjectID
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
+    var id: FetchedObject.ID
     var keyPath: PartialKeyPath<FetchedObject>
 }
 
-class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedValueReference {
-    private var observations: [Entity: [KeyValueObservationToken]] = [:]
+class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference {
+    private var observations: [Entity: [InvalidatableToken]] = [:]
 
     fileprivate override func stopObservingValue() {
         observations.values.forEach { $0.forEach { $0.invalidate() } }
@@ -38,35 +38,21 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
         }
     }
 
-    private func observeChanges(for entity: Entity) -> [KeyValueObservationToken] {
-        var tokens: [KeyValueObservationToken] = []
+    private func observeChanges(for entity: Entity) -> [InvalidatableToken] {
+        entity.listenForUpdates()
 
-        entity.observingUpdates = true
-
-        let dataObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: entity,
-            keyPath: Entity.dataKeyPath
-        ) { [weak self] object, oldValue, newValue in
-            guard !Entity.rawDataIsIdentical(lhs: oldValue, rhs: newValue) else {
-                return
-            }
-
+        let dataObserver = entity.observeDataChanges { [weak self] in
             self?.changeHandler?(false)
         }
 
-        let deleteObserver: KeyValueObservationToken = LegacyKeyValueObserving(
-            object: entity,
-            keyPath: Entity.deletedKeyPath
-        ) { [weak self] object, oldValue, newValue in
-            guard oldValue != newValue, newValue == true else {
+        let isDeletedObserver = entity.observeIsDeletedChanges { [weak self, weak entity] in
+            guard let entity = entity else {
                 return
             }
             self?.observedDeletionEvent(with: entity)
         }
 
-        tokens += [dataObserver, deleteObserver]
-
-        return tokens
+        return [dataObserver, isDeletedObserver]
     }
 
     private func observedDeletionEvent(with entity: Entity) {
@@ -86,7 +72,7 @@ class FetchableAssociatedValueReference<Entity: CWFetchableObject>: AssociatedVa
 
 class AssociatedValueReference: NSObject {
     private let creationObserver: FetchRequestObservableToken<Any>?
-    private let creationObserved: (Any?, Any) -> CWAssociationReplacement<Any>
+    private let creationObserved: (Any?, Any) -> AssociationReplacement<Any>
 
     fileprivate(set) var value: Any?
     fileprivate var changeHandler: ((_ invalidate: Bool) -> Void)?
@@ -97,7 +83,7 @@ class AssociatedValueReference: NSObject {
 
     init(
         creationObserver: FetchRequestObservableToken<Any>? = nil,
-        creationObserved: @escaping (Any?, Any) -> CWAssociationReplacement<Any> = { _, _ in .same },
+        creationObserved: @escaping (Any?, Any) -> AssociationReplacement<Any> = { _, _ in .same },
         value: Any? = nil
     ) {
         self.creationObserver = creationObserver

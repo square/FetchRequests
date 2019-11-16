@@ -1,5 +1,5 @@
 //
-//  CWObservableToken.swift
+//  ObservableToken.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/22/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-private func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
+func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
     objc_sync_enter(lockObject)
     defer {
         objc_sync_exit(lockObject)
@@ -17,14 +17,17 @@ private func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
     return block()
 }
 
-public protocol CWObservableToken: class {
-    associatedtype Parameter
-
-    func observe(handler: @escaping (Parameter) -> Void)
+public protocol InvalidatableToken: class {
     func invalidate()
 }
 
-public class CWObservableNotificationCenterToken: CWObservableToken {
+public protocol ObservableToken: InvalidatableToken {
+    associatedtype Parameter
+
+    func observe(handler: @escaping (Parameter) -> Void)
+}
+
+public class ObservableNotificationCenterToken: ObservableToken {
     private let name: Notification.Name
     private unowned let notificationCenter: NotificationCenter
     private var centerToken: NSObjectProtocol?
@@ -61,13 +64,9 @@ public class CWObservableNotificationCenterToken: CWObservableToken {
     }
 }
 
-internal protocol KeyValueObservationToken {
-    func invalidate()
-}
+extension NSKeyValueObservation: InvalidatableToken {}
 
-extension NSKeyValueObservation: KeyValueObservationToken {}
-
-internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, KeyValueObservationToken {
+internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, InvalidatableToken {
     typealias Handler = (_ object: Object, _ oldValue: Value?, _ newValue: Value?) -> Void
 
     private weak var object: Object?
@@ -120,17 +119,7 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
     }
 }
 
-extension LegacyKeyValueObserving where Object: CWFetchableObjectProtocol {
-    convenience init(
-        object: Object,
-        keyPath: KeyPath<Object.KeyPathBase, Value>,
-        handler: @escaping Handler
-    ) {
-        self.init(object: object, keyPath: keyPath, type: Value.self, handler: handler)
-    }
-}
-
-internal class FetchRequestObservableToken<Parameter>: CWObservableToken {
+internal class FetchRequestObservableToken<Parameter>: ObservableToken {
     private let _observe: (_ handler: @escaping (Parameter) -> Void) -> Void
     private let _invalidate: () -> Void
 
@@ -147,7 +136,7 @@ internal class FetchRequestObservableToken<Parameter>: CWObservableToken {
         _invalidate = invalidate
     }
 
-    init<Token: CWObservableToken>(token: Token) where Token.Parameter == Parameter {
+    init<Token: ObservableToken>(token: Token) where Token.Parameter == Parameter {
         _observe = { token.observe(handler: $0) }
         _invalidate = { token.invalidate() }
     }
@@ -200,7 +189,7 @@ internal class FetchRequestObservableToken<Parameter>: CWObservableToken {
 }
 
 extension FetchRequestObservableToken where Parameter == Any {
-    convenience init<Token: CWObservableToken>(typeErasedToken: Token) {
+    convenience init<Token: ObservableToken>(typeErasedToken: Token) {
         self.init(
             observe: { typeErasedToken.observe(handler: $0) },
             invalidate: { typeErasedToken.invalidate() }

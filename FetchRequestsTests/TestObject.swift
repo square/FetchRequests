@@ -1,5 +1,5 @@
 //
-//  CWTestObject.swift
+//  TestObject.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 2/25/18.
@@ -9,74 +9,67 @@
 import Foundation
 @testable import FetchRequests
 
-final class CWTestObject: NSObject {
-    typealias ObjectID = String
-    typealias RawData = [String: Any]
+final class TestObject: NSObject, Identifiable {
+    typealias RawData = JSON
 
-    @objc dynamic var objectID: ObjectID
+    @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
-
-    private var _data: RawData = [:]
-    @objc dynamic var data: RawData {
-        get {
-            return _data
-        }
-        set {
-            _data = newValue
-            integrate(data: newValue)
+    @objc dynamic var data: RawData = [:] {
+        didSet {
+            integrate(data: data)
         }
     }
 
     @objc dynamic var isDeleted: Bool = false
 
-    var observingUpdates: Bool = false
-
     // MARK: NSObject Overrides
 
     override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? CWTestObject else {
+        guard let other = object as? TestObject else {
             return false
         }
 
-        return objectID == other.objectID
+        return id == other.id
     }
 
     override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(objectID)
+        hasher.combine(id)
 
         return hasher.finalize()
     }
 
     required init?(data: RawData) {
-        guard let id = CWTestObject.entityID(from: data) else {
+        guard let id = TestObject.entityID(from: data) else {
             return nil
         }
-        objectID = id
+        self.id = id
         super.init()
         self.data = data
+        integrate(data: data)
     }
 
     init(id: String, tag: Int = 0, sectionName: String = "") {
-        self.objectID = id
+        self.id = id
         super.init()
         data = [
             "id": id,
             "tag": tag,
             "sectionName": sectionName,
         ]
+        integrate(data: data)
     }
 
     private func integrate(data: RawData) {
-        tag = data["tag"] as? Int ?? 0
-        sectionName = (data["sectionName"] as? String) ?? ""
+        tag = data.tag?.int ?? 0
+        sectionName = data.sectionName?.string ?? ""
     }
 }
 
 // MARK: - KVO-able synthetic properties
 
-extension CWTestObject {
+extension TestObject {
     @objc
     dynamic var tagID: String? {
         return String(tag)

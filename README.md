@@ -2,12 +2,12 @@
 
 FetchRequests is an eventing library inspired by NSFetchedResultsController and written in Swift.
 
-[![Build Status](https://img.shields.io/travis/crewos/FetchRequests.svg)](https://travis-ci.org/crewos/FetchRequests)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FetchRequests.svg)](https://cocoapods.org/pods/FetchRequests)
-[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![Platform](https://img.shields.io/cocoapods/p/FetchRequests.svg?style=flat)](https://cocoapods.org/pods/FetchRequests)
-[![Pod License](http://img.shields.io/cocoapods/l/FetchRequests.svg?style=flat)](https://opensource.org/licenses/MIT)
-[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests.svg)](https://codecov.io/gh/crewos/FetchRequests)
+[![Build Status](https://img.shields.io/travis/crewos/FetchRequests/master)](https://travis-ci.org/crewos/FetchRequests)
+[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests/master)](https://codecov.io/gh/crewos/FetchRequests)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
+[![Carthage Compatible](https://img.shields.io/badge/carthage-compatible-4BC51D)](https://github.com/Carthage/Carthage)
+[![Platform](https://img.shields.io/cocoapods/p/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
+[![Pod License](https://img.shields.io/cocoapods/l/FetchRequests)](https://opensource.org/licenses/MIT)
 
 - [Features](#features)
 - [Usage](#usage)
@@ -30,8 +30,8 @@ FetchRequests is an eventing library inspired by NSFetchedResultsController and 
 FetchRequests can be used for any combination of networking, database, and file queries.
 It is best when backed by something like a [WebSocket](https://en.wikipedia.org/wiki/WebSocket) where you're expecting your data to live update.
 
-To get started, you create a `CWFetchRequest` which explains your data access patterns.
-The `CWFetchedResultsController` is the interface to access the your data.
+To get started, you create a `FetchRequest` which explains your data access patterns.
+The `FetchedResultsController` is the interface to access the your data.
 It will automatically cache your associated values for the lifetime of that controller.
 If a memory pressure event occurs, it will release its hold on those objects, allowing them to be deinited.
 
@@ -41,7 +41,7 @@ The unit tests have in-memory objects, with NotificationCenter eventing.
 Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observation.
 With Swift 5.1 it should be possible to further remove those restrictions.
 
-It currently relies upon a `[String: Any]` raw data representation.
+It currently relies upon a bundled `JSON` raw data representation.
 Everything is in place to remove this restriction, but the swift compiler crashes if so.
 
 ## Requirements
@@ -63,7 +63,7 @@ Everything is in place to remove this restriction, but the swift compiler crashe
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 1.0'
+pod 'FetchRequests', '~> 2.0'
 ```
 
 ### Carthage
@@ -71,7 +71,7 @@ pod 'FetchRequests', '~> 1.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```ogdl
-github "crewos/FetchRequests" ~> 1.0
+github "crewos/FetchRequests" ~> 2.0
 ```
 
 ### Swift Package Manager
@@ -80,7 +80,7 @@ Install with [Swift Package Manager](https://swift.org/package-manager/) by addi
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/crewos/FetchRequests.git", from: "1.0.0")
+    .package(url: "https://github.com/crewos/FetchRequests.git", from: "2.0.0")
 ]
 ```
 

@@ -1,5 +1,5 @@
 //
-//  CWFetchedResultsControllerTestHarness.swift
+//  FetchedResultsControllerTestHarness.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 9/27/18.
@@ -12,22 +12,22 @@ import Foundation
 
 //swiftlint:disable implicitly_unwrapped_optional
 
-protocol CWFetchedResultsControllerTestHarness {
-    associatedtype FetchController: CWFetchedResultsControllerProtocol where
-        FetchController.FetchedObject == CWTestObject
+protocol FetchedResultsControllerTestHarness {
+    associatedtype FetchController: FetchedResultsControllerProtocol where
+        FetchController.FetchedObject == TestObject
 
     var controller: FetchController! { get }
-    var fetchCompletion: (([CWTestObject]) -> Void)! { get }
+    var fetchCompletion: (([TestObject]) -> Void)! { get }
 }
 
-extension CWFetchedResultsControllerTestHarness {
+extension FetchedResultsControllerTestHarness {
     func performFetch(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) throws {
-        let objects = objectIDs.compactMap { CWTestObject(id: $0) }
+        let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         try performFetch(objects, file: file, line: line)
     }
 
-    func performFetch(_ objects: [CWTestObject], file: StaticString = #file, line: UInt = #line) throws {
+    func performFetch(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) throws {
         controller.performFetch()
 
         self.fetchCompletion(objects)
@@ -36,18 +36,18 @@ extension CWFetchedResultsControllerTestHarness {
         XCTAssertEqual(sortedObjects, controller.fetchedObjects, file: file, line: line)
     }
 
-    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> CWTestObject! {
+    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> TestObject! {
         let object = controller.fetchedObjects[index]
 
-        XCTAssertEqual(object.objectID, objectID, file: file, line: line)
+        XCTAssertEqual(object.id, objectID, file: file, line: line)
 
         return object
     }
 }
 
-extension CWFetchedResultsController where FetchedObject: CWTestObject {
+extension FetchedResultsController where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.map { $0.objectID }
+        return fetchedObjects.map { $0.id }
     }
 
     var tags: [Int] {
@@ -55,9 +55,9 @@ extension CWFetchedResultsController where FetchedObject: CWTestObject {
     }
 }
 
-extension CWFetchedResultsSection where FetchedObject: CWTestObject {
+extension FetchedResultsSection where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return objects.map { $0.objectID }
+        return objects.map { $0.id }
     }
 
     var tags: [Int] {
