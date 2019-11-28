@@ -9,10 +9,17 @@
 import Foundation
 
 @objc(CWBoxedJSON)
-public class BoxedJSON: NSObject {
+public class BoxedJSON: NSObject, NSCoding {
     internal let json: JSON
 
     public init(_ json: JSON) {
+        self.json = json
+    }
+
+    public required init?(coder: NSCoder) {
+        guard let json = coder.decodeObject() as? JSON else {
+            return nil
+        }
         self.json = json
     }
 
@@ -36,6 +43,10 @@ public class BoxedJSON: NSObject {
             return super.isEqual(object)
         }
         return json == other.json
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(json)
     }
 }
 
