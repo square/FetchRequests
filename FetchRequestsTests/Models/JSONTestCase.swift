@@ -386,4 +386,20 @@ extension JSONTestCase {
         let boxed = data as BoxedJSON
         _ = JSON._unconditionallyBridgeFromObjectiveC(boxed)
     }
+
+    func testCodingForBoxedJSON() {
+        let data = complexJSON
+        let boxed = data as BoxedJSON
+
+        let archiver = NSKeyedArchiver()
+        archiver.requiresSecureCoding = true
+        archiver.encode(boxed, forKey: NSKeyedArchiveRootObjectKey)
+        let encodedData = archiver.encodedData
+
+        let unarchiver = NSKeyedUnarchiver(forReadingWith: encodedData)
+        unarchiver.requiresSecureCoding = true
+        let unarchivedJSON = unarchiver.decodeObject(of: BoxedJSON.self, forKey: NSKeyedArchiveRootObjectKey)
+
+        XCTAssertTrue(boxed.isEqual(unarchivedJSON))
+    }
 }
