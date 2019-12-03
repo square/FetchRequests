@@ -42,7 +42,7 @@ Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observ
 With Swift 5.1 it should be possible to further remove those restrictions.
 
 It currently relies upon a bundled `JSON` raw data representation.
-Everything is in place to remove this restriction, but the swift compiler crashes if so.
+Everything is in place to remove this restriction, but [there is a bug in the swift compiler](https://bugs.swift.org/browse/SR-11891).
 
 ## Requirements
 
