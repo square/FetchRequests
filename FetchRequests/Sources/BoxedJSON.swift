@@ -20,6 +20,14 @@ public class BoxedJSON: NSObject, NSSecureCoding {
         self.json = json
     }
 
+    @objc(initWithObject:)
+    public convenience init?(object: NSObject?) {
+        guard let object = object, let json = JSON(object) else {
+            return nil
+        }
+        self.init(json)
+    }
+
     public required init?(coder: NSCoder) {
         guard let jsonRaw = coder.decodeData() else {
             return nil
