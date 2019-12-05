@@ -21,7 +21,7 @@ public class BoxedJSON: NSObject, NSSecureCoding {
     }
 
     @objc(initWithObject:)
-    public convenience init?(object: NSObject?) {
+    public convenience init?(__object object: NSObject?) {
         guard let object = object, let json = JSON(object) else {
             return nil
         }
