@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.2](https://github.com/crewos/FetchRequests/releases/tag/2.2)
+Released on 2019-12-05
+
+* BoxedJSON.init(__object: NSObject?) for Obj-C uses
+
 ## [2.1](https://github.com/crewos/FetchRequests/releases/tag/2.1)
 Released on 2019-12-02
 
