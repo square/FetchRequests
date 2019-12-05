@@ -7,6 +7,7 @@
 //
 
 import XCTest
+
 @testable import FetchRequests
 
 class JSONTestCase: XCTestCase {
@@ -401,5 +402,17 @@ extension JSONTestCase {
         let unarchivedJSON = unarchiver.decodeObject(of: BoxedJSON.self, forKey: NSKeyedArchiveRootObjectKey)
 
         XCTAssertTrue(boxed.isEqual(unarchivedJSON))
+    }
+
+    func testNonJsonNSObjectForBoxedJSON() {
+        let set = NSSet(objects: "1", "2")
+        let boxed = BoxedJSON(__object: set)
+        XCTAssertTrue(boxed == nil)
+    }
+
+    func testJsonNSObjectForBoxedJSON() {
+        let dict = NSDictionary(dictionary: ["name": "Alexa"])
+        let boxed = BoxedJSON(__object: dict)
+        XCTAssertTrue(boxed?.json.name?.string == "Alexa")
     }
 }
