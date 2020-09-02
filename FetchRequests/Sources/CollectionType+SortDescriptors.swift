@@ -31,7 +31,7 @@ public extension Sequence where Iterator.Element: NSObject {
         return sorted(by: descriptors.comparator)
     }
 
-    func sorted(by comparator: Comparator) -> [Iterator.Element] {
+    private func sorted(by comparator: Comparator) -> [Iterator.Element] {
         return sorted { comparator($0, $1) == .orderedAscending }
     }
 }
