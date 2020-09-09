@@ -39,15 +39,12 @@ The example app has an UserDefaults-backed storage mechanism.
 The unit tests have in-memory objects, with NotificationCenter eventing.
 
 Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observation.
-With Swift 5.1 it should be possible to further remove those restrictions.
-
-It currently relies upon a bundled `JSON` raw data representation.
-Everything is in place to remove this restriction, but [there is a bug in the swift compiler](https://bugs.swift.org/browse/SR-11891).
+It should be possible to further remove those restrictions, and some effort has been made to remove them.
 
 ## Requirements
 
-- iOS 10+ / macOS 10.12+ / tvOS 10+ / watchOS 3+
-- Xcode 10.2+
+- iOS 12+ / macOS 10.14+ / tvOS 12+ / watchOS 5+
+- Xcode 12+
 - Swift 5+
 
 ## Communication
@@ -63,7 +60,7 @@ Everything is in place to remove this restriction, but [there is a bug in the sw
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 2.0'
+pod 'FetchRequests', '~> 3.0'
 ```
 
 ### Carthage
@@ -71,7 +68,7 @@ pod 'FetchRequests', '~> 2.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```ogdl
-github "crewos/FetchRequests" ~> 2.0
+github "crewos/FetchRequests" ~> 3.0
 ```
 
 ### Swift Package Manager
@@ -80,7 +77,7 @@ Install with [Swift Package Manager](https://swift.org/package-manager/) by addi
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/crewos/FetchRequests.git", from: "2.0.0")
+    .package(url: "https://github.com/crewos/FetchRequests.git", from: "3.0.0")
 ]
 ```
 

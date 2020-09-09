@@ -468,7 +468,7 @@ extension FetchedResultsControllerTestCase {
 // MARK: - Observed Events
 
 extension FetchedResultsControllerTestCase {
-    private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
+    private func setupControllerForKVO(_ file: StaticString = #filePath, line: UInt = #line) {
         controller = FetchedResultsController(
             request: createFetchRequest(),
             sortDescriptors: [

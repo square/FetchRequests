@@ -5,10 +5,10 @@ import PackageDescription
 let package = Package(
     name: "FetchRequests",
     platforms: [
-        .macOS(.v10_12),
-        .iOS(.v10),
-        .tvOS(.v10),
-        .watchOS(.v3),
+        .macOS(.v10_14),
+        .iOS(.v12),
+        .tvOS(.v12),
+        .watchOS(.v5),
     ],
     products: [
         .library(

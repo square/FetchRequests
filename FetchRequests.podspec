@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'FetchRequests'
-  s.version = '2.2.1'
+  s.version = '3.0'
   s.license = 'MIT'
   s.summary = 'NSFetchedResultsController inspired eventing'
   s.homepage = 'https://github.com/crewos/FetchRequests'
@@ -8,10 +8,10 @@ Pod::Spec.new do |s|
   s.authors = { 'Speramus Inc' => 'opensource@crewapp.com' }
   s.source = { :git => 'https://github.com/crewos/FetchRequests.git', :tag => s.version }
 
-  ios_deployment_target = '10.0'
-  tvos_deployment_target = '10.0'
-  macos_deployment_target = '10.12'
-  watchos_deployment_target = '3.0'
+  ios_deployment_target = '12.0'
+  tvos_deployment_target = '12.0'
+  macos_deployment_target = '10.14'
+  watchos_deployment_target = '5.0'
 
   s.ios.deployment_target = ios_deployment_target
   s.tvos.deployment_target = tvos_deployment_target
