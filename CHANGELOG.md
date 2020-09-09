@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+Released on 2020-XX-XX
+
+* Renamed Identifiable to FRIdentifiable to avoid naming collisions with Swift.Identifiable
+* Changed to require Xcode 12, and increased the minimum OS by 2, so iOS 14, tvOS 14, macOS 10.14, & watchOS 5
+* RawDataRepresentable.RawData is now an associatedtype as the tests execute cleanly in Xcode 12
+* Note: The JSON type is still being vended by this framework
+
 ## [2.2.1](https://github.com/crewos/FetchRequests/releases/tag/2.2.1)
 Released on 2020-09-02
 
