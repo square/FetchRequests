@@ -22,7 +22,7 @@ public protocol FRIdentifiable {
 
 /// A class of types whose instances hold raw data of that entity
 public protocol RawDataRepresentable {
-    typealias RawData = JSON
+    associatedtype RawData
 
     /// Initialize a fetchable object from raw data
     init?(data: RawData)
