@@ -9,7 +9,7 @@
 import Foundation
 @testable import FetchRequests
 
-final class TestObject: NSObject, Identifiable {
+final class TestObject: NSObject {
     typealias RawData = JSON
 
     @objc dynamic var id: String
