@@ -125,11 +125,11 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     }
 
     public var associatedFetchSize: Int {
-        set {
-            fetchController.associatedFetchSize = newValue
-        }
         get {
             return fetchController.associatedFetchSize
+        }
+        set {
+            fetchController.associatedFetchSize = newValue
         }
     }
 

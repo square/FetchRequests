@@ -302,12 +302,11 @@ extension JSONTestCase {
             throw URLError(.cannotDecodeContentData)
         }
 
-        let archiver = NSKeyedArchiver()
-        archiver.requiresSecureCoding = true
+        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
         try archiver.encodeEncodable(json, forKey: NSKeyedArchiveRootObjectKey)
         let data = archiver.encodedData
 
-        let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
+        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data)
         unarchiver.requiresSecureCoding = true
         let rawUnarchivedData = unarchiver.decodeDecodable(JSON.self, forKey: NSKeyedArchiveRootObjectKey)
 
@@ -388,16 +387,15 @@ extension JSONTestCase {
         _ = JSON._unconditionallyBridgeFromObjectiveC(boxed)
     }
 
-    func testCodingForBoxedJSON() {
+    func testCodingForBoxedJSON() throws {
         let data = complexJSON
         let boxed = data as BoxedJSON
 
-        let archiver = NSKeyedArchiver()
-        archiver.requiresSecureCoding = true
+        let archiver = NSKeyedArchiver(requiringSecureCoding: true)
         archiver.encode(boxed, forKey: NSKeyedArchiveRootObjectKey)
         let encodedData = archiver.encodedData
 
-        let unarchiver = NSKeyedUnarchiver(forReadingWith: encodedData)
+        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: encodedData)
         unarchiver.requiresSecureCoding = true
         let unarchivedJSON = unarchiver.decodeObject(of: BoxedJSON.self, forKey: NSKeyedArchiveRootObjectKey)
 
