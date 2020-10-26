@@ -174,13 +174,13 @@ extension PaginatingFetchedResultsControllerTestCase: FetchedResultsControllerDe
 // MARK: - Helper Functions
 
 private extension PaginatingFetchedResultsControllerTestCase {
-    func performPagination(_ objectIDs: [String], file: StaticString = #filePath, line: UInt = #line) {
+    func performPagination(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         performPagination(objects, file: file, line: line)
     }
 
-    func performPagination(_ objects: [TestObject], file: StaticString = #filePath, line: UInt = #line) {
+    func performPagination(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) {
         controller.performPagination()
 
         self.paginationCompletion(objects)

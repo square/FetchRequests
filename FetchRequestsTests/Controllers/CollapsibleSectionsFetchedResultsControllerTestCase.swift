@@ -827,7 +827,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 }
 
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
-    private func setupControllerForKVO(_ file: StaticString = #filePath, line: UInt = #line) {
+    private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
         controller = FetchController(
             request: createFetchRequest(),
             sortDescriptors: [
@@ -1263,13 +1263,13 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 }
 
 private extension CollapsibleSectionsFetchedResultsControllerTestCase {
-    func performFetch(_ objectIDs: [String], file: StaticString = #filePath, line: UInt = #line) throws {
+    func performFetch(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) throws {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         try performFetch(objects, file: file, line: line)
     }
 
-    func performFetch(_ objects: [TestObject], file: StaticString = #filePath, line: UInt = #line) throws {
+    func performFetch(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) throws {
         controller.performFetch()
 
         self.fetchCompletion(objects)
@@ -1278,7 +1278,7 @@ private extension CollapsibleSectionsFetchedResultsControllerTestCase {
         XCTAssertEqual(sortedObjects, controller.fetchedObjects, file: file, line: line)
     }
 
-    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #filePath, line: UInt = #line) -> TestObject! {
+    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> TestObject! {
         let object = controller.fetchedObjects[index]
 
         XCTAssertEqual(object.id, objectID, file: file, line: line)
