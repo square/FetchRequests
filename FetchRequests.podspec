@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   ]
 
   s.test_spec do |test_spec|
-    test_spec.source_files = 'FetchRequestsTests/**/*.swift'
+    test_spec.source_files = 'FetchRequests/Tests/**/*.swift'
 
     # watchOS inherently doesn't support tests
     test_spec.ios.deployment_target = ios_deployment_target

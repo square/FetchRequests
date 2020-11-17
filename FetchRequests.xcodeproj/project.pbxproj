@@ -266,7 +266,7 @@
 				47B4771722C6D7860008C56E /* README.md */,
 				4719618122C6DC6C000BBE6B /* CHANGELOG.md */,
 				471C506E22C6D0DB007F73E9 /* FetchRequests */,
-				471C507922C6D0DC007F73E9 /* FetchRequestsTests */,
+				471C507922C6D0DC007F73E9 /* Tests */,
 				471C506D22C6D0DB007F73E9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -296,7 +296,7 @@
 			path = FetchRequests;
 			sourceTree = "<group>";
 		};
-		471C507922C6D0DC007F73E9 /* FetchRequestsTests */ = {
+		471C507922C6D0DC007F73E9 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				471C50AB22C6D337007F73E9 /* Controllers */,
@@ -307,7 +307,8 @@
 				471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */,
 				471C507C22C6D0DC007F73E9 /* Info.plist */,
 			);
-			path = FetchRequestsTests;
+			name = Tests;
+			path = FetchRequests/Tests;
 			sourceTree = "<group>";
 		};
 		471C508622C6D18D007F73E9 /* Sources */ = {
@@ -668,7 +669,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed\"\nfi\n";
+			shellScript = "PATH=$PATH:/usr/local/bin:/opt/hombrew/bin:/opt/brew/bin\n\nexpected=`cat .swiftlint.version`\nactual=`swiftlint version`\n\nif [ \"$expected\" = \"$actual\" ]; then\n    swiftlint --strict\nelif which swiftlint > /dev/null; then\n    echo \".swiftlint.version: error: SwiftLint is not version $expected\"\n    exit 1\nelse\n    echo \"README.md: error: SwiftLint is not installed\"\n    exit 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
