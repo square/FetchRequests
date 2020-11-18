@@ -160,7 +160,7 @@
 		471C506F22C6D0DB007F73E9 /* FetchRequests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FetchRequests.h; sourceTree = "<group>"; };
 		471C507022C6D0DB007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471C507522C6D0DC007F73E9 /* FetchRequests-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FetchRequests-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		471C507C22C6D0DC007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		471C507C22C6D0DC007F73E9 /* TestsInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = TestsInfo.plist; path = ../TestsInfo.plist; sourceTree = "<group>"; };
 		471C508722C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsControllerProtocol.swift; sourceTree = "<group>"; };
 		471C508822C6D18D007F73E9 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		471C508922C6D18D007F73E9 /* ObservableToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableToken.swift; sourceTree = "<group>"; };
@@ -305,7 +305,7 @@
 				471C50B722C6D337007F73E9 /* TestObject+Associations.swift */,
 				47B31B502330671E00D6EB66 /* TestObject+FetchRequests.swift */,
 				471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */,
-				471C507C22C6D0DC007F73E9 /* Info.plist */,
+				471C507C22C6D0DC007F73E9 /* TestsInfo.plist */,
 			);
 			name = Tests;
 			path = FetchRequests/Tests;
