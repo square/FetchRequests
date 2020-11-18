@@ -19,7 +19,13 @@ let package = Package(
     targets: [
         .target(
             name: "FetchRequests",
-            path: "FetchRequests"
+            path: "FetchRequests",
+            exclude: ["Tests"]
+        ),
+        .testTarget(
+            name: "FetchRequestsTests",
+            dependencies: ["FetchRequests"],
+            path: "FetchRequests/Tests"
         ),
     ],
     swiftLanguageVersions: [.v5]

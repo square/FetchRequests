@@ -160,7 +160,7 @@
 		471C506F22C6D0DB007F73E9 /* FetchRequests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FetchRequests.h; sourceTree = "<group>"; };
 		471C507022C6D0DB007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471C507522C6D0DC007F73E9 /* FetchRequests-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FetchRequests-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		471C507C22C6D0DC007F73E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		471C507C22C6D0DC007F73E9 /* TestsInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = TestsInfo.plist; path = ../TestsInfo.plist; sourceTree = "<group>"; };
 		471C508722C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsControllerProtocol.swift; sourceTree = "<group>"; };
 		471C508822C6D18D007F73E9 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		471C508922C6D18D007F73E9 /* ObservableToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableToken.swift; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 				47B4771722C6D7860008C56E /* README.md */,
 				4719618122C6DC6C000BBE6B /* CHANGELOG.md */,
 				471C506E22C6D0DB007F73E9 /* FetchRequests */,
-				471C507922C6D0DC007F73E9 /* FetchRequestsTests */,
+				471C507922C6D0DC007F73E9 /* Tests */,
 				471C506D22C6D0DB007F73E9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -296,7 +296,7 @@
 			path = FetchRequests;
 			sourceTree = "<group>";
 		};
-		471C507922C6D0DC007F73E9 /* FetchRequestsTests */ = {
+		471C507922C6D0DC007F73E9 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				471C50AB22C6D337007F73E9 /* Controllers */,
@@ -305,9 +305,10 @@
 				471C50B722C6D337007F73E9 /* TestObject+Associations.swift */,
 				47B31B502330671E00D6EB66 /* TestObject+FetchRequests.swift */,
 				471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */,
-				471C507C22C6D0DC007F73E9 /* Info.plist */,
+				471C507C22C6D0DC007F73E9 /* TestsInfo.plist */,
 			);
-			path = FetchRequestsTests;
+			name = Tests;
+			path = FetchRequests/Tests;
 			sourceTree = "<group>";
 		};
 		471C508622C6D18D007F73E9 /* Sources */ = {
@@ -668,7 +669,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint > /dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed\"\nfi\n";
+			shellScript = "PATH=$PATH:/usr/local/bin:/opt/hombrew/bin:/opt/brew/bin\n\nif which swiftlint >/dev/null; then\n    swiftlint --strict\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1043,7 +1044,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1059,7 +1060,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1135,7 +1136,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1152,7 +1153,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1197,7 +1198,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1213,7 +1214,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				INFOPLIST_FILE = FetchRequestsTests/Info.plist;
+				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
