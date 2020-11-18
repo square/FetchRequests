@@ -669,7 +669,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "PATH=$PATH:/usr/local/bin:/opt/hombrew/bin:/opt/brew/bin\n\nexpected=`cat .swiftlint.version`\nactual=`swiftlint version`\n\nif [ \"$expected\" = \"$actual\" ]; then\n    swiftlint --strict\nelif which swiftlint > /dev/null; then\n    echo \".swiftlint.version: error: SwiftLint is not version $expected\"\n    exit 1\nelse\n    echo \"README.md: error: SwiftLint is not installed\"\n    exit 1\nfi\n";
+			shellScript = "PATH=$PATH:/usr/local/bin:/opt/hombrew/bin:/opt/brew/bin\n\nif which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
