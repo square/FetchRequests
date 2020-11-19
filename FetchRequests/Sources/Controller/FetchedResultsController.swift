@@ -566,14 +566,23 @@ private extension FetchedResultsController {
     }
 
     func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+        let fetchedObjectIDs = self.fetchedObjectIDs
+
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.insert(objects, emitChanges: emitChanges)
+                self?.insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
             }
             return
         }
+        insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
+    }
 
+    private func insert<C: Collection>(
+        _ objects: C,
+        fetchedObjectIDs: Set<FetchedObject.ID>,
+        emitChanges: Bool = true
+    ) where C.Iterator.Element == FetchedObject {
         let objects = objects.filter { object in
             guard !object.isDeleted else {
                 return false
