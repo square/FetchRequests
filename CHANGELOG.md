@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.2](https://github.com/crewos/FetchRequests/releases/tag/3.0.2)
+Released on 2020-11-19
+
+* Expose test target in Swift Package Manager
+* Fix thread safety bug with insertion
+
 ## [3.0.1](https://github.com/crewos/FetchRequests/releases/tag/3.0.1)
 Released on 2020-10-26
 
