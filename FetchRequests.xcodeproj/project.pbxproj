@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00999E3625B223D300A74C96 /* FetchedObjectCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00999E3525B223D300A74C96 /* FetchedObjectCache.swift */; };
+		00999E3725B223D300A74C96 /* FetchedObjectCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00999E3525B223D300A74C96 /* FetchedObjectCache.swift */; };
+		00999E3825B223D300A74C96 /* FetchedObjectCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00999E3525B223D300A74C96 /* FetchedObjectCache.swift */; };
+		00999E3925B223D300A74C96 /* FetchedObjectCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00999E3525B223D300A74C96 /* FetchedObjectCache.swift */; };
 		471C507622C6D0DC007F73E9 /* FetchRequests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 471C506C22C6D0DB007F73E9 /* FetchRequests.framework */; };
 		471C507D22C6D0DC007F73E9 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		471C509822C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508722C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift */; };
@@ -155,6 +159,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00999E3525B223D300A74C96 /* FetchedObjectCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchedObjectCache.swift; sourceTree = "<group>"; };
 		4719618122C6DC6C000BBE6B /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		471C506C22C6D0DB007F73E9 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		471C506F22C6D0DB007F73E9 /* FetchRequests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FetchRequests.h; sourceTree = "<group>"; };
@@ -364,6 +369,7 @@
 				471C508D22C6D18D007F73E9 /* FetchRequestAssociation.swift */,
 				471C509422C6D18D007F73E9 /* FetchableEntityID.swift */,
 				471C508922C6D18D007F73E9 /* ObservableToken.swift */,
+				00999E3525B223D300A74C96 /* FetchedObjectCache.swift */,
 			);
 			path = Associations;
 			sourceTree = "<group>";
@@ -695,6 +701,7 @@
 				471C509922C6D18D007F73E9 /* Logging.swift in Sources */,
 				47D33F072334163100E247E4 /* JSON.swift in Sources */,
 				471C50A522C6D18D007F73E9 /* FetchableEntityID.swift in Sources */,
+				00999E3625B223D300A74C96 /* FetchedObjectCache.swift in Sources */,
 				471C50A422C6D18D007F73E9 /* FetchableObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -741,6 +748,7 @@
 				47A6ECDC22CA8FA80034A854 /* Logging.swift in Sources */,
 				47D33F0A2334163100E247E4 /* JSON.swift in Sources */,
 				47A6ECDD22CA8FA80034A854 /* FetchableEntityID.swift in Sources */,
+				00999E3925B223D300A74C96 /* FetchedObjectCache.swift in Sources */,
 				47A6ECDE22CA8FA80034A854 /* FetchableObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -766,6 +774,7 @@
 				47A6ED0D22CA905A0034A854 /* Logging.swift in Sources */,
 				47D33F092334163100E247E4 /* JSON.swift in Sources */,
 				47A6ED0E22CA905A0034A854 /* FetchableEntityID.swift in Sources */,
+				00999E3825B223D300A74C96 /* FetchedObjectCache.swift in Sources */,
 				47A6ED0F22CA905A0034A854 /* FetchableObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -812,6 +821,7 @@
 				47A6ED3E22CA90A20034A854 /* Logging.swift in Sources */,
 				47D33F082334163100E247E4 /* JSON.swift in Sources */,
 				47A6ED3F22CA90A20034A854 /* FetchableEntityID.swift in Sources */,
+				00999E3725B223D300A74C96 /* FetchedObjectCache.swift in Sources */,
 				47A6ED4022CA90A20034A854 /* FetchableObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

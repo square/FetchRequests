@@ -14,6 +14,8 @@ class FetchRequestAssociationTestCase: XCTestCase {
 
     private var objects: [TestObject] = []
 
+    private var cache = FetchedObjectCache<TestFetchableEntityID>()
+
     private var objectIDs: [String] {
         return objects.map { $0.id }
     }
@@ -688,6 +690,22 @@ extension FetchRequestAssociationTestCase {
     }
 }
 
+extension FetchRequestAssociationTestCase {
+    func testObjectCache() {
+        let objectA = TestObject(id: "a")
+        let objectB = TestObject(id: "b")
+        XCTAssertEqual(cache["a"], objectA)
+
+        cache["b"] = objectA
+
+        XCTAssertEqual(cache["b"], objectB)
+
+        cache["a"] = nil
+
+        XCTAssertEqual(cache["a"], objectA)
+    }
+}
+
 // MARK: - Helpers
 
 private extension TestObject {
@@ -740,7 +758,7 @@ private extension TestObject {
     }
 }
 
-private final class TestFetchableEntityID: NSObject, FetchableEntityID {
+private final class TestFetchableEntityID: NSObject, CachableEntityID {
     let id: TestObject.ID
 
     init(id: String) {
