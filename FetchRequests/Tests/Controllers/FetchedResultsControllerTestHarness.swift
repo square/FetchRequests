@@ -10,7 +10,7 @@ import XCTest
 import Foundation
 @testable import FetchRequests
 
-//swiftlint:disable implicitly_unwrapped_optional
+// swiftlint:disable implicitly_unwrapped_optional
 
 protocol FetchedResultsControllerTestHarness {
     associatedtype FetchController: FetchedResultsControllerProtocol where

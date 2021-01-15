@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-//swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional
 
 class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: PaginatingFetchedResultsController<TestObject>!
@@ -72,7 +72,10 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     }
 
     func testBasicFetch() {
-        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
 
         let objectIDs = ["a", "b", "c"]
 
@@ -82,8 +85,27 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
     }
 
+    func testResort() {
+        controller = PaginatingFetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
+
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
+    }
+
     func testPaginationTriggersLoad() {
-        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
         controller.setDelegate(self)
 
         // Fetch some objects
@@ -114,7 +136,10 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     }
 
     func testPaginationDoesNotDisableInserts() {
-        controller = PaginatingFetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = PaginatingFetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
         controller.setDelegate(self)
 
         // Fetch some objects

@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-//swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional
 
 class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: PausableFetchedResultsController<TestObject>!
@@ -71,6 +71,22 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
+    }
+
+    func testResort() {
+        controller = PausableFetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
+
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
     func testExpectInsertFromBroadcastNotification() {

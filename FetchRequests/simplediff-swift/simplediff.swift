@@ -69,7 +69,7 @@ func diff<T>(_ before: [T], _ after: [T]) -> [Operation<T>] {
     for index: Int in after.indices {
         let element: T = after[index]
 
-        //swiftlint:disable:next identifier_name
+        // swiftlint:disable:next identifier_name
         var _overlay: [Int: Int] = [:]
          // Element must be in *before* list
         if let elemIndices: [Int] = beforeIndices[element] {

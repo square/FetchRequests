@@ -93,7 +93,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     private var deletedSectionsDuringContentChange: Set<String> = []
     private var previousSectionsDuringContentChange: [CollapsibleResultsSection<FetchedObject>] = []
 
-    //swiftlint:disable:next identifier_name
+    // swiftlint:disable:next identifier_name
     private var collapsedSectionsModifiedDuringContentChange: Set<String> = []
     private var collapsedSectionNames: Set<String> = []
 
@@ -102,7 +102,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     private var sectionNamesCheckedForInitialCollapse: Set<String> = []
     private let sectionConfigCheck: SectionCollapseConfigCheck
 
-    //swiftlint:disable:next weak_delegate
+    // swiftlint:disable:next weak_delegate
     private var delegate: CollapsibleSectionsFetchResultsDelegate<FetchedObject>?
 
     private var sectionConfigs: [String: SectionCollapseConfig] = [:]
@@ -251,9 +251,11 @@ public extension CollapsibleSectionsFetchedResultsController {
 // MARK: - Fetch Methods
 public extension CollapsibleSectionsFetchedResultsController {
     func performFetch(completion: (() -> Void)? = nil) {
-        fetchController.performFetch {
-            completion?()
-        }
+        fetchController.performFetch(completion: completion ?? {})
+    }
+
+    func resort(using newSortDescriptors: [NSSortDescriptor], completion: (() -> Void)? = nil) {
+        fetchController.resort(using: newSortDescriptors, completion: completion ?? {})
     }
 }
 

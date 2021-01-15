@@ -72,7 +72,7 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
         }
     }
 
-    //swiftlint:disable:next weak_delegate
+    // swiftlint:disable:next weak_delegate
     private var delegate: PausableFetchResultsDelegate<FetchedObject>?
 
     public init(
@@ -95,6 +95,10 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
 extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     public func performFetch(completion: @escaping () -> Void) {
         controller.performFetch(completion: completion)
+    }
+
+    public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+        controller.resort(using: newSortDescriptors, completion: completion)
     }
 
     public func reset() {
