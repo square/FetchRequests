@@ -9,9 +9,9 @@
 import XCTest
 @testable import FetchRequests
 
-//swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional
 
-//swiftlint:disable:next type_name
+// swiftlint:disable:next type_name
 class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     typealias FetchController = CollapsibleSectionsFetchedResultsController<TestObject>
 
@@ -439,6 +439,22 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         XCTAssertEqual(controller.sections.count, 3)
         XCTAssertEqual(controller.sections[0].allObjects.count, 5)
+    }
+
+    func testResort() {
+        controller = FetchController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
+
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, objectIDs.reversed())
     }
 
     func testAccessByIndexPath() {

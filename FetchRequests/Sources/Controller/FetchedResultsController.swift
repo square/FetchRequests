@@ -162,8 +162,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
-    public private(set) var request: FetchRequest<FetchedObject>
-    public let sortDescriptors: [NSSortDescriptor]
+    public let request: FetchRequest<FetchedObject>
+    public private(set) var sortDescriptors: [NSSortDescriptor]
     public let sectionNameKeyPath: SectionNameKeyPath?
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
@@ -180,7 +180,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         #endif
     }()
 
-    //swiftlint:disable:next weak_delegate
+    // swiftlint:disable:next weak_delegate
     private var delegate: FetchResultsDelegate<FetchedObject>?
 
     public var associatedFetchSize: Int = 10
@@ -225,45 +225,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        var sortDescriptors = sortDescriptors
-
-        if let sectionNameKeyPath = sectionNameKeyPath {
-            assert(sectionNameKeyPath._kvcKeyPathString != nil, "\(sectionNameKeyPath) is not KVC compliant?")
-
-            // Make sure we have our section name included if appropriate
-            let sectionNameDescriptor = NSSortDescriptor(
-                keyPath: sectionNameKeyPath,
-                ascending: true,
-                comparator: { lhs, rhs in
-                    let lhs = lhs as? String ?? ""
-                    let rhs = rhs as? String ?? ""
-                    return lhs.localizedStandardCompare(rhs)
-                }
-            )
-            sortDescriptors.insert(sectionNameDescriptor, at: 0)
-        }
-
-        if FetchedObject.instancesRespond(to: Selector(("id"))) {
-            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            sortDescriptors.append(idDescriptor)
-        } else {
-            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
-                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
-                    return .orderedSame
-                }
-                if lhs.id < rhs.id {
-                    return .orderedAscending
-                } else if lhs.id > rhs.id {
-                    return .orderedDescending
-                } else {
-                    return .orderedSame
-                }
-            }
-            sortDescriptors.append(idDescriptor)
-        }
-
         self.request = request
-        self.sortDescriptors = sortDescriptors
+        self.sortDescriptors = sortDescriptors.finalize(with: sectionNameKeyPath)
         self.sectionNameKeyPath = sectionNameKeyPath
         self.debounceInsertsAndReloads = debounceInsertsAndReloads
     }
@@ -331,6 +294,17 @@ public extension FetchedResultsController {
         }
     }
 
+    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+        assert(Thread.isMainThread)
+
+        sortDescriptors = newSortDescriptors.finalize(with: sectionNameKeyPath)
+        guard hasFetchedObjects else {
+            completion()
+            return
+        }
+        assign(fetchedObjects: fetchedObjects, dropObjectsToInsert: false, completion: completion)
+    }
+
     func indexPath(for object: FetchedObject) -> IndexPath? {
         return indexPathsTable[object]
     }
@@ -348,7 +322,10 @@ public extension FetchedResultsController {
 // MARK: Associated Values
 
 private extension FetchedResultsController {
-    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
+    func associatedValue(
+        with keyPath: PartialKeyPath<FetchedObject>,
+        forObjectID objectID: FetchedObject.ID
+    ) throws -> Any? {
         let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
 
         if let holder = associatedValues[key] {
@@ -467,7 +444,11 @@ private extension FetchedResultsController {
         }
     }
 
-    func removeAssociatedValue(for object: FetchedObject, keyPath: PartialKeyPath<FetchedObject>, emitChanges: Bool = true) {
+    func removeAssociatedValue(
+        for object: FetchedObject,
+        keyPath: PartialKeyPath<FetchedObject>,
+        emitChanges: Bool = true
+    ) {
         let objectID = object.id
         guard let indexPath = indexPath(for: object) else {
             return
@@ -481,7 +462,12 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(fetchedObjects objects: [FetchedObject], emitChanges: Bool = true, completion: @escaping () -> Void) {
+    func assign(
+        fetchedObjects objects: [FetchedObject],
+        emitChanges: Bool = true,
+        dropObjectsToInsert: Bool = true,
+        completion: @escaping () -> Void
+    ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -493,7 +479,11 @@ private extension FetchedResultsController {
         let sorted = objects.sorted(by: sortDescriptors)
 
         func performAssign() {
-            assign(sortedFetchedObjects: sorted, emitChanges: emitChanges)
+            assign(
+                sortedFetchedObjects: sorted,
+                emitChanges: emitChanges,
+                dropObjectsToInsert: dropObjectsToInsert
+            )
             completion()
         }
 
@@ -504,10 +494,16 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(sortedFetchedObjects objects: [FetchedObject], emitChanges: Bool = true) {
+    func assign(
+        sortedFetchedObjects objects: [FetchedObject],
+        emitChanges: Bool,
+        dropObjectsToInsert: Bool
+    ) {
         assert(Thread.isMainThread)
 
-        objectsToInsert.removeAll()
+        if dropObjectsToInsert {
+            objectsToInsert.removeAll()
+        }
         performChanges(emitChanges: emitChanges) {
             let operations = diff(fetchedObjects, objects)
 
@@ -972,6 +968,8 @@ private extension FetchedResultsController {
     }
 
     func stopObservingNotifications() {
+        assert(Thread.isMainThread)
+
         memoryPressureToken?.invalidateIfNeeded()
         request.objectCreationToken.invalidateIfNeeded()
 
@@ -1354,5 +1352,50 @@ public extension FetchableObjectProtocol where Self: NSObject {
         }
 
         return fallback(entityID)
+    }
+}
+
+private extension Array where Element == NSSortDescriptor {
+    func finalize<FetchedObject: FetchableObject>(
+        with sectionNameKeyPath: KeyPath<FetchedObject, String>?
+    ) -> Self {
+        var sortDescriptors = self
+
+        if let sectionNameKeyPath = sectionNameKeyPath {
+            assert(sectionNameKeyPath._kvcKeyPathString != nil, "\(sectionNameKeyPath) is not KVC compliant?")
+
+            // Make sure we have our section name included if appropriate
+            let sectionNameDescriptor = NSSortDescriptor(
+                keyPath: sectionNameKeyPath,
+                ascending: true,
+                comparator: { lhs, rhs in
+                    let lhs = lhs as? String ?? ""
+                    let rhs = rhs as? String ?? ""
+                    return lhs.localizedStandardCompare(rhs)
+                }
+            )
+            sortDescriptors.insert(sectionNameDescriptor, at: 0)
+        }
+
+        if FetchedObject.instancesRespond(to: Selector(("id"))) {
+            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            sortDescriptors.append(idDescriptor)
+        } else {
+            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                    return .orderedSame
+                }
+                if lhs.id < rhs.id {
+                    return .orderedAscending
+                } else if lhs.id > rhs.id {
+                    return .orderedDescending
+                } else {
+                    return .orderedSame
+                }
+            }
+            sortDescriptors.append(idDescriptor)
+        }
+
+        return sortDescriptors
     }
 }

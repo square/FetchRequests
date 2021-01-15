@@ -9,7 +9,7 @@
 import Foundation
 @testable import FetchRequests
 
-//swiftlint:disable implicitly_unwrapped_optional
+// swiftlint:disable implicitly_unwrapped_optional
 
 extension TestObject {
     func tagString() -> String? {

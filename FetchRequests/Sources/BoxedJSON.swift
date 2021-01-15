@@ -68,7 +68,7 @@ public class BoxedJSON: NSObject, NSSecureCoding {
     }
 }
 
-//swiftlint:disable identifier_name
+// swiftlint:disable identifier_name
 
 extension JSON: _ObjectiveCBridgeable {
     public func _bridgeToObjectiveC() -> BoxedJSON {

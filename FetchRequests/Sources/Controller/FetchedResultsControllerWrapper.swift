@@ -42,6 +42,10 @@ extension FetchedResultsControllerWrapper: FetchedResultsControllerProtocol {
         controller.performFetch(completion: completion)
     }
 
+    public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+        controller.resort(using: newSortDescriptors, completion: completion)
+    }
+
     public func reset() {
         controller.reset()
     }

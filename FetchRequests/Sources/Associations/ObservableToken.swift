@@ -106,7 +106,7 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
         invalidate()
     }
 
-    //swiftlint:disable:next block_based_kvo
+    // swiftlint:disable:next block_based_kvo
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         guard let typedObject = object as? Object, typedObject == self.object, keyPath == self.keyPath else {
             return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)

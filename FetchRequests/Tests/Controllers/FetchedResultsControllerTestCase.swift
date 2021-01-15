@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-//swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional
 class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: FetchedResultsController<TestObject>!
 
@@ -61,7 +61,10 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
     }
 
     func testBasicFetch() {
-        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
 
         let objectIDs = ["a", "b", "c"]
 
@@ -69,6 +72,22 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
+    }
+
+    func testResort() {
+        controller = FetchedResultsController(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        )
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
+
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
     func testAccessByIndexPath() {

@@ -29,6 +29,7 @@ public protocol FetchedResultsControllerProtocol {
     var sectionNameKeyPath: SectionNameKeyPath? { get }
 
     func performFetch(completion: @escaping () -> Void)
+    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void)
     func reset()
 
     func indexPath(for object: FetchedObject) -> IndexPath?
@@ -39,6 +40,10 @@ public protocol FetchedResultsControllerProtocol {
 public extension FetchedResultsControllerProtocol {
     func performFetch() {
         performFetch(completion: {})
+    }
+
+    func resort(using newSortDescriptors: [NSSortDescriptor]) {
+        resort(using: newSortDescriptors, completion: {})
     }
 
     internal func idealSectionIndex(forSectionName name: String) -> Int {

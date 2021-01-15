@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-//swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional
 
 class FetchedResultsControllerWrapperTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: FetchedResultsControllerWrapper<TestObject>!
@@ -75,6 +75,30 @@ class FetchedResultsControllerWrapperTestCase: XCTestCase, FetchedResultsControl
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
         XCTAssertEqual(controller.fetchedObjects.map { $0.id }, objectIDs)
+    }
+
+    func testResort() {
+        var calledClosure = false
+        controller = FetchedResultsControllerWrapper(
+            request: createFetchRequest(),
+            debounceInsertsAndReloads: false
+        ) {
+            calledClosure = true
+        }
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        XCTAssertTrue(calledClosure)
+
+        calledClosure = false
+
+        controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
+
+        XCTAssertTrue(calledClosure)
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
     func testWrappedProperties() {
