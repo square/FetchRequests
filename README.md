@@ -2,8 +2,8 @@
 
 FetchRequests is an eventing library inspired by NSFetchedResultsController and written in Swift.
 
-[![Build Status](https://img.shields.io/travis/crewos/FetchRequests/master)](https://travis-ci.org/crewos/FetchRequests)
-[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests/master)](https://codecov.io/gh/crewos/FetchRequests)
+[![Build Status](https://img.shields.io/travis/crewos/FetchRequests/main)](https://travis-ci.org/crewos/FetchRequests)
+[![codecov](https://img.shields.io/codecov/c/github/crewos/FetchRequests/main)](https://codecov.io/gh/crewos/FetchRequests)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
 [![Carthage Compatible](https://img.shields.io/badge/carthage-compatible-4BC51D)](https://github.com/Carthage/Carthage)
 [![Platform](https://img.shields.io/cocoapods/p/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
@@ -83,4 +83,4 @@ dependencies: [
 
 ## License
 
-FetchRequests is released under the MIT license. [See LICENSE](https://github.com/crewos/FetchRequests/blob/master/LICENSE) for details.
+FetchRequests is released under the MIT license. [See LICENSE](https://github.com/crewos/FetchRequests/blob/main/LICENSE) for details.
