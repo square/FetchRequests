@@ -44,7 +44,7 @@ public enum FetchedResultsChange<Location: Equatable>: Equatable {
     }
 }
 
-public protocol FetchedResultsControllerDelegate: class {
+public protocol FetchedResultsControllerDelegate: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>)

@@ -18,7 +18,7 @@ public struct SectionCollapseConfig: Equatable {
     }
 }
 
-public protocol CollapsibleSectionsFetchedResultsControllerDelegate: class {
+public protocol CollapsibleSectionsFetchedResultsControllerDelegate: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>)
