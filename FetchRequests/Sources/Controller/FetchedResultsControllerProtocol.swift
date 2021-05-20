@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal protocol InternalFetchResultsControllerProtocol: class, FetchedResultsControllerProtocol {
+internal protocol InternalFetchResultsControllerProtocol: AnyObject, FetchedResultsControllerProtocol {
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 

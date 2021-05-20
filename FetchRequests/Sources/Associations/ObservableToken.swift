@@ -17,7 +17,7 @@ func synchronized<T>(_ lockObject: AnyObject, block: () -> T) -> T {
     return block()
 }
 
-public protocol InvalidatableToken: class {
+public protocol InvalidatableToken: AnyObject {
     func invalidate()
 }
 

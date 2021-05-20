@@ -32,7 +32,7 @@ public protocol RawDataRepresentable {
 }
 
 /// A class of types that should be fetchable via FetchRequests
-public protocol FetchableObjectProtocol: class, FRIdentifiable, RawDataRepresentable
+public protocol FetchableObjectProtocol: AnyObject, FRIdentifiable, RawDataRepresentable
     where ID: Comparable
 {
     /// Has this object been marked as deleted?
