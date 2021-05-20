@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.1.1](https://github.com/crewos/FetchRequests/releases/tag/3.1.1)
+Released on 2021-05-19
+
+* Fix warnings related to deprecation of using `class` in protocol definitions
+
 ## [3.1](https://github.com/crewos/FetchRequests/releases/tag/3.1)
 Released on 2021-01-15
 
