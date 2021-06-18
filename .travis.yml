@@ -16,11 +16,7 @@ script:
   - set -o pipefail
   #- xcodebuild -version
   #- xcodebuild -showsdks
-  - if [ $RUN_TESTS == "YES" ]; then
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=YES test | xcpretty -c;
-    else
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
-    fi
+  - xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=$RUN_TESTS test | xcpretty -c;
 jobs:
   include:
     - stage: Pod Lint
