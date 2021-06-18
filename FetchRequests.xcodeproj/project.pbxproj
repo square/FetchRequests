@@ -171,12 +171,12 @@
 			remoteGlobalIDString = 47A6ED2E22CA90A20034A854;
 			remoteInfo = "FetchRequests-macOS";
 		};
-		66239735267D03C0009B696F /* PBXContainerItemProxy */ = {
+		6623974D267D07A1009B696F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 471C506322C6D0DB007F73E9 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 471C506B22C6D0DB007F73E9;
-			remoteInfo = FetchRequests;
+			remoteGlobalIDString = 47A6ECCC22CA8FA80034A854;
+			remoteInfo = "FetchRequests-watchOS";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -614,7 +614,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				66239734267D03C0009B696F /* PBXTargetDependency */,
+				6623974E267D07A1009B696F /* PBXTargetDependency */,
 			);
 			name = "FetchRequests-watchOSTests";
 			productName = FetchRequestsTests;
@@ -952,10 +952,10 @@
 			target = 47A6ED2E22CA90A20034A854 /* FetchRequests-macOS */;
 			targetProxy = 47A6ED6722CAA6170034A854 /* PBXContainerItemProxy */;
 		};
-		66239734267D03C0009B696F /* PBXTargetDependency */ = {
+		6623974E267D07A1009B696F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 471C506B22C6D0DB007F73E9 /* FetchRequests-iOS */;
-			targetProxy = 66239735267D03C0009B696F /* PBXContainerItemProxy */;
+			target = 47A6ECCC22CA8FA80034A854 /* FetchRequests-watchOS */;
+			targetProxy = 6623974D267D07A1009B696F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
