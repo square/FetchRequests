@@ -23,6 +23,7 @@ FetchRequests is an eventing library inspired by NSFetchedResultsController and 
 - [x] Animate underlying data changes
 - [x] Fetch associated values in batch
 - [x] Support paginated requests
+- [x] SwiftUI Integration
 - [x] Comprehensive Unit Test Coverage
 
 ## Usage
@@ -40,6 +41,53 @@ The unit tests have in-memory objects, with NotificationCenter eventing.
 
 Today, it is heavily dependent on the Obj-C runtime, as well as Key-Value Observation.
 It should be possible to further remove those restrictions, and some effort has been made to remove them.
+
+### SwiftUI
+
+There are two SwiftUI Property Wrappers available for use, `FetchableRequest` and `SectionedFetchableRequest`. These are analagous to CoreData's property wrappers. 
+
+Examples:
+
+```swift
+struct AllUsersView: View {
+    @FetchableRequest(
+        fetchRequest: FetchRequest(request: User.fetchAll),
+        sortDescriptors: [
+            NSSortDescriptor(
+                key: #keyPath(User.name),
+                ascending: true,
+                selector: #selector(NSString.localizedStandardCompare)
+            ),
+        ]
+    )
+    private var members: FetchableResults<User>
+
+    // ...
+}
+```
+
+For more complicated use cases, you probably will need to write initializers for your view, for example:
+
+```swift
+struct MembersView: View {
+    private let fromID: EntityID
+
+    @FetchableRequest
+    private var members: FetchableResults<Membership>
+
+    func init(fromID: EntityID) {
+        self.fromID = fromID
+        _members = FetchableRequest(
+            fetchRequest: Membership.fetchRequest(from: fromID, toEntityType: .user)
+        )
+    }
+
+    // ...
+}
+```
+
+The controller will perform a fetch once and only once upon the first view render.
+After that point, it is dependent upon live update events.
 
 ## Requirements
 
