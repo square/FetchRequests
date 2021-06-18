@@ -21,7 +21,7 @@ jobs:
   include:
     - stage: Pod Lint
       script:
-        - pod lib lint --verbose --allow-warnings
+        - pod lib lint --quick --fail-fast --verbose --allow-warnings --skip-tests
     - stage: Example Project
       env:
         - SCHEME="iOS Example"
