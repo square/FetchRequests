@@ -46,6 +46,8 @@ It should be possible to further remove those restrictions, and some effort has 
 
 There are two SwiftUI Property Wrappers available for use, `FetchableRequest` and `SectionedFetchableRequest`. These are analagous to CoreData's property wrappers.
 
+The controller will perform a fetch once and only once upon the first view render. After that point, it is dependent upon live update events.
+
 Examples:
 
 ```swift
@@ -85,9 +87,6 @@ struct MembersView: View {
     // ...
 }
 ```
-
-The controller will perform a fetch once and only once upon the first view render.
-After that point, it is dependent upon live update events.
 
 ## Requirements
 
