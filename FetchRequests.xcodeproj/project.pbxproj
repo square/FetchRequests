@@ -1026,7 +1026,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequests;
 				PRODUCT_NAME = FetchRequests;
-				SDKROOT = watchos;
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1099,7 +1099,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequests;
 				PRODUCT_NAME = FetchRequests;
-				SDKROOT = watchos;
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -1340,6 +1340,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
 				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Debug;
@@ -1356,6 +1357,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
 				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Release;
