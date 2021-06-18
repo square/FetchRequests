@@ -34,7 +34,7 @@ It is best when backed by something like a [WebSocket](https://en.wikipedia.org/
 To get started, you create a `FetchRequest` which explains your data access patterns.
 The `FetchedResultsController` is the interface to access the your data.
 It will automatically cache your associated values for the lifetime of that controller.
-If a memory pressure event occurs, it will release its hold on those objects, allowing them to be deinited.
+If a memory pressure event occurs, it will release its hold on those objects, allowing them to be de-inited.
 
 The example app has an UserDefaults-backed storage mechanism.
 The unit tests have in-memory objects, with NotificationCenter eventing.
