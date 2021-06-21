@@ -114,7 +114,7 @@ pod 'FetchRequests', '~> 3.0'
 
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
-```ogdl
+```
 github "crewos/FetchRequests" ~> 3.0
 ```
 
