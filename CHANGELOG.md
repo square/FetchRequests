@@ -2,8 +2,8 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.2](https://github.com/crewos/FetchRequests/releases/tag/3.2)
-Released on TKTKTK
+## [3.2.0](https://github.com/crewos/FetchRequests/releases/tag/3.2.0)
+Released on 2021-06-21
 
 * Added FetchableRequest SwiftUI Property Wrapper and friends
 
