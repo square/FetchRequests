@@ -57,7 +57,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "47A6ECE622CA900D0034A854"
+               BlueprintIdentifier = "66239733267D03C0009B696F"
                BuildableName = "FetchRequests-watchOSTests.xctest"
                BlueprintName = "FetchRequests-watchOSTests"
                ReferencedContainer = "container:FetchRequests.xcodeproj">

@@ -1,5 +1,5 @@
 os: osx
-osx_image: xcode12
+osx_image: xcode12.5
 language: swift
 env:
   global:
@@ -8,28 +8,24 @@ env:
     - PROJECT=FetchRequests.xcodeproj
     - RUN_TESTS="YES"
   matrix:
-    - SCHEME="FetchRequests-iOS" DESTINATION="name=iPhone 11 Pro"
-    - SCHEME="FetchRequests-tvOS" DESTINATION="name=Apple TV 4K"
-    - SCHEME="FetchRequests-watchOS" DESTINATION="name=Apple Watch Series 5 - 44mm" RUN_TESTS="NO"
+    - SCHEME="FetchRequests-iOS" DESTINATION="name=iPhone 12 Pro"
+    - SCHEME="FetchRequests-tvOS" DESTINATION="name=Apple TV 4K (2nd generation)"
+    - SCHEME="FetchRequests-watchOS" DESTINATION="name=Apple Watch Series 6 - 44mm"
     - SCHEME="FetchRequests-macOS" DESTINATION="arch=x86_64"
 script:
   - set -o pipefail
   #- xcodebuild -version
   #- xcodebuild -showsdks
-  - if [ $RUN_TESTS == "YES" ]; then
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=YES test | xcpretty -c;
-    else
-      xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO build | xcpretty -c;
-    fi
+  - xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Release ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=$RUN_TESTS test | xcpretty -c;
 jobs:
   include:
     - stage: Pod Lint
       script:
-        - pod lib lint --verbose --allow-warnings
+        - pod lib lint --quick --fail-fast --verbose --skip-tests
     - stage: Example Project
       env:
         - SCHEME="iOS Example"
-        - DESTINATION="name=iPhone 11 Pro"
+        - DESTINATION="name=iPhone 12 Pro"
         - PROJECT="Example/iOS-Example.xcodeproj"
       script:
         - set -o pipefail

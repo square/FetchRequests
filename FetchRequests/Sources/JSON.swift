@@ -35,9 +35,11 @@ public enum JSON {
         } else if let value = value as? [Any] {
             self = .array(value)
         } else if let value = value as? [String: JSON] {
-            self = .dictionary(value.reduce(into: [:]) { memo, kvp in
-                memo[kvp.key] = kvp.value.object
-            })
+            self = .dictionary(
+                value.reduce(into: [:]) { memo, kvp in
+                    memo[kvp.key] = kvp.value.object
+                }
+            )
         } else if let value = value as? [String: Any] {
             self = .dictionary(value)
         } else if let _ = value as? NSNull {

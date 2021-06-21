@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'FetchRequests'
-  s.version = '3.1.1'
+  s.version = '3.2'
   s.license = 'MIT'
   s.summary = 'NSFetchedResultsController inspired eventing'
   s.homepage = 'https://github.com/crewos/FetchRequests'
@@ -28,8 +28,8 @@ Pod::Spec.new do |s|
   s.test_spec do |test_spec|
     test_spec.source_files = 'FetchRequests/Tests/**/*.swift'
 
-    # watchOS inherently doesn't support tests
     test_spec.ios.deployment_target = ios_deployment_target
+    test_spec.watchos.deployment_target = watchos_deployment_target
     test_spec.tvos.deployment_target = tvos_deployment_target
     test_spec.macos.deployment_target = macos_deployment_target
   end

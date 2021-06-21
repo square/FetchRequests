@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  TestObject+FetchableObject.swift
 //  FetchRequests-iOSTests
 //
 //  Created by Adam Lickel on 3/29/19.
