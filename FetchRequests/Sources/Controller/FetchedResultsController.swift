@@ -143,9 +143,13 @@ public enum FetchedResultsError: Error {
 
 // MARK: - Sections
 
-public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable {
+public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable {
     public let name: String
     public fileprivate(set) var objects: [FetchedObject]
+
+    public var id: String {
+        return name
+    }
 
     public var numberOfObjects: Int {
         return objects.count
