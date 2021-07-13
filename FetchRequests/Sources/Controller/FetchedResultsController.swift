@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 #if canImport(UIKit)
 import UIKit
@@ -202,6 +203,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     private let debounceInsertsAndReloads: Bool
     private var objectsToReload: Set<FetchedObject> = []
     private var objectsToInsert: Set<FetchedObject> = []
+
+    private let objectWillChangeSubject = PassthroughSubject<Void, Never>()
+    private let objectDidChangeSubject = PassthroughSubject<Void, Never>()
+
+    public private(set) lazy var objectWillChange = objectWillChangeSubject.eraseToAnyPublisher()
+    public private(set) lazy var objectDidChange = objectDidChangeSubject.eraseToAnyPublisher()
 
     public private(set) var sections: [Section] = [] {
         didSet {
@@ -1078,6 +1085,7 @@ private extension FetchedResultsController {
         let delegate = self.delegate
 
         if emitChanges {
+            objectWillChangeSubject.send()
             delegate?.controllerWillChangeContent(self)
         }
 
@@ -1086,6 +1094,7 @@ private extension FetchedResultsController {
         hasFetchedObjects = true
         if emitChanges {
             delegate?.controllerDidChangeContent(self)
+            objectDidChangeSubject.send()
         }
     }
 
