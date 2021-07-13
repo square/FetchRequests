@@ -516,35 +516,15 @@ private extension FetchedResultsController {
             objectsToInsert.removeAll()
         }
         performChanges(emitChanges: emitChanges) {
-            let operations = diff(fetchedObjects, objects)
+            let operations = objects.difference(from: fetchedObjects)
 
-            var index = fetchedObjects.endIndex
-            for operation in operations.reversed() {
-                switch operation.type {
-                case .insert:
-                    break
-
-                case .noop:
-                    index -= operation.elements.count
-
-                case .delete:
-                    index -= operation.elements.count
-                    remove(operation.elements, atIndex: index, emitChanges: emitChanges)
-                }
-            }
-
-            index = 0
             for operation in operations {
-                switch operation.type {
-                case .insert:
-                    insert(operation.elements, atIndex: index, emitChanges: emitChanges)
-                    index += operation.elements.count
+                switch operation {
+                case let .remove(index, element, _):
+                    remove(element, atIndex: index, emitChanges: emitChanges)
 
-                case .noop:
-                    index += operation.elements.count
-
-                case .delete:
-                    break
+                case let .insert(index, element, _):
+                    insert(element, atIndex: index, emitChanges: emitChanges)
                 }
             }
         }
@@ -627,7 +607,7 @@ private extension FetchedResultsController {
                         continue
                     }
                 }
-                insert([object], atIndex: newFetchIndex, emitChanges: emitChanges)
+                insert(object, atIndex: newFetchIndex, emitChanges: emitChanges)
             }
         }
 
@@ -808,56 +788,48 @@ private extension FetchedResultsController {
         }
     }
 
-    func remove(_ objects: [FetchedObject], atIndex index: Int, emitChanges: Bool = true) {
-        for (arrayIndex, object) in objects.enumerated().reversed() {
-            let fetchIndex = index + arrayIndex
+    func remove(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        guard let indexPath = self.indexPath(forFetchIndex: index) else {
+            return
+        }
 
-            guard let indexPath = self.indexPath(forFetchIndex: fetchIndex) else {
-                return
-            }
+        stopObserving(object)
 
-            stopObserving(object)
+        fetchedObjects.remove(at: index)
+        sections[indexPath.section].objects.remove(at: indexPath.item)
+        fetchedObjectIDs.remove(object.id)
 
-            fetchedObjects.remove(at: fetchIndex)
-            sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjectIDs.remove(object.id)
+        notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
-            notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
-
-            if sections[indexPath.section].objects.isEmpty {
-                let section = sections.remove(at: indexPath.section)
-                notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
-            }
+        if sections[indexPath.section].objects.isEmpty {
+            let section = sections.remove(at: indexPath.section)
+            notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
         }
     }
 
-    func insert(_ objects: [FetchedObject], atIndex index: Int, emitChanges: Bool = true) {
-        for (arrayIndex, object) in objects.enumerated() {
-            let fetchIndex = index + arrayIndex
+    func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
+        let sectionIndex = idealSectionIndex(forSectionName: sectionName)
 
-            let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
-            let sectionIndex = idealSectionIndex(forSectionName: sectionName)
+        let sectionPrefix = sections[0..<sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
+        let sectionObjectIndex = index - sectionPrefix
 
-            let sectionPrefix = sections[0..<sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
-            let sectionObjectIndex = fetchIndex - sectionPrefix
+        if sections.endIndex <= sectionIndex || sections[sectionIndex].name != sectionName {
+            assert(sectionObjectIndex == 0, "For some reason a section wasn't deleted")
+            let section = Section(name: sectionName)
+            sections.insert(section, at: sectionIndex)
 
-            if sections.endIndex <= sectionIndex || sections[sectionIndex].name != sectionName {
-                assert(sectionObjectIndex == 0, "For some reason a section wasn't deleted")
-                let section = Section(name: sectionName)
-                sections.insert(section, at: sectionIndex)
-
-                notifyInserting(section, at: sectionIndex, emitChanges: emitChanges)
-            }
-
-            fetchedObjects.insert(object, at: fetchIndex)
-            sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
-            fetchedObjectIDs.insert(object.id)
-
-            let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
-            notifyInserting(object, at: indexPath, emitChanges: emitChanges)
-
-            startObserving(object)
+            notifyInserting(section, at: sectionIndex, emitChanges: emitChanges)
         }
+
+        fetchedObjects.insert(object, at: index)
+        sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
+        fetchedObjectIDs.insert(object.id)
+
+        let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
+        notifyInserting(object, at: indexPath, emitChanges: emitChanges)
+
+        startObserving(object)
     }
 
     func startObserving(_ object: FetchedObject) {
