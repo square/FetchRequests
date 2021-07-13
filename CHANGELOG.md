@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## 4.0
 In Progress
 
+* Updated minimum SDKs to iOS 13 and related OSes
+* Added a Swift 5.5 package definition
+
 ## [3.2.0](https://github.com/crewos/FetchRequests/releases/tag/3.2.0)
 Released on 2021-06-21
 
