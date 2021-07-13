@@ -150,7 +150,7 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
     public var id: String {
         return name
     }
-    
+
     public var numberOfObjects: Int {
         return objects.count
     }
