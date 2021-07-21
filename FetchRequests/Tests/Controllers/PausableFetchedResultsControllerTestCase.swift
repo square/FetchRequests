@@ -200,7 +200,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let effectiveSortDescriptorKeys = [
             #selector(getter: TestObject.sectionName),
-            #selector(getter: TestObject.id),
+            NSSelectorFromString("self"),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])

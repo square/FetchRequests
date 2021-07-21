@@ -20,6 +20,8 @@ struct OrderedSet<Element: Hashable> {
     private(set) var elements: [Element]
     private(set) var unordered: Set<Element>
 
+    #warning("Make a time efficient firstIndex and lastIndex")
+
     init() {
         elements = []
         unordered = []

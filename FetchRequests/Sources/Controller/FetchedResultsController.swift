@@ -168,7 +168,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
     public let request: FetchRequest<FetchedObject>
-    public private(set) var sortDescriptors: [NSSortDescriptor]
+    public private(set) var sortDescriptors: [NSSortDescriptor] = []
     public let sectionNameKeyPath: SectionNameKeyPath?
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
@@ -192,7 +192,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     public private(set) var hasFetchedObjects: Bool = false
     public private(set) var fetchedObjects: [FetchedObject] = []
-    private var fetchedObjectIDs: OrderedSet<FetchedObject.ID> = []
+    fileprivate private(set) var fetchedObjectIDs: OrderedSet<FetchedObject.ID> = []
 
     private var _indexPathsTable: [FetchedObject: IndexPath]?
     private var indexPathsTable: [FetchedObject: IndexPath] {
@@ -238,9 +238,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         debounceInsertsAndReloads: Bool = true
     ) {
         self.request = request
-        self.sortDescriptors = sortDescriptors.finalize(with: sectionNameKeyPath)
         self.sectionNameKeyPath = sectionNameKeyPath
         self.debounceInsertsAndReloads = debounceInsertsAndReloads
+
+        super.init()
+
+        self.sortDescriptors = sortDescriptors.finalize(with: self)
     }
 
     deinit {
@@ -309,7 +312,8 @@ public extension FetchedResultsController {
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
         assert(Thread.isMainThread)
 
-        sortDescriptors = newSortDescriptors.finalize(with: sectionNameKeyPath)
+        sortDescriptors = newSortDescriptors.finalize(with: self)
+
         guard hasFetchedObjects else {
             completion()
             return
@@ -488,6 +492,7 @@ private extension FetchedResultsController {
             return
         }
 
+        #warning("FIXME")
         let sorted = objects.sorted(by: sortDescriptors)
 
         func performAssign() {
@@ -560,6 +565,7 @@ private extension FetchedResultsController {
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
     ) where C.Iterator.Element == FetchedObject {
+        #warning("FIXME")
         let objects = objects.filter { object in
             guard !object.isDeleted else {
                 return false
@@ -582,7 +588,10 @@ private extension FetchedResultsController {
         }
     }
 
-    private func insert<C: Collection>(sortedObjects objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    private func insert<C: Collection>(
+        sortedObjects objects: C,
+        emitChanges: Bool = true
+    ) where C.Iterator.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         performChanges(emitChanges: emitChanges) {
@@ -1332,11 +1341,11 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 private extension Array where Element == NSSortDescriptor {
     func finalize<FetchedObject: FetchableObject>(
-        with sectionNameKeyPath: KeyPath<FetchedObject, String>?
+        with controller: FetchedResultsController<FetchedObject>
     ) -> Self {
         var sortDescriptors = self
 
-        if let sectionNameKeyPath = sectionNameKeyPath {
+        if let sectionNameKeyPath = controller.sectionNameKeyPath {
             assert(sectionNameKeyPath._kvcKeyPathString != nil, "\(sectionNameKeyPath) is not KVC compliant?")
 
             // Make sure we have our section name included if appropriate
@@ -1352,24 +1361,28 @@ private extension Array where Element == NSSortDescriptor {
             sortDescriptors.insert(sectionNameDescriptor, at: 0)
         }
 
-        if FetchedObject.instancesRespond(to: Selector(("id"))) {
-            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            sortDescriptors.append(idDescriptor)
-        } else {
-            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
-                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
-                    return .orderedSame
-                }
-                if lhs.id < rhs.id {
-                    return .orderedAscending
-                } else if lhs.id > rhs.id {
-                    return .orderedDescending
-                } else {
-                    return .orderedSame
-                }
-            }
-            sortDescriptors.append(idDescriptor)
+        let insertionOrder: (FetchedObject.ID) -> Int? = { [weak controller] id in
+            // Note: OrderedSet.firstIndex(of:) is *not* O(n)
+            controller?.fetchedObjectIDs.firstIndex(of: id)
         }
+
+        let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+            guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                return .orderedSame
+            }
+
+            let lhsInsertion = insertionOrder(lhs.id) ?? .max
+            let rhsInsertion = insertionOrder(rhs.id) ?? .max
+
+            if lhsInsertion < rhsInsertion {
+                return .orderedAscending
+            } else if lhsInsertion > rhsInsertion {
+                return .orderedDescending
+            } else {
+                return .orderedSame
+            }
+        }
+        sortDescriptors.append(idDescriptor)
 
         return sortDescriptors
     }
