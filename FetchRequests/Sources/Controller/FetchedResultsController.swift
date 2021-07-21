@@ -318,6 +318,7 @@ public extension FetchedResultsController {
             completion()
             return
         }
+
         assign(fetchedObjects: fetchedObjects, dropObjectsToInsert: false, completion: completion)
     }
 
@@ -493,11 +494,12 @@ private extension FetchedResultsController {
         }
 
         #warning("FIXME")
-        let sorted = objects.sorted(by: sortDescriptors)
+        let sortedObjects = objects.sorted(by: sortDescriptors)
 
         func performAssign() {
             assign(
-                sortedFetchedObjects: sorted,
+                sortedObjects: sortedObjects,
+                initialOrder: objects.map(\.id),
                 emitChanges: emitChanges,
                 dropObjectsToInsert: dropObjectsToInsert
             )
@@ -511,17 +513,21 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(
-        sortedFetchedObjects objects: [FetchedObject],
+    func assign<Objects: BidirectionalCollection, IDs: Collection>(
+        sortedObjects objects: Objects,
+        initialOrder: IDs,
         emitChanges: Bool,
         dropObjectsToInsert: Bool
-    ) {
+    ) where Objects.Element == FetchedObject, IDs.Element == FetchedObject.ID {
         assert(Thread.isMainThread)
 
         if dropObjectsToInsert {
             objectsToInsert.removeAll()
         }
+
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs = OrderedSet(initialOrder)
+
             let operations = objects.difference(from: fetchedObjects)
 
             for operation in operations {
@@ -542,6 +548,7 @@ private extension FetchedResultsController {
         }
 
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs.remove(object.id)
             remove(object, atIndex: fetchIndex, emitChanges: emitChanges)
         }
     }
@@ -557,6 +564,7 @@ private extension FetchedResultsController {
             }
             return
         }
+
         insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
     }
 
@@ -566,7 +574,7 @@ private extension FetchedResultsController {
         emitChanges: Bool = true
     ) where C.Iterator.Element == FetchedObject {
         #warning("FIXME")
-        let objects = objects.filter { object in
+        let sortedObjects = objects.filter { object in
             guard !object.isDeleted else {
                 return false
             }
@@ -578,7 +586,11 @@ private extension FetchedResultsController {
         }
 
         func performInsert() {
-            insert(sortedObjects: objects, emitChanges: emitChanges)
+            insert(
+                sortedObjects: sortedObjects,
+                initialOrder: objects.map(\.id),
+                emitChanges: emitChanges
+            )
         }
 
         if !Thread.isMainThread {
@@ -588,13 +600,16 @@ private extension FetchedResultsController {
         }
     }
 
-    private func insert<C: Collection>(
-        sortedObjects objects: C,
+    private func insert<Objects: BidirectionalCollection, IDs: Collection>(
+        sortedObjects objects: Objects,
+        initialOrder: IDs,
         emitChanges: Bool = true
-    ) where C.Iterator.Element == FetchedObject {
+    ) where Objects.Element == FetchedObject, IDs.Element == FetchedObject.ID {
         assert(Thread.isMainThread)
 
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs.formUnion(initialOrder)
+
             for object in objects {
                 guard !object.isDeleted else {
                     continue
@@ -606,6 +621,7 @@ private extension FetchedResultsController {
                         continue
                     }
                 }
+
                 insert(object, atIndex: newFetchIndex, emitChanges: emitChanges)
             }
         }
@@ -796,7 +812,6 @@ private extension FetchedResultsController {
 
         fetchedObjects.remove(at: index)
         sections[indexPath.section].objects.remove(at: indexPath.item)
-        fetchedObjectIDs.remove(object.id)
 
         notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
@@ -807,6 +822,8 @@ private extension FetchedResultsController {
     }
 
     func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        assert(fetchedObjectIDs.contains(object.id))
+        
         let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
 
@@ -823,7 +840,6 @@ private extension FetchedResultsController {
 
         fetchedObjects.insert(object, at: index)
         sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
-        fetchedObjectIDs.insert(object.id)
 
         let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
         notifyInserting(object, at: indexPath, emitChanges: emitChanges)
