@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2AB9763026A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
+		2AB9763126A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
+		2AB9763226A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
+		2AB9763326A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
 		471C507622C6D0DC007F73E9 /* FetchRequests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 471C506C22C6D0DB007F73E9 /* FetchRequests.framework */; };
 		471C507D22C6D0DC007F73E9 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		471C509822C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508722C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift */; };
@@ -169,6 +173,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSetCompat.swift; sourceTree = "<group>"; };
 		4719618122C6DC6C000BBE6B /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		471C506C22C6D0DB007F73E9 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		471C506F22C6D0DB007F73E9 /* FetchRequests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FetchRequests.h; sourceTree = "<group>"; };
@@ -344,6 +349,7 @@
 				471C509322C6D18D007F73E9 /* FetchableObject.swift */,
 				47D33F062334163100E247E4 /* JSON.swift */,
 				47FB808E237CE816008F5438 /* BoxedJSON.swift */,
+				2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -732,6 +738,7 @@
 				471C509822C6D18D007F73E9 /* FetchedResultsControllerProtocol.swift in Sources */,
 				471C509E22C6D18D007F73E9 /* FetchRequestAssociation.swift in Sources */,
 				471C50A222C6D18D007F73E9 /* FetchedResultsController.swift in Sources */,
+				2AB9763026A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */,
 				471C50A022C6D18D007F73E9 /* PausableFetchedResultsController.swift in Sources */,
 				471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */,
 				6623972F267D034D009B696F /* FetchableRequest.swift in Sources */,
@@ -776,6 +783,7 @@
 				47A6ECD622CA8FA80034A854 /* FetchedResultsControllerProtocol.swift in Sources */,
 				47A6ECD722CA8FA80034A854 /* FetchRequestAssociation.swift in Sources */,
 				47A6ECD822CA8FA80034A854 /* FetchedResultsController.swift in Sources */,
+				2AB9763326A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */,
 				47A6ECD922CA8FA80034A854 /* PausableFetchedResultsController.swift in Sources */,
 				47A6ECDA22CA8FA80034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239732267D034D009B696F /* FetchableRequest.swift in Sources */,
@@ -800,6 +808,7 @@
 				47A6ED0722CA905A0034A854 /* FetchedResultsControllerProtocol.swift in Sources */,
 				47A6ED0822CA905A0034A854 /* FetchRequestAssociation.swift in Sources */,
 				47A6ED0922CA905A0034A854 /* FetchedResultsController.swift in Sources */,
+				2AB9763226A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */,
 				47A6ED0A22CA905A0034A854 /* PausableFetchedResultsController.swift in Sources */,
 				47A6ED0B22CA905A0034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239731267D034D009B696F /* FetchableRequest.swift in Sources */,
@@ -844,6 +853,7 @@
 				47A6ED3822CA90A20034A854 /* FetchedResultsControllerProtocol.swift in Sources */,
 				47A6ED3922CA90A20034A854 /* FetchRequestAssociation.swift in Sources */,
 				47A6ED3A22CA90A20034A854 /* FetchedResultsController.swift in Sources */,
+				2AB9763126A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */,
 				47A6ED3B22CA90A20034A854 /* PausableFetchedResultsController.swift in Sources */,
 				47A6ED3C22CA90A20034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239730267D034D009B696F /* FetchableRequest.swift in Sources */,

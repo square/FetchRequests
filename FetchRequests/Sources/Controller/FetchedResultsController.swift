@@ -192,7 +192,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     public private(set) var hasFetchedObjects: Bool = false
     public private(set) var fetchedObjects: [FetchedObject] = []
-    private var fetchedObjectIDs: Set<FetchedObject.ID> = []
+    private var fetchedObjectIDs: OrderedSet<FetchedObject.ID> = []
+
     private var _indexPathsTable: [FetchedObject: IndexPath]?
     private var indexPathsTable: [FetchedObject: IndexPath] {
         if let existing = _indexPathsTable {
@@ -556,7 +557,7 @@ private extension FetchedResultsController {
 
     private func insert<C: Collection>(
         _ objects: C,
-        fetchedObjectIDs: Set<FetchedObject.ID>,
+        fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
     ) where C.Iterator.Element == FetchedObject {
         let objects = objects.filter { object in
