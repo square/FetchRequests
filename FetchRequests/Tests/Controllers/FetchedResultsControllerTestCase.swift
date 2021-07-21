@@ -138,18 +138,15 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
             return object
         }
-        let sortedSecondaryObjects = secondaryObjects.sorted(by: controller.sortDescriptors)
-        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.id }
 
         try! performFetch(secondaryObjects)
 
         XCTAssertEqual(controller.fetchedIDs.count, secondaryObjectIDs.count)
-        XCTAssertEqual(controller.fetchedIDs, sortedSecondaryObjectIDs)
         XCTAssertEqual(controller.sections.count, 1)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, sortedSecondaryObjectIDs)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a", "c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 1, 2, 7, 3])
-        XCTAssertEqual(controller.sections[0].tags, [0, 1, 2, 7, 3])
+        XCTAssertEqual(controller.tags, [3, 0, 2, 6, 7])
+        XCTAssertEqual(controller.sections[0].tags, [3, 0, 2, 6, 7])
     }
 
     func testBasicFetchWithSortDescriptors() {
@@ -261,13 +258,13 @@ extension FetchedResultsControllerTestCase {
 
         try! performFetch(secondaryObjects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "c", "b", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "c", "b", "d"])
         XCTAssertEqual(controller.sections.count, 2)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 4, 6, 1, 2])
-        XCTAssertEqual(controller.sections[0].tags, [0, 4])
+        XCTAssertEqual(controller.tags, [4, 0, 6, 1, 2])
+        XCTAssertEqual(controller.sections[0].tags, [4, 0])
         XCTAssertEqual(controller.sections[1].tags, [6, 1, 2])
     }
 
@@ -713,9 +710,9 @@ extension FetchedResultsControllerTestCase {
 
         try! performFetch(objects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].fetchedIDs, ["c", "d"])
 
@@ -723,13 +720,13 @@ extension FetchedResultsControllerTestCase {
 
         changeEvents.removeAll()
 
-        getObjectAtIndex(1, withObjectID: "z").sectionName = "a"
+        getObjectAtIndex(1, withObjectID: "a").sectionName = "a"
 
         XCTAssert(changeEvents.isEmpty)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].fetchedIDs, ["c", "d"])
     }

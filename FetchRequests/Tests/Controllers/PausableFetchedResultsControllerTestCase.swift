@@ -258,7 +258,7 @@ extension PausableFetchedResultsControllerTestCase {
         controller.isPaused = false
 
         XCTAssertTrue(changeEvents.isEmpty)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["1", "a", "b", "c"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "b", "c", "1"])
     }
 }
 

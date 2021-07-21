@@ -138,6 +138,9 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     func testPaginationDoesNotDisableInserts() {
         controller = PaginatingFetchedResultsController(
             request: createFetchRequest(),
+            sortDescriptors: [
+                NSSortDescriptor(keyPath: \FetchedObject.id, ascending: true),
+            ],
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)

@@ -32,8 +32,8 @@ public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
 
     var associatedFetchSize: Int { get set }
 
-    var sortDescriptors: [NSSortDescriptor] { get }
     var sectionNameKeyPath: SectionNameKeyPath? { get }
+    var sortDescriptors: [NSSortDescriptor] { get }
 
     func performFetch(completion: @escaping () -> Void)
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void)
@@ -54,7 +54,7 @@ public extension FetchedResultsControllerProtocol {
     }
 
     internal func idealSectionIndex(forSectionName name: String) -> Int {
-        guard let descriptor = sortDescriptors.first else {
+        guard let descriptor = sortDescriptors.first, sectionNameKeyPath != nil else {
             return 0
         }
 
@@ -67,7 +67,7 @@ public extension FetchedResultsControllerProtocol {
         }
     }
 
-    internal func idealObjectIndex(for object: FetchedObject, inArray array: [FetchedObject]) -> Int {
+    func idealObjectIndex(for object: FetchedObject, inArray array: [FetchedObject]) -> Int {
         guard !sortDescriptors.isEmpty else {
             return array.endIndex
         }

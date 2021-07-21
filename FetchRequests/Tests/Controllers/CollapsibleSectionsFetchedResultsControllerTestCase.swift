@@ -497,18 +497,15 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
             return object
         }
-        let sortedSecondaryObjects = secondaryObjects.sorted(by: controller.sortDescriptors)
-        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.id }
 
         try! performFetch(secondaryObjects)
 
         XCTAssertEqual(controller.fetchedIDs.count, secondaryObjectIDs.count)
-        XCTAssertEqual(controller.fetchedIDs, sortedSecondaryObjectIDs)
         XCTAssertEqual(controller.sections.count, 1)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, sortedSecondaryObjectIDs)
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["9", "0", "2", "1", "4"])
 
-        XCTAssertEqual(controller.tags, [0, 1, 2, 7, 3])
-        XCTAssertEqual(controller.sections[0].allTags, [0, 1, 2, 7, 3])
+        XCTAssertEqual(controller.tags, [3, 0, 2, 6, 7])
+        XCTAssertEqual(controller.sections[0].allTags, [3, 0, 2, 6, 7])
     }
 
     func testBasicFetchWithSortDescriptors() {
@@ -619,13 +616,13 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         try! performFetch(secondaryObjects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "c", "b", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "c", "b", "d"])
         XCTAssertEqual(controller.sections.count, 2)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 4, 6, 1, 2])
-        XCTAssertEqual(controller.sections[0].allTags, [0, 4])
+        XCTAssertEqual(controller.tags, [4, 0, 6, 1, 2])
+        XCTAssertEqual(controller.sections[0].allTags, [4, 0])
         XCTAssertEqual(controller.sections[1].allTags, [6, 1, 2])
     }
 
@@ -1069,9 +1066,9 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         try! performFetch(objects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].allFetchedIDs, ["c", "d"])
 
@@ -1079,13 +1076,13 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         changeEvents.removeAll()
 
-        getObjectAtIndex(1, withObjectID: "z").sectionName = "a"
+        getObjectAtIndex(1, withObjectID: "a").sectionName = "a"
 
         XCTAssert(changeEvents.isEmpty)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].allFetchedIDs, ["c", "d"])
     }
