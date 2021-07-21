@@ -536,23 +536,12 @@ private extension FetchedResultsController {
         }
 
         performChanges(emitChanges: emitChanges) {
-            stopObserving(object)
-
-            sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjects.remove(at: fetchIndex)
-            fetchedObjectIDs.remove(object.id)
-
-            notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
-
-            if sections[indexPath.section].numberOfObjects == 0 {
-                let section = sections.remove(at: indexPath.section)
-
-                notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
-            }
+            remove(object, atIndex: fetchIndex, emitChanges: emitChanges)
         }
     }
 
     func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+        // This is snapshotted because we're about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
         guard objects.count <= 100 || !Thread.isMainThread else {
