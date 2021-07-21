@@ -16,9 +16,15 @@ let package = Package(
             targets: ["FetchRequests"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-collections", from: "0.0.4"),
+    ],
     targets: [
         .target(
             name: "FetchRequests",
+            dependencies: [
+                .product(name: "Collections", package: "swift-collections"),
+            ],
             path: "FetchRequests",
             exclude: ["Tests"]
         ),
