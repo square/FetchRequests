@@ -17,14 +17,19 @@ typealias OrderedSet = Collections.OrderedSet
 import Foundation
 
 struct OrderedSet<Element: Hashable> {
-    private(set) var elements: [Element]
+    private(set) var elements: [Element] {
+        didSet {
+            reindex()
+        }
+    }
     private(set) var unordered: Set<Element>
 
-    #warning("Make a time efficient firstIndex and lastIndex")
+    private var indexed: [Element: Int]
 
     init() {
         elements = []
         unordered = []
+        indexed = [:]
     }
 
     init<S: Sequence>(_ sequence: S) where S.Element == Element {
@@ -92,7 +97,7 @@ extension OrderedSet: SetAlgebra {
 
     @discardableResult
     mutating func remove(_ member: Element) -> Element? {
-        guard contains(member), let index = elements.firstIndex(of: member) else {
+        guard contains(member), let index = index(of: member) else {
             return nil
         }
         elements.remove(at: index)
@@ -103,7 +108,7 @@ extension OrderedSet: SetAlgebra {
     mutating func update(with newMember: Element) -> Element? {
         // Unconditionally update our set, even if our set contains it
 
-        if contains(newMember), let index = elements.firstIndex(of: newMember) {
+        if contains(newMember), let index = index(of: newMember) {
             elements[index] = newMember
             return unordered.update(with: newMember)
         } else {
@@ -179,7 +184,8 @@ extension OrderedSet: SetAlgebra {
         _ other: S
     ) where S.Element == Element {
         unordered.formIntersection(other)
-        elements.removeAll { !unordered.contains($0) }
+        let newElements = elements.filter { !unordered.contains($0) }
+        elements = newElements
     }
 
     mutating func formSymmetricDifference<S: Sequence>(
@@ -203,7 +209,8 @@ extension OrderedSet: SetAlgebra {
         _ other: S
     ) where S.Element == Element {
         unordered.subtract(other)
-        elements.removeAll { !unordered.contains($0) }
+        let newElements = elements.filter { !unordered.contains($0) }
+        elements = newElements
     }
 }
 
@@ -248,6 +255,28 @@ extension OrderedSet: RandomAccessCollection {
 
     subscript(position: Int) -> Element {
         elements[position]
+    }
+}
+
+// MARK: - O(1) Index access
+
+extension OrderedSet {
+    private mutating func reindex() {
+        indexed = elements.enumerated().reduce(into: [:]) { memo, entry in
+            memo[entry.element] = entry.offset
+        }
+    }
+
+    private func index(of element: Element) -> Int? {
+        return indexed[element]
+    }
+
+    public func firstIndex(of element: Element) -> Int? {
+        index(of: element)
+    }
+
+    public func lastIndex(of element: Element) -> Int? {
+        index(of: element)
     }
 }
 
