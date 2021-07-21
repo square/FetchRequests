@@ -23,7 +23,6 @@ struct OrderedSet<Element: Hashable> {
         }
     }
     private(set) var unordered: Set<Element>
-
     private var indexed: [Element: Int]
 
     init() {

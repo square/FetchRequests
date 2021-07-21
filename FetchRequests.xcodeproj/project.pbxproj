@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A97F51426A8B43100027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51326A8B43100027D90 /* Collections */; };
+		2A97F51726A8B44400027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51626A8B44400027D90 /* Collections */; };
+		2A97F51926A8B44B00027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51826A8B44B00027D90 /* Collections */; };
+		2A97F51B26A8B44F00027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51A26A8B44F00027D90 /* Collections */; };
 		2AB9763026A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
 		2AB9763126A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
 		2AB9763226A7A8DC0086AA77 /* OrderedSetCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */; };
@@ -225,6 +229,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A97F51426A8B43100027D90 /* Collections in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +245,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A97F51B26A8B44F00027D90 /* Collections in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +253,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A97F51926A8B44B00027D90 /* Collections in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +269,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A97F51726A8B44400027D90 /* Collections in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +292,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A97F51526A8B44400027D90 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		471C506222C6D0DB007F73E9 = {
 			isa = PBXGroup;
 			children = (
@@ -293,6 +308,7 @@
 				471C506E22C6D0DB007F73E9 /* FetchRequests */,
 				471C507922C6D0DC007F73E9 /* Tests */,
 				471C506D22C6D0DB007F73E9 /* Products */,
+				2A97F51526A8B44400027D90 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -469,6 +485,9 @@
 			dependencies = (
 			);
 			name = "FetchRequests-iOS";
+			packageProductDependencies = (
+				2A97F51326A8B43100027D90 /* Collections */,
+			);
 			productName = FetchRequests;
 			productReference = 471C506C22C6D0DB007F73E9 /* FetchRequests.framework */;
 			productType = "com.apple.product-type.framework";
@@ -505,6 +524,9 @@
 			dependencies = (
 			);
 			name = "FetchRequests-watchOS";
+			packageProductDependencies = (
+				2A97F51A26A8B44F00027D90 /* Collections */,
+			);
 			productName = FetchRequests;
 			productReference = 47A6ECE422CA8FA80034A854 /* FetchRequests.framework */;
 			productType = "com.apple.product-type.framework";
@@ -523,6 +545,9 @@
 			dependencies = (
 			);
 			name = "FetchRequests-tvOS";
+			packageProductDependencies = (
+				2A97F51826A8B44B00027D90 /* Collections */,
+			);
 			productName = FetchRequests;
 			productReference = 47A6ED1522CA905A0034A854 /* FetchRequests.framework */;
 			productType = "com.apple.product-type.framework";
@@ -559,6 +584,9 @@
 			dependencies = (
 			);
 			name = "FetchRequests-macOS";
+			packageProductDependencies = (
+				2A97F51626A8B44400027D90 /* Collections */,
+			);
 			productName = FetchRequests;
 			productReference = 47A6ED4622CA90A20034A854 /* FetchRequests.framework */;
 			productType = "com.apple.product-type.framework";
@@ -627,6 +655,9 @@
 				Base,
 			);
 			mainGroup = 471C506222C6D0DB007F73E9;
+			packageReferences = (
+				2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
 			productRefGroup = 471C506D22C6D0DB007F73E9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1417,6 +1448,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2A97F51326A8B43100027D90 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		2A97F51626A8B44400027D90 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		2A97F51826A8B44B00027D90 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		2A97F51A26A8B44F00027D90 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A97F51226A8B43100027D90 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 471C506322C6D0DB007F73E9 /* Project object */;
 }
