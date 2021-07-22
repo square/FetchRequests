@@ -16,8 +16,8 @@ jobs:
           - watchOS
           - macOS
         xcode:
-          - ~12.5
-    runs-on: macos-latest
+          - 13
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
       - name: Build
