@@ -30,17 +30,9 @@ jobs:
           scheme: FetchRequests-${{ matrix.platform }}
           action: test
           code-coverage: true
-      - name: LS
-        run: ls -R test.xcresult
       - name: Code Coverage
-        uses: codecov/codecov-action@v2
-        with:
-          working-directory: /Users/runner/Library/Developer/Xcode/DerivedData
-          #files: ./coverage1.xml,./coverage2.xml # optional
-          #flags: unittests # optional
-          #name: codecov-umbrella # optional
-          #fail_ci_if_error: true # optional (default = false)
-          verbose: true # optional (default = false)
+        #uses: codecov/codecov-action@v2
+        run: bash <(curl -s https://codecov.io/bash);
   validate:
     runs-on: macos-latest
     needs: build
