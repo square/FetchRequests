@@ -15,28 +15,25 @@ jobs:
           - tvOS
           - watchOS
           - macOS
-        xcode:
-          - 12.5
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Build
         uses: mxcl/xcodebuild@v1
         with:
-          #xcode: ${{ matrix.xcode }}
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
-          action: test
+          # action: test
           code-coverage: true
-          warnings-as-errors: true
+          # warnings-as-errors: true
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
         uses: mxcl/xcodebuild@v1
         with:
-          #xcode: ${{ matrix.xcode }}
           platform: iOS
           scheme: iOS Example
           action: build
-          warnings-as-errors: true
+          # warnings-as-errors: true
           working-directory: Example
