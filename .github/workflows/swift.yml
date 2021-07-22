@@ -26,7 +26,7 @@ jobs:
           scheme: FetchRequests-${{ matrix.platform }}
           #action: test
           code-coverage: true
-          warnings-as-errors: true
+          #warnings-as-errors: true
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
