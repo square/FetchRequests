@@ -17,13 +17,13 @@ jobs:
           - macOS
         xcode:
           - 12.5
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
       - name: Build
         uses: mxcl/xcodebuild@v1
         with:
-          xcode: ${{ matrix.xcode }}
+          #xcode: ${{ matrix.xcode }}
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
           action: test
@@ -34,7 +34,7 @@ jobs:
       - name: Example Project
         uses: mxcl/xcodebuild@v1
         with:
-          xcode: ${{ matrix.xcode }}
+          #xcode: ${{ matrix.xcode }}
           platform: iOS
           scheme: iOS Example
           action: build
