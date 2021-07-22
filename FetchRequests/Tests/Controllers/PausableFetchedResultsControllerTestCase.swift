@@ -200,7 +200,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let effectiveSortDescriptorKeys = [
             #selector(getter: TestObject.sectionName),
-            #selector(getter: TestObject.id),
+            NSSelectorFromString("self"),
         ].map { $0.description }
 
         try! performFetch(["a", "b", "c"])
@@ -258,7 +258,7 @@ extension PausableFetchedResultsControllerTestCase {
         controller.isPaused = false
 
         XCTAssertTrue(changeEvents.isEmpty)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["1", "a", "b", "c"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "b", "c", "1"])
     }
 }
 

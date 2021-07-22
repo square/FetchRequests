@@ -168,8 +168,13 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
     public let request: FetchRequest<FetchedObject>
-    public private(set) var sortDescriptors: [NSSortDescriptor]
     public let sectionNameKeyPath: SectionNameKeyPath?
+    private var rawSortDescriptors: [NSSortDescriptor] {
+        didSet {
+            sortDescriptors = rawSortDescriptors.finalize(with: self)
+        }
+    }
+    public private(set) var sortDescriptors: [NSSortDescriptor] = []
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
 
@@ -192,7 +197,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     public private(set) var hasFetchedObjects: Bool = false
     public private(set) var fetchedObjects: [FetchedObject] = []
-    private var fetchedObjectIDs: Set<FetchedObject.ID> = []
+    fileprivate private(set) var fetchedObjectIDs: OrderedSet<FetchedObject.ID> = []
+
     private var _indexPathsTable: [FetchedObject: IndexPath]?
     private var indexPathsTable: [FetchedObject: IndexPath] {
         if let existing = _indexPathsTable {
@@ -237,9 +243,13 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         debounceInsertsAndReloads: Bool = true
     ) {
         self.request = request
-        self.sortDescriptors = sortDescriptors.finalize(with: sectionNameKeyPath)
+        self.rawSortDescriptors = sortDescriptors
         self.sectionNameKeyPath = sectionNameKeyPath
         self.debounceInsertsAndReloads = debounceInsertsAndReloads
+
+        super.init()
+
+        self.sortDescriptors = sortDescriptors.finalize(with: self)
     }
 
     deinit {
@@ -308,11 +318,13 @@ public extension FetchedResultsController {
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
         assert(Thread.isMainThread)
 
-        sortDescriptors = newSortDescriptors.finalize(with: sectionNameKeyPath)
+        rawSortDescriptors = newSortDescriptors
+
         guard hasFetchedObjects else {
             completion()
             return
         }
+
         assign(fetchedObjects: fetchedObjects, dropObjectsToInsert: false, completion: completion)
     }
 
@@ -487,11 +499,17 @@ private extension FetchedResultsController {
             return
         }
 
-        let sorted = objects.sorted(by: sortDescriptors)
+        let fetchOrder = OrderedSet(objects.map(\.id))
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.sorted(by: sortDescriptors)
 
         func performAssign() {
             assign(
-                sortedFetchedObjects: sorted,
+                sortedObjects: sortedObjects,
+                initialOrder: fetchOrder,
                 emitChanges: emitChanges,
                 dropObjectsToInsert: dropObjectsToInsert
             )
@@ -505,17 +523,21 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(
-        sortedFetchedObjects objects: [FetchedObject],
+    func assign<C: BidirectionalCollection>(
+        sortedObjects objects: C,
+        initialOrder: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool,
         dropObjectsToInsert: Bool
-    ) {
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         if dropObjectsToInsert {
             objectsToInsert.removeAll()
         }
+
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs = initialOrder
+
             let operations = objects.difference(from: fetchedObjects)
 
             for operation in operations {
@@ -536,23 +558,13 @@ private extension FetchedResultsController {
         }
 
         performChanges(emitChanges: emitChanges) {
-            stopObserving(object)
-
-            sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjects.remove(at: fetchIndex)
             fetchedObjectIDs.remove(object.id)
-
-            notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
-
-            if sections[indexPath.section].numberOfObjects == 0 {
-                let section = sections.remove(at: indexPath.section)
-
-                notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
-            }
+            remove(object, atIndex: fetchIndex, emitChanges: emitChanges)
         }
     }
 
     func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+        // This is snapshotted because we're about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
         guard objects.count <= 100 || !Thread.isMainThread else {
@@ -562,15 +574,23 @@ private extension FetchedResultsController {
             }
             return
         }
+
         insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
     }
 
     private func insert<C: Collection>(
         _ objects: C,
-        fetchedObjectIDs: Set<FetchedObject.ID>,
+        fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
     ) where C.Iterator.Element == FetchedObject {
-        let objects = objects.filter { object in
+        let initialOrder = OrderedSet(objects.map(\.id))
+
+        let fetchOrder = fetchedObjectIDs.union(initialOrder)
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.filter { object in
             guard !object.isDeleted else {
                 return false
             }
@@ -582,7 +602,11 @@ private extension FetchedResultsController {
         }
 
         func performInsert() {
-            insert(sortedObjects: objects, emitChanges: emitChanges)
+            insert(
+                sortedObjects: sortedObjects,
+                initialOrder: initialOrder,
+                emitChanges: emitChanges
+            )
         }
 
         if !Thread.isMainThread {
@@ -592,10 +616,16 @@ private extension FetchedResultsController {
         }
     }
 
-    private func insert<C: Collection>(sortedObjects objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    private func insert<C: BidirectionalCollection>(
+        sortedObjects objects: C,
+        initialOrder: OrderedSet<FetchedObject.ID>,
+        emitChanges: Bool = true
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs.formUnion(initialOrder)
+
             for object in objects {
                 guard !object.isDeleted else {
                     continue
@@ -607,6 +637,7 @@ private extension FetchedResultsController {
                         continue
                     }
                 }
+
                 insert(object, atIndex: newFetchIndex, emitChanges: emitChanges)
             }
         }
@@ -797,7 +828,6 @@ private extension FetchedResultsController {
 
         fetchedObjects.remove(at: index)
         sections[indexPath.section].objects.remove(at: indexPath.item)
-        fetchedObjectIDs.remove(object.id)
 
         notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
@@ -808,6 +838,8 @@ private extension FetchedResultsController {
     }
 
     func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        assert(fetchedObjectIDs.contains(object.id))
+        
         let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
 
@@ -824,7 +856,6 @@ private extension FetchedResultsController {
 
         fetchedObjects.insert(object, at: index)
         sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
-        fetchedObjectIDs.insert(object.id)
 
         let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
         notifyInserting(object, at: indexPath, emitChanges: emitChanges)
@@ -1342,7 +1373,17 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 private extension Array where Element == NSSortDescriptor {
     func finalize<FetchedObject: FetchableObject>(
-        with sectionNameKeyPath: KeyPath<FetchedObject, String>?
+        with controller: FetchedResultsController<FetchedObject>
+    ) -> Self {
+        return finalize(sectionNameKeyPath: controller.sectionNameKeyPath) { [weak controller] id in
+            // Note: OrderedSet.firstIndex(of:) is *not* O(n)
+            controller?.fetchedObjectIDs.firstIndex(of: id)
+        }
+    }
+
+    func finalize<FetchedObject: FetchableObject>(
+        sectionNameKeyPath: KeyPath<FetchedObject, String>?,
+        insertionOrder: @escaping (FetchedObject.ID) -> Int?
     ) -> Self {
         var sortDescriptors = self
 
@@ -1362,24 +1403,27 @@ private extension Array where Element == NSSortDescriptor {
             sortDescriptors.insert(sectionNameDescriptor, at: 0)
         }
 
-        if FetchedObject.instancesRespond(to: Selector(("id"))) {
-            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            sortDescriptors.append(idDescriptor)
-        } else {
-            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
-                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
-                    return .orderedSame
-                }
-                if lhs.id < rhs.id {
-                    return .orderedAscending
-                } else if lhs.id > rhs.id {
-                    return .orderedDescending
-                } else {
-                    return .orderedSame
-                }
+        let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+            guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                assert(false, "We were used against the wrong type?")
+                return .orderedSame
             }
-            sortDescriptors.append(idDescriptor)
+
+            let lhsInsertion = insertionOrder(lhs.id) ?? .max
+            let rhsInsertion = insertionOrder(rhs.id) ?? .max
+
+            assert(lhsInsertion != .max)
+            assert(rhsInsertion != .max)
+
+            if lhsInsertion < rhsInsertion {
+                return .orderedAscending
+            } else if lhsInsertion > rhsInsertion {
+                return .orderedDescending
+            } else {
+                return .orderedSame
+            }
         }
+        sortDescriptors.append(idDescriptor)
 
         return sortDescriptors
     }
