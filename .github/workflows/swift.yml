@@ -39,11 +39,13 @@ jobs:
   lint:
     runs-on: macos-latest
     needs: build
+    steps:
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
   example
     runs-on: macos-latest
     needs: build
+    steps:
       - name: Build
         uses: mxcl/xcodebuild@v1
         with:
