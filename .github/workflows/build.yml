@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     strategy:
-      max-parallel: 1
+      #max-parallel: 1
       matrix:
         platform:
           - iOS
@@ -31,7 +31,7 @@ jobs:
           scheme: FetchRequests-${{ matrix.platform }}
           action: test
           code-coverage: true
-          warnings-as-errors: true
+          #warnings-as-errors: true
       - name: Code Coverage
         uses: codecov/codecov-action@v2
         with:
