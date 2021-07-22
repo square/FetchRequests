@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
-  example
+  example:
     runs-on: macos-latest
     needs: build
     steps:
