@@ -16,7 +16,7 @@ jobs:
           - watchOS
           - macOS
         xcode:
-          - ^13
+          - ~12.5
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
