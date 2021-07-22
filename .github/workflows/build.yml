@@ -35,7 +35,7 @@ jobs:
       - name: Code Coverage
         uses: codecov/codecov-action@v2
         with:
-          working-directory: ~/Library/Developer/Xcode/DerivedData
+          working-directory: /Users/runner/Library/Developer/Xcode/DerivedData
           #files: ./coverage1.xml,./coverage2.xml # optional
           #flags: unittests # optional
           #name: codecov-umbrella # optional
