@@ -21,7 +21,6 @@ jobs:
           - watchOS
           - macOS
     runs-on: macos-latest
-    needs: checkout
     steps:
       - name: Checkout
         uses: actions/checkout@v2
