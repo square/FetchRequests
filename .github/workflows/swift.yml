@@ -6,19 +6,27 @@ on:
   pull_request:
     branches:
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
+  checkout:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
   build:
     strategy:
       matrix:
         platform:
           - iOS
-          #- tvOS
-          #- watchOS
-          #- macOS
+          - tvOS
+          - watchOS
+          - macOS
     runs-on: macos-latest
+    needs: checkout
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Build
         uses: mxcl/xcodebuild@v1
         with:
@@ -27,9 +35,15 @@ jobs:
           #action: test
           code-coverage: true
           #warnings-as-errors: true
+  lint:
+    runs-on: macos-latest
+    needs: build
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
-      - name: Example Project
+  example
+    runs-on: macos-latest
+    needs: build
+      - name: Build
         uses: mxcl/xcodebuild@v1
         with:
           platform: iOS
