@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
   build:
     strategy:
+      max-parallel: 1
       matrix:
         platform:
           - iOS
