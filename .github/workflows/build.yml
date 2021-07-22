@@ -1,0 +1,53 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches:
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - iOS
+          - tvOS
+          #- watchOS
+          - macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        uses: mxcl/xcodebuild@v1
+        with:
+          platform: ${{ matrix.platform }}
+          scheme: FetchRequests-${{ matrix.platform }}
+          action: test
+          code-coverage: true
+      - name: Code Coverage
+        #uses: codecov/codecov-action@v2
+        run: bash <(curl -s https://codecov.io/bash);
+  validate:
+    runs-on: macos-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Swift Lint
+        run: swiftlint --strict
+      - name: Pod Lint
+        run: pod lib lint --quick --fail-fast --verbose --skip-tests
+      - name: Example Project
+        uses: mxcl/xcodebuild@v1
+        with:
+          platform: iOS
+          scheme: iOS Example
+          action: build
+          warnings-as-errors: true
+          working-directory: Example
