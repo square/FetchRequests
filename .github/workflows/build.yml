@@ -29,15 +29,25 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
-          #action: test
+          action: test
           code-coverage: true
-          #warnings-as-errors: true
+          warnings-as-errors: true
+      - name: Code Coverage
+        uses: codecov/codecov-action@v2
+        with:
+          #files: ./coverage1.xml,./coverage2.xml # optional
+          #flags: unittests # optional
+          #name: codecov-umbrella # optional
+          #fail_ci_if_error: true # optional (default = false)
+          verbose: true # optional (default = false)
   validate:
     runs-on: macos-latest
     needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Swift Lint
+        run: swiftlint
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
