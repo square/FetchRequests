@@ -1,4 +1,4 @@
-name: Swift
+name: build
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         platform:
           - iOS
           - tvOS
-          - watchOS
+          #- watchOS
           - macOS
     runs-on: macos-latest
     steps:
