@@ -17,8 +17,8 @@ jobs:
           - macOS
     runs-on: macos-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      # - name: Checkout
+      #   uses: actions/checkout@v2
       - name: Build
         uses: mxcl/xcodebuild@v1
         with:
