@@ -30,10 +30,8 @@ jobs:
           scheme: FetchRequests-${{ matrix.platform }}
           action: test
           code-coverage: true
-      - name: PWD
-        run: pwd
       - name: LS
-        run: ls test
+        run: ls -R test
       - name: Code Coverage
         uses: codecov/codecov-action@v2
         with:
