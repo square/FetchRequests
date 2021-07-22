@@ -128,7 +128,7 @@ extension OrderedSet: SetAlgebra {
             return (true, newMember)
         }
 
-        // returns (false, oldMember)
+        // This should return (false, oldMember)
         return unordered.insert(newMember)
     }
 
