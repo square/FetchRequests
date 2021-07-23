@@ -33,7 +33,13 @@ It is best when backed by something like a [WebSocket](https://en.wikipedia.org/
 
 To get started, you create a `FetchRequest` which explains your data access patterns.
 The `FetchedResultsController` is the interface to access the your data.
-It will automatically cache your associated values for the lifetime of that controller.
+Objects are sorted with the following heuristic: 
+* Section Name ascending (if present)
+* Passed in sort descriptors
+* Insertion order of the entity ascending
+
+You can associate related values to your fetched entities.
+It will automatically cache these associated values for the lifetime of that controller.
 If a memory pressure event occurs, it will release its hold on those objects, allowing them to be de-inited.
 
 The example app has an UserDefaults-backed storage mechanism.

@@ -7,10 +7,15 @@ In Progress
 
 * Updated minimum SDKs to iOS 13 and related OSes
 * Added a Swift 5.5 package definition
-* Added Identifiable conformance to FetchedResultsSection
-* Added `objectWillChange` and `objectDidChange` Publishers to all Controllers 
-* Removed FRIdentifiable in deference to Identifiable
-* Removed simplediff in deference to BidirectionalCollection.difference(from:)
+* Renamed `FetchRequest` to `FetchDefinition` to avoid SwiftUI naming collisions
+* Removed `FRIdentifiable` in deference to `Identifiable`
+* Added `Identifiable` conformance to FetchedResultsSection
+* Removed simplediff in deference to `BidirectionalCollection.difference(from:)`
+* Added `objectWillChange` and `objectDidChange` Publishers to all Controllers
+    * Removed the Wrapper controller as it is dupliative with `objectDidChange` 
+* Objects are no longer sorted by `id`
+    * The `ID` does not need to be comparable
+    * Stable sorting is maintained by respecting the insertion order of objects
 
 ## [3.2.0](https://github.com/crewos/FetchRequests/releases/tag/3.2.0)
 Released on 2021-06-21

@@ -325,7 +325,12 @@ public extension FetchedResultsController {
             return
         }
 
-        assign(fetchedObjects: fetchedObjects, dropObjectsToInsert: false, completion: completion)
+        assign(
+            fetchedObjects: fetchedObjects,
+            updateFetchOrder: false,
+            dropObjectsToInsert: false,
+            completion: completion
+        )
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {
@@ -487,6 +492,7 @@ private extension FetchedResultsController {
 
     func assign(
         fetchedObjects objects: [FetchedObject],
+        updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
         completion: @escaping () -> Void
@@ -499,7 +505,7 @@ private extension FetchedResultsController {
             return
         }
 
-        let fetchOrder = OrderedSet(objects.map(\.id))
+        let fetchOrder = updateFetchOrder ? OrderedSet(objects.map(\.id)) : fetchedObjectIDs
         let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
             fetchOrder.firstIndex(of: id)
         }
