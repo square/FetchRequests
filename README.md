@@ -53,7 +53,7 @@ Examples:
 ```swift
 struct AllUsersView: View {
     @FetchableRequest(
-        fetchRequest: FetchRequest(request: User.fetchAll),
+        definition: FetchDefinition(request: User.fetchAll),
         sortDescriptors: [
             NSSortDescriptor(
                 key: #keyPath(User.name),
@@ -80,7 +80,7 @@ struct MembersView: View {
     func init(fromID: EntityID) {
         self.fromID = fromID
         _members = FetchableRequest(
-            fetchRequest: Membership.fetchRequest(from: fromID, toEntityType: .user)
+            definition: Membership.fetchDefinition(from: fromID, toEntityType: .user)
         )
     }
 

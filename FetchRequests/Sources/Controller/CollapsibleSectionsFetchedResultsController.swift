@@ -112,8 +112,8 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     private var sectionConfigs: [String: SectionCollapseConfig] = [:]
 
     public var sections: [CollapsibleResultsSection<FetchedObject>] = []
-    public var request: FetchRequest<FetchedObject> {
-        return fetchController.request
+    public var definition: FetchDefinition<FetchedObject> {
+        return fetchController.definition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {
@@ -138,7 +138,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     }
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true,
@@ -146,7 +146,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
         sectionConfigCheck: @escaping SectionCollapseConfigCheck = { _ in return nil }
     ) {
         fetchController = FetchedResultsController<FetchedObject>(
-            request: request,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads

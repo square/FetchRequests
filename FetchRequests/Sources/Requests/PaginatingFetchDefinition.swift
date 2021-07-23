@@ -1,5 +1,5 @@
 //
-//  PaginatingFetchRequest.swift
+//  PaginatingFetchDefinition.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/28/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchRequest<FetchedObject> {
+public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDefinition<FetchedObject> {
     public typealias PaginationRequest = (
         _ currentResults: [FetchedObject],
         _ completion: @escaping ([FetchedObject]?) -> Void
@@ -33,14 +33,18 @@ public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchReques
             dataResetTokens: dataResetTokens
         )
     }
+}
 
-    fileprivate func performPagination<Controller>(in fetchController: Controller) where Controller: InternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
-        let currentResults = fetchController.fetchedObjects
-        paginationRequest(currentResults) { [weak fetchController] pageResults in
+private extension InternalFetchResultsControllerProtocol {
+    func performPagination(
+        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
+    ) {
+        let currentResults = self.fetchedObjects
+        paginationRequest(currentResults) { [weak self] pageResults in
             guard let pageResults = pageResults else {
                 return
             }
-            fetchController?.manuallyInsert(objects: pageResults, emitChanges: true)
+            self?.manuallyInsert(objects: pageResults, emitChanges: true)
         }
     }
 }
@@ -48,18 +52,18 @@ public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchReques
 public class PaginatingFetchedResultsController<
     FetchedObject: FetchableObject
 >: FetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
+    private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
 
     public init(
-        request: PaginatingFetchRequest<FetchedObject>,
+        definition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingRequest = request
+        paginatingDefinition = definition
 
         super.init(
-            request: request,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -67,25 +71,25 @@ public class PaginatingFetchedResultsController<
     }
 
     public func performPagination() {
-        paginatingRequest.performPagination(in: self)
+        performPagination(with: paginatingDefinition.paginationRequest)
     }
 }
 
 public class PausablePaginatingFetchedResultsController<
     FetchedObject: FetchableObject
 >: PausableFetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
+    private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
     
     public init(
-        request: PaginatingFetchRequest<FetchedObject>,
+        definition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingRequest = request
+        paginatingDefinition = definition
         
         super.init(
-            request: request,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -93,6 +97,6 @@ public class PausablePaginatingFetchedResultsController<
     }
     
     public func performPagination() {
-        paginatingRequest.performPagination(in: self)
+        performPagination(with: paginatingDefinition.paginationRequest)
     }
 }

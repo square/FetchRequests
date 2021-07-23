@@ -22,10 +22,10 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
-    private func createFetchRequest(
+    private func createFetchDefinition(
         associations: [PartialKeyPath<TestObject>] = []
-    ) -> FetchRequest<TestObject> {
-        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
+    ) -> FetchDefinition<TestObject> {
+        let request: FetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
 
@@ -35,11 +35,11 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return FetchRequest<TestObject>(
+        return FetchDefinition<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -61,7 +61,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     func testBasicFetch() {
         controller = PausableFetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -75,7 +75,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     func testResort() {
         controller = PausableFetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -91,7 +91,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     func testExpectInsertFromBroadcastNotification() {
         controller = PausableFetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -128,7 +128,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     func testExpectPausedInsertFromBroadcastNotification() {
         controller = PausableFetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -174,7 +174,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
     func testResetClearsPaused() {
         controller = PausableFetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -190,10 +190,10 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
     }
 
     func testWrappedProperties() {
-        let request = createFetchRequest()
+        let fetchDefinition = createFetchDefinition()
 
         controller = PausableFetchedResultsController(
-            request: request,
+            definition: fetchDefinition,
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -207,7 +207,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         controller.associatedFetchSize = 20
 
-        XCTAssert(controller.request === request)
+        XCTAssert(controller.definition === fetchDefinition)
         XCTAssertEqual(controller.sortDescriptors.map { $0.key }, effectiveSortDescriptorKeys)
         XCTAssertEqual(controller.sectionNameKeyPath, \TestObject.sectionName)
         XCTAssertEqual(controller.associatedFetchSize, 20)
@@ -219,12 +219,12 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
 extension PausableFetchedResultsControllerTestCase {
     func testCanCreatePausableVariation() {
-        let baseRequest = createFetchRequest()
+        let baseDefinition = createFetchDefinition()
 
         var paginationRequests = 0
 
-        let request = PaginatingFetchRequest<TestObject>(
-            request: baseRequest.request,
+        let fetchDefinition = PaginatingFetchDefinition<TestObject>(
+            request: baseDefinition.request,
             paginationRequest: { current, completion in
                 paginationRequests += 1
 
@@ -232,12 +232,12 @@ extension PausableFetchedResultsControllerTestCase {
 
                 completion([newObject])
             },
-            creationInclusionCheck: baseRequest.creationInclusionCheck,
-            associations: baseRequest.associations
+            creationInclusionCheck: baseDefinition.creationInclusionCheck,
+            associations: baseDefinition.associations
         )
 
         let controller = PausablePaginatingFetchedResultsController(
-            request: request,
+            definition: fetchDefinition,
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )

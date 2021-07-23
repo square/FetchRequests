@@ -1,5 +1,5 @@
 //
-//  FetchRequest.swift
+//  FetchDefinition.swift
 //  Crew
 //
 //  Created by Adam Lickel on 7/7/16.
@@ -8,9 +8,7 @@
 
 import Foundation
 
-// MARK: - FetchRequest
-
-public class FetchRequest<FetchedObject: FetchableObject> {
+public class FetchDefinition<FetchedObject: FetchableObject> {
     public typealias Request = (_ completion: @escaping ([FetchedObject]) -> Void) -> Void
     public typealias CreationInclusionCheck = (_ rawData: FetchedObject.RawData) -> Bool
 
