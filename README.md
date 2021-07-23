@@ -16,7 +16,6 @@ FetchRequests is an eventing library inspired by NSFetchedResultsController and 
 - [Installation](#installation)
 - [License](#license)
 
-
 ## Features
 
 - [x] Sort and section a list of items
