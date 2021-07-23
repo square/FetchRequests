@@ -17,6 +17,23 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
         return SectionedFetchableResults(contents: _base.fetchController.sections)
     }
 
+    public init(
+        fetchRequest: FetchRequests.FetchRequest<FetchedObject>,
+        sectionNameKeyPath: KeyPath<FetchedObject, String>,
+        sortDescriptors: [NSSortDescriptor] = [],
+        debounceInsertsAndReloads: Bool = true,
+        animation: Animation? = nil
+    ) {
+        let controller = FetchedResultsController(
+            request: fetchRequest,
+            sortDescriptors: sortDescriptors,
+            sectionNameKeyPath: sectionNameKeyPath,
+            debounceInsertsAndReloads: debounceInsertsAndReloads
+        )
+
+        _base = FetchableRequest(controller: controller, animation: animation)
+    }
+
     public mutating func update() {
         _base.update()
     }
@@ -35,6 +52,10 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
     private var observer = FetchableRequestObserver<FetchedObject>()
 
     private let animation: Animation?
+
+    internal var hasFetchedObjects: Bool {
+        return fetchController.hasFetchedObjects
+    }
 
     public init(
         fetchRequest: FetchRequests.FetchRequest<FetchedObject>,
