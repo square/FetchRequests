@@ -13,12 +13,12 @@ import FetchRequests
 // MARK: - Fetch Requests
 
 extension FetchableObjectProtocol where Self: Model {
-    static func fetchRequest() -> FetchRequest<Self> {
+    static func fetchDefinition() -> FetchDefinition<Self> {
         let dataResetTokens: [ModelClearedToken<Self>] = [
             ModelClearedToken(),
         ]
 
-        return FetchRequest<Self>(
+        return FetchDefinition<Self>(
             request: { completion in
                 completion(fetchAll())
             },
