@@ -14,17 +14,17 @@ class FetchableRequestTestCase: XCTestCase {
 }
 
 extension FetchableRequestTestCase {
-    private func createFetchRequest(ids: [String] = ["a", "b", "c"]) -> FetchRequest<TestObject> {
-        let request: FetchRequest<TestObject>.Request = { completion in
+    private func createFetchDefinition(ids: [String] = ["a", "b", "c"]) -> FetchDefinition<TestObject> {
+        let request: FetchDefinition<TestObject>.Request = { completion in
             completion(ids.map { TestObject(id: $0, sectionName: $0) })
         }
 
-        return FetchRequest<TestObject>(request: request)
+        return FetchDefinition(request: request)
     }
 
     func testCreation() {
         var instance = FetchableRequest(
-            fetchRequest: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -41,7 +41,7 @@ extension FetchableRequestTestCase {
 
     func testSectionedCreation() {
         var instance = SectionedFetchableRequest(
-            fetchRequest: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )

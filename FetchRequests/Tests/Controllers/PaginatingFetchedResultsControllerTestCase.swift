@@ -25,13 +25,13 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
-    private func createFetchRequest(
+    private func createFetchDefinition(
         associations: [PartialKeyPath<TestObject>] = []
-    ) -> PaginatingFetchRequest<TestObject> {
-        let request: PaginatingFetchRequest<TestObject>.Request = { [unowned self] completion in
+    ) -> PaginatingFetchDefinition<TestObject> {
+        let request: PaginatingFetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        let paginationRequest: PaginatingFetchRequest<TestObject>.PaginationRequest = { [unowned self] currentResults, completion in
+        let paginationRequest: PaginatingFetchDefinition<TestObject>.PaginationRequest = { [unowned self] currentResults, completion in
             self.paginationCurrentResults = currentResults
             self.paginationCompletion = completion
         }
@@ -42,11 +42,11 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: PaginatingFetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: PaginatingFetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return PaginatingFetchRequest<TestObject>(
+        return PaginatingFetchDefinition<TestObject>(
             request: request,
             paginationRequest: paginationRequest,
             creationInclusionCheck: inclusionCheck,
@@ -73,7 +73,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testBasicFetch() {
         controller = PaginatingFetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -87,7 +87,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testResort() {
         controller = PaginatingFetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -103,7 +103,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testPaginationTriggersLoad() {
         controller = PaginatingFetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -137,7 +137,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testPaginationDoesNotDisableInserts() {
         controller = PaginatingFetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \FetchedObject.id, ascending: true),
             ],

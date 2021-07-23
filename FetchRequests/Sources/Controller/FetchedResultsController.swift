@@ -167,7 +167,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
-    public let request: FetchRequest<FetchedObject>
+    public let fetchDefinition: FetchDefinition<FetchedObject>
     public let sectionNameKeyPath: SectionNameKeyPath?
     private var rawSortDescriptors: [NSSortDescriptor] {
         didSet {
@@ -237,12 +237,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }()
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        fetchDefinition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        self.request = request
+        self.fetchDefinition = fetchDefinition
         self.rawSortDescriptors = sortDescriptors
         self.sectionNameKeyPath = sectionNameKeyPath
         self.debounceInsertsAndReloads = debounceInsertsAndReloads
@@ -310,7 +310,7 @@ public extension FetchedResultsController {
     func performFetch(completion: @escaping () -> Void) {
         startObservingNotificationsIfNeeded()
 
-        request.request { [weak self] objects in
+        fetchDefinition.request { [weak self] objects in
             self?.assign(fetchedObjects: objects, completion: completion)
         }
     }
@@ -359,7 +359,7 @@ private extension FetchedResultsController {
             throw FetchedResultsError.objectNotFound
         }
 
-        guard let association = request.associationsByKeyPath[keyPath] else {
+        guard let association = fetchDefinition.associationsByKeyPath[keyPath] else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -868,7 +868,7 @@ private extension FetchedResultsController {
 
         var observations: [InvalidatableToken] = []
 
-        for association in request.associations {
+        for association in fetchDefinition.associations {
             let keyPath = association.keyPath
             let observer = association.observeKeyPath(object) { [weak self] object, oldValue, newValue in
                 // Nil out associated value and send change event
@@ -970,11 +970,11 @@ private extension FetchedResultsController {
         memoryPressureToken?.observeIfNeeded { [ weak self] notification in
             self?.removeAllAssociatedValues()
         }
-        request.objectCreationToken.observeIfNeeded { [weak self] data in
+        fetchDefinition.objectCreationToken.observeIfNeeded { [weak self] data in
             self?.observedObjectUpdate(data)
         }
 
-        for dataResetToken in request.dataResetTokens {
+        for dataResetToken in fetchDefinition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
                 self?.handleDatabaseClear()
             }
@@ -985,9 +985,9 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.invalidateIfNeeded()
-        request.objectCreationToken.invalidateIfNeeded()
+        fetchDefinition.objectCreationToken.invalidateIfNeeded()
 
-        for dataResetToken in request.dataResetTokens {
+        for dataResetToken in fetchDefinition.dataResetTokens {
             dataResetToken.invalidateIfNeeded()
         }
     }
@@ -1005,7 +1005,7 @@ private extension FetchedResultsController {
             return
         }
 
-        guard request.creationInclusionCheck(data) else {
+        guard fetchDefinition.creationInclusionCheck(data) else {
             return
         }
 
@@ -1056,7 +1056,7 @@ private extension FetchedResultsController {
 
 internal extension FetchedResultsController {
     var listeningForInserts: Bool {
-        return request.objectCreationToken.isObserving
+        return fetchDefinition.objectCreationToken.isObserving
     }
 }
 

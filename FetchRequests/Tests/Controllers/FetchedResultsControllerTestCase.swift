@@ -21,10 +21,10 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
-    private func createFetchRequest(
+    private func createFetchDefinition(
         associations: [PartialKeyPath<TestObject>] = []
-    ) -> FetchRequest<TestObject> {
-        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
+    ) -> FetchDefinition<TestObject> {
+        let request: FetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
 
@@ -34,11 +34,11 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return FetchRequest<TestObject>(
+        return FetchDefinition<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -62,7 +62,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testBasicFetch() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -76,7 +76,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testResort() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -111,7 +111,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testFetchAvoidsReplacingInstances() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -151,7 +151,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testBasicFetchWithSortDescriptors() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: false),
             ],
@@ -177,7 +177,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 extension FetchedResultsControllerTestCase {
     func testFetchingIntoSections() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -223,7 +223,7 @@ extension FetchedResultsControllerTestCase {
 
     func testFetchingIntoSectionsAvoidsReplacingInstances() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -270,7 +270,7 @@ extension FetchedResultsControllerTestCase {
 
     func testFetchingIntoSectionsWithSortDescriptors() {
         controller = FetchedResultsController<TestObject>(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
@@ -303,7 +303,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     func testFetchingAssociatedObjects() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
         controller.associatedFetchSize = 3
@@ -353,7 +353,7 @@ extension FetchedResultsControllerTestCase {
     #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -390,7 +390,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -427,7 +427,7 @@ extension FetchedResultsControllerTestCase {
 
     func testMissingAssociatedObjectsInvalidatedFromNotifications() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -486,7 +486,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
@@ -581,7 +581,7 @@ extension FetchedResultsControllerTestCase {
     }
 
     func testDeleteFromKVO() {
-        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(fetchDefinition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -603,7 +603,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectDeleteFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -651,7 +651,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectArrayDeleteFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -700,7 +700,7 @@ extension FetchedResultsControllerTestCase {
     func testExpectNoReloadFromKVO() {
         // We need a custom controller so that sort descriptors is "empty"
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -732,7 +732,7 @@ extension FetchedResultsControllerTestCase {
     }
 
     func testExpectReloadFromKVO() {
-        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(fetchDefinition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -750,7 +750,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -798,7 +798,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectArrayKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            fetchDefinition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -846,7 +846,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectInsertFromBroadcastNotification() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -883,7 +883,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectNoInsertFromBroadcastNotification() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -924,7 +924,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     private func setupController() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            fetchDefinition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )

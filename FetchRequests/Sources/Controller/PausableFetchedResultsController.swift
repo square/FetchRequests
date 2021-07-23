@@ -93,13 +93,13 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
     private var delegate: PausableFetchResultsDelegate<FetchedObject>?
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        fetchDefinition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
         controller = FetchedResultsController(
-            request: request,
+            fetchDefinition: fetchDefinition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -123,8 +123,8 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
         isPaused = false
     }
 
-    public var request: FetchRequest<FetchedObject> {
-        return controller.request
+    public var fetchDefinition: FetchDefinition<FetchedObject> {
+        return controller.fetchDefinition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {

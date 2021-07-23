@@ -9,7 +9,7 @@
 import Foundation
 import FetchRequests
 
-extension FetchRequest where FetchedObject: TestObject {
+extension FetchDefinition where FetchedObject: TestObject {
     convenience init(
         request: @escaping Request,
         objectCreationNotification: Notification.Name? = nil,
@@ -34,7 +34,7 @@ extension FetchRequest where FetchedObject: TestObject {
     }
 }
 
-extension PaginatingFetchRequest where FetchedObject: TestObject {
+extension PaginatingFetchDefinition where FetchedObject: TestObject {
     convenience init(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,

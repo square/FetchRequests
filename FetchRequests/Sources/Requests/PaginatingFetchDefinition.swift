@@ -1,5 +1,5 @@
 //
-//  PaginatingFetchRequest.swift
+//  PaginatingFetchDefinition.swift
 //  FetchRequests-iOS
 //
 //  Created by Adam Lickel on 2/28/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchRequest<FetchedObject> {
+public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDefinition<FetchedObject> {
     public typealias PaginationRequest = (
         _ currentResults: [FetchedObject],
         _ completion: @escaping ([FetchedObject]?) -> Void
@@ -34,7 +34,9 @@ public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchReques
         )
     }
 
-    fileprivate func performPagination<Controller>(in fetchController: Controller) where Controller: InternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
+    fileprivate func performPagination<Controller>(
+        in fetchController: Controller
+    ) where Controller: InternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
         let currentResults = fetchController.fetchedObjects
         paginationRequest(currentResults) { [weak fetchController] pageResults in
             guard let pageResults = pageResults else {
@@ -48,18 +50,18 @@ public class PaginatingFetchRequest<FetchedObject: FetchableObject>: FetchReques
 public class PaginatingFetchedResultsController<
     FetchedObject: FetchableObject
 >: FetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
+    private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
 
     public init(
-        request: PaginatingFetchRequest<FetchedObject>,
+        fetchDefinition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingRequest = request
+        paginatingDefinition = fetchDefinition
 
         super.init(
-            request: request,
+            fetchDefinition: fetchDefinition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -67,25 +69,25 @@ public class PaginatingFetchedResultsController<
     }
 
     public func performPagination() {
-        paginatingRequest.performPagination(in: self)
+        paginatingDefinition.performPagination(in: self)
     }
 }
 
 public class PausablePaginatingFetchedResultsController<
     FetchedObject: FetchableObject
 >: PausableFetchedResultsController<FetchedObject> {
-    private unowned let paginatingRequest: PaginatingFetchRequest<FetchedObject>
+    private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
     
     public init(
-        request: PaginatingFetchRequest<FetchedObject>,
+        fetchDefinition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingRequest = request
+        paginatingDefinition = fetchDefinition
         
         super.init(
-            request: request,
+            fetchDefinition: fetchDefinition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -93,6 +95,6 @@ public class PausablePaginatingFetchedResultsController<
     }
     
     public func performPagination() {
-        paginatingRequest.performPagination(in: self)
+        paginatingDefinition.performPagination(in: self)
     }
 }

@@ -24,7 +24,7 @@ public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
     typealias Section = FetchedResultsSection<FetchedObject>
 
-    var request: FetchRequest<FetchedObject> { get }
+    var fetchDefinition: FetchDefinition<FetchedObject> { get }
 
     var hasFetchedObjects: Bool { get }
     var sections: [Section] { get }
