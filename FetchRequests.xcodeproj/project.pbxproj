@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A8096F926AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */; };
+		2A8096FA26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */; };
+		2A8096FB26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */; };
+		2A8096FC26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */; };
 		2A97F51426A8B43100027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51326A8B43100027D90 /* Collections */; };
 		2A97F51726A8B44400027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51626A8B44400027D90 /* Collections */; };
 		2A97F51926A8B44B00027D90 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2A97F51826A8B44B00027D90 /* Collections */; };
@@ -177,6 +181,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchableRequestTestCase.swift; sourceTree = "<group>"; };
 		2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSetCompat.swift; sourceTree = "<group>"; };
 		4719618122C6DC6C000BBE6B /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		471C506C22C6D0DB007F73E9 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -292,6 +297,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A8096F726AA469C0035BFB4 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
 		2A97F51526A8B44400027D90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -342,6 +355,7 @@
 			children = (
 				471C50AB22C6D337007F73E9 /* Controllers */,
 				471C50B322C6D337007F73E9 /* Models */,
+				2A8096F726AA469C0035BFB4 /* SwiftUI */,
 				471C50B222C6D337007F73E9 /* TestObject.swift */,
 				471C50B722C6D337007F73E9 /* TestObject+Associations.swift */,
 				47B31B502330671E00D6EB66 /* TestObject+FetchRequests.swift */,
@@ -788,6 +802,7 @@
 				47B31B512330671E00D6EB66 /* TestObject+FetchRequests.swift in Sources */,
 				47B31B562330697200D6EB66 /* PausableFetchedResultsControllerTestCase.swift in Sources */,
 				471C50BC22C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift in Sources */,
+				2A8096F926AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				471C50BF22C6D337007F73E9 /* FetchRequestAssociationTestCase.swift in Sources */,
 				47C4ECE52335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47B31B572330697500D6EB66 /* PaginatingFetchedResultsControllerTestCase.swift in Sources */,
@@ -858,6 +873,7 @@
 				47A6ED1D22CA90640034A854 /* TestObject+Associations.swift in Sources */,
 				47A6ED1E22CA90640034A854 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1F22CA90640034A854 /* PausableFetchedResultsControllerTestCase.swift in Sources */,
+				2A8096FB26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				47C4ECE72335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47A6ED2022CA90640034A854 /* TestObject+FetchableObject.swift in Sources */,
 				47A6ED2122CA90640034A854 /* FetchedResultsControllerTestHarness.swift in Sources */,
@@ -903,6 +919,7 @@
 				47A6ED4E22CA90A40034A854 /* TestObject+Associations.swift in Sources */,
 				47A6ED4F22CA90A40034A854 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5022CA90A40034A854 /* PausableFetchedResultsControllerTestCase.swift in Sources */,
+				2A8096FA26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				47C4ECE62335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47A6ED5122CA90A40034A854 /* TestObject+FetchableObject.swift in Sources */,
 				47A6ED5222CA90A40034A854 /* FetchedResultsControllerTestHarness.swift in Sources */,
@@ -923,6 +940,7 @@
 				66239738267D03C0009B696F /* TestObject+FetchRequests.swift in Sources */,
 				66239739267D03C0009B696F /* PausableFetchedResultsControllerTestCase.swift in Sources */,
 				6623973A267D03C0009B696F /* FetchedResultsControllerTestHarness.swift in Sources */,
+				2A8096FC26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				6623973B267D03C0009B696F /* FetchRequestAssociationTestCase.swift in Sources */,
 				6623973C267D03C0009B696F /* JSONTestCase.swift in Sources */,
 				6623973D267D03C0009B696F /* PaginatingFetchedResultsControllerTestCase.swift in Sources */,

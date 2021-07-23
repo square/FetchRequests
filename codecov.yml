@@ -1,4 +1,3 @@
 coverage:
   ignore:
     - "Example"
-    - "FetchRequests/Sources/SwiftUI"
