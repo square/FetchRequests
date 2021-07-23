@@ -73,7 +73,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testBasicFetch() {
         controller = PaginatingFetchedResultsController(
-            fetchDefinition: createFetchDefinition(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -87,7 +87,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testResort() {
         controller = PaginatingFetchedResultsController(
-            fetchDefinition: createFetchDefinition(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -103,7 +103,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testPaginationTriggersLoad() {
         controller = PaginatingFetchedResultsController(
-            fetchDefinition: createFetchDefinition(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -137,7 +137,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     func testPaginationDoesNotDisableInserts() {
         controller = PaginatingFetchedResultsController(
-            fetchDefinition: createFetchDefinition(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \FetchedObject.id, ascending: true),
             ],

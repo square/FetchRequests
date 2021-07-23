@@ -18,14 +18,14 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
     }
 
     public init(
-        fetchDefinition: FetchDefinition<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sectionNameKeyPath: KeyPath<FetchedObject, String>,
         sortDescriptors: [NSSortDescriptor] = [],
         debounceInsertsAndReloads: Bool = true,
         animation: Animation? = nil
     ) {
         let controller = FetchedResultsController(
-            fetchDefinition: fetchDefinition,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -58,13 +58,13 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
     }
 
     public init(
-        fetchDefinition: FetchDefinition<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         debounceInsertsAndReloads: Bool = true,
         animation: Animation? = nil
     ) {
         let controller = FetchedResultsController(
-            fetchDefinition: fetchDefinition,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             debounceInsertsAndReloads: debounceInsertsAndReloads
         )

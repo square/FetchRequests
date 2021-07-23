@@ -55,15 +55,15 @@ public class PaginatingFetchedResultsController<
     private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
 
     public init(
-        fetchDefinition: PaginatingFetchDefinition<FetchedObject>,
+        definition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingDefinition = fetchDefinition
+        paginatingDefinition = definition
 
         super.init(
-            fetchDefinition: fetchDefinition,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -81,15 +81,15 @@ public class PausablePaginatingFetchedResultsController<
     private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
     
     public init(
-        fetchDefinition: PaginatingFetchDefinition<FetchedObject>,
+        definition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        paginatingDefinition = fetchDefinition
+        paginatingDefinition = definition
         
         super.init(
-            fetchDefinition: fetchDefinition,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads

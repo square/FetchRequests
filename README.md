@@ -53,7 +53,7 @@ Examples:
 ```swift
 struct AllUsersView: View {
     @FetchableRequest(
-        fetchDefinition: FetchDefinition(request: User.fetchAll),
+        definition: FetchDefinition(request: User.fetchAll),
         sortDescriptors: [
             NSSortDescriptor(
                 key: #keyPath(User.name),
