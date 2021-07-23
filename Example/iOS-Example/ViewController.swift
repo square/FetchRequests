@@ -13,7 +13,7 @@ import FetchRequests
 class ViewController: UITableViewController {
     private(set) lazy var controller: FetchedResultsController<Model> = {
         let controller: FetchedResultsController<Model> = FetchedResultsController(
-            fetchDefinition: Model.fetchDefinition(),
+            definition: Model.fetchDefinition(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Model.updatedAt, ascending: false)]
         )
         controller.setDelegate(self)

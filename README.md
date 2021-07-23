@@ -80,7 +80,7 @@ struct MembersView: View {
     func init(fromID: EntityID) {
         self.fromID = fromID
         _members = FetchableRequest(
-            fetchDefinition: Membership.fetchDefinition(from: fromID, toEntityType: .user)
+            definition: Membership.fetchDefinition(from: fromID, toEntityType: .user)
         )
     }
 
