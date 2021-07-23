@@ -33,16 +33,18 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
             dataResetTokens: dataResetTokens
         )
     }
+}
 
-    fileprivate func performPagination<Controller>(
-        in fetchController: Controller
-    ) where Controller: InternalFetchResultsControllerProtocol, Controller.FetchedObject == FetchedObject {
-        let currentResults = fetchController.fetchedObjects
-        paginationRequest(currentResults) { [weak fetchController] pageResults in
+private extension InternalFetchResultsControllerProtocol {
+    func performPagination(
+        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
+    ) {
+        let currentResults = self.fetchedObjects
+        paginationRequest(currentResults) { [weak self] pageResults in
             guard let pageResults = pageResults else {
                 return
             }
-            fetchController?.manuallyInsert(objects: pageResults, emitChanges: true)
+            self?.manuallyInsert(objects: pageResults, emitChanges: true)
         }
     }
 }
@@ -69,7 +71,7 @@ public class PaginatingFetchedResultsController<
     }
 
     public func performPagination() {
-        paginatingDefinition.performPagination(in: self)
+        performPagination(with: paginatingDefinition.paginationRequest)
     }
 }
 
@@ -95,6 +97,6 @@ public class PausablePaginatingFetchedResultsController<
     }
     
     public func performPagination() {
-        paginatingDefinition.performPagination(in: self)
+        performPagination(with: paginatingDefinition.paginationRequest)
     }
 }
