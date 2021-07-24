@@ -52,7 +52,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
     fileprivate var fetchController: FetchedResultsController<FetchedObject>
 
     @State
-    fileprivate var subscription: Opaque<Cancellable> = Opaque()
+    private var subscription: Opaque<Cancellable> = Opaque()
 
     private let animation: Animation?
 
