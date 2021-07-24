@@ -99,7 +99,9 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
         controller.reset()
 
         XCTAssertEqual(changeEvents.count, 3)
-        XCTAssertEqual(changeEvents.last?.change, FetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.delete(location: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(changeEvents[1].change, FetchedResultsChange.delete(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[2].change, FetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
 
         XCTAssertFalse(controller.hasFetchedObjects)
         XCTAssertEqual(controller.fetchedObjects, [])
