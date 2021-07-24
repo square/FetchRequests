@@ -262,7 +262,11 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    public func setDelegate<Delegate: FetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<
+        Delegate: FetchedResultsControllerDelegate
+    >(
+        _ delegate: Delegate?
+    ) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             FetchResultsDelegate($0)
         }
@@ -688,10 +692,9 @@ private extension FetchedResultsController {
         }
 
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
-        guard sectionIndex < sections.count else {
-            throw FetchedResultsError.objectNotFound
-        }
-        guard let itemIndex = sections[sectionIndex].objects.firstIndex(of: object) else {
+        guard sectionIndex < sections.count,
+              let itemIndex = sections[sectionIndex].objects.firstIndex(of: object)
+        else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -774,12 +777,11 @@ private extension FetchedResultsController {
     }
 
     func removeAll(emitChanges: Bool = true) {
-        performChanges(emitChanges: emitChanges) {
+        performChanges(emitChanges: emitChanges, updateHasFetchedObjects: false) {
             if let delegate = delegate, emitChanges {
-                for (sectionIndex, section) in sections.enumerated() {
-                    for (objectIndex, object) in section.objects.enumerated() {
+                for (sectionIndex, section) in sections.enumerated().reversed() {
+                    for (objectIndex, object) in section.objects.enumerated().reversed() {
                         let indexPath = IndexPath(item: objectIndex, section: sectionIndex)
-
                         delegate.controller(self, didChange: object, for: .delete(location: indexPath))
                     }
 
@@ -1080,7 +1082,11 @@ extension FetchedResultsController: InternalFetchResultsControllerProtocol {
 // MARK: Delegate Change Events
 
 private extension FetchedResultsController {
-    func performChanges(emitChanges: Bool = true, changes: () -> Void) {
+    func performChanges(
+        emitChanges: Bool = true,
+        updateHasFetchedObjects: Bool = true,
+        changes: () -> Void
+    ) {
         assert(Thread.isMainThread)
         let delegate = self.delegate
 
@@ -1091,7 +1097,10 @@ private extension FetchedResultsController {
 
         changes()
 
-        hasFetchedObjects = true
+        if updateHasFetchedObjects {
+            hasFetchedObjects = true
+        }
+
         if emitChanges {
             delegate?.controllerDidChangeContent(self)
             objectDidChangeSubject.send()
