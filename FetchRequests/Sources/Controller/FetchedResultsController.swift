@@ -651,20 +651,11 @@ private extension FetchedResultsController {
         CWLogVerbose("Inserted \(objects.count) objects")
     }
 
-    func reload(_ object: FetchedObject, emitChanges: Bool = true) throws {
-        guard let indexPath = indexPath(for: object) else {
-            throw FetchedResultsError.objectNotFound
-        }
-
-        performChanges(emitChanges: emitChanges) {
-            notifyUpdating(object, at: indexPath, emitChanges: emitChanges)
-        }
-    }
-
     func reload<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
         var objectPaths: [FetchedObject: IndexPath] = [:]
         for object in objects {
             guard let indexPath = indexPath(for: object) else {
+                CWLogError("Failed to reload object with ID: \(object.id)")
                 continue
             }
             objectPaths[object] = indexPath
@@ -1026,11 +1017,7 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         guard debounceInsertsAndReloads else {
-            do {
-                try reload(object, emitChanges: emitChanges)
-            } catch {
-                CWLogError("Failed to reload object: \(error)")
-            }
+            reload([object], emitChanges: emitChanges)
             return
         }
 
