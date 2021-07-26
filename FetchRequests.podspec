@@ -7,10 +7,10 @@ Pod::Spec.new do |s|
   s.authors = 'Square'
   s.source = { :git => 'https://github.com/square/FetchRequests.git', :tag => s.version }
 
-  ios_deployment_target = '12.0'
-  tvos_deployment_target = '12.0'
-  macos_deployment_target = '10.14'
-  watchos_deployment_target = '5.0'
+  ios_deployment_target = '13.0'
+  tvos_deployment_target = '13.0'
+  macos_deployment_target = '10.15'
+  watchos_deployment_target = '6.0'
 
   s.ios.deployment_target = ios_deployment_target
   s.tvos.deployment_target = tvos_deployment_target
