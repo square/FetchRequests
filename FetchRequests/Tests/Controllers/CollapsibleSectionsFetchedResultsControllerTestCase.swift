@@ -26,10 +26,10 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
     private var sectionChangeEvents: [(change: FetchedResultsChange<Int>, section: CollapsibleResultsSection<TestObject>)] = []
 
-    private func createFetchRequest(
+    private func createFetchDefinition(
         associations: [PartialKeyPath<TestObject>] = []
-    ) -> FetchRequest<TestObject> {
-        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
+    ) -> FetchDefinition<TestObject> {
+        let request: FetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
         
@@ -39,11 +39,11 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return FetchRequest<TestObject>(
+        return FetchDefinition<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -91,7 +91,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase: CollapsibleSectio
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testInitialSectionCollapse() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -124,7 +124,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testInitialSectionConfigCheck() {
         let maxNumberOfItems = 4
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -155,7 +155,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testSectionUpdatesWhenCollapsed() {
         let maxNumberOfItems = 4
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -194,7 +194,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testObjectUpdatesAfterExpanding() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -237,7 +237,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testIndexPath() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -269,7 +269,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testItemMovingSections() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -327,7 +327,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testInsertingItemsTriggersCollapse() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -425,7 +425,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testBasicFetch() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
@@ -443,7 +443,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testResort() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -478,7 +478,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testFetchAvoidsReplacingInstances() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -497,23 +497,20 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
             return object
         }
-        let sortedSecondaryObjects = secondaryObjects.sorted(by: controller.sortDescriptors)
-        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.id }
 
         try! performFetch(secondaryObjects)
 
         XCTAssertEqual(controller.fetchedIDs.count, secondaryObjectIDs.count)
-        XCTAssertEqual(controller.fetchedIDs, sortedSecondaryObjectIDs)
         XCTAssertEqual(controller.sections.count, 1)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, sortedSecondaryObjectIDs)
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["9", "0", "2", "1", "4"])
 
-        XCTAssertEqual(controller.tags, [0, 1, 2, 7, 3])
-        XCTAssertEqual(controller.sections[0].allTags, [0, 1, 2, 7, 3])
+        XCTAssertEqual(controller.tags, [3, 0, 2, 6, 7])
+        XCTAssertEqual(controller.sections[0].allTags, [3, 0, 2, 6, 7])
     }
 
     func testBasicFetchWithSortDescriptors() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: false),
             ],
@@ -538,7 +535,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testFetchingIntoSections() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -584,7 +581,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testFetchingIntoSectionsAvoidsReplacingInstances() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -619,19 +616,19 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         try! performFetch(secondaryObjects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "c", "b", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "c", "b", "d"])
         XCTAssertEqual(controller.sections.count, 2)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 4, 6, 1, 2])
-        XCTAssertEqual(controller.sections[0].allTags, [0, 4])
+        XCTAssertEqual(controller.tags, [4, 0, 6, 1, 2])
+        XCTAssertEqual(controller.sections[0].allTags, [4, 0])
         XCTAssertEqual(controller.sections[1].allTags, [6, 1, 2])
     }
 
     func testFetchingIntoSectionsWithSortDescriptors() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
@@ -663,7 +660,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testFetchingAssociatedObjects() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
         controller.associatedFetchSize = 3
@@ -714,7 +711,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -751,7 +748,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -788,7 +785,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testMissingAssociatedObjectsInvalidatedFromNotifications() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -845,7 +842,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
@@ -940,7 +937,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     }
 
     func testDeleteFromKVO() {
-        controller = FetchController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchController(definition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -962,7 +959,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testAssociatedObjectDeleteFromKVO() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -1010,7 +1007,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testAssociatedObjectArrayDeleteFromKVO() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            definition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -1059,7 +1056,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testExpectNoReloadFromKVO() {
         // We need a custom controller so that sort descriptors is "empty"
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -1069,9 +1066,9 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         try! performFetch(objects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].allFetchedIDs, ["c", "d"])
 
@@ -1079,19 +1076,19 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         changeEvents.removeAll()
 
-        getObjectAtIndex(1, withObjectID: "z").sectionName = "a"
+        getObjectAtIndex(1, withObjectID: "a").sectionName = "a"
 
         XCTAssert(changeEvents.isEmpty)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].allFetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].allFetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].allFetchedIDs, ["c", "d"])
     }
 
     func testExpectReloadFromKVO() {
-        controller = FetchController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchController(definition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -1109,7 +1106,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectKVO() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -1157,7 +1154,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectArrayKVO() {
         controller = FetchController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            definition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -1205,7 +1202,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testExpectInsertFromBroadcastNotification() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -1242,7 +1239,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
     func testExpectNoInsertFromBroadcastNotification() {
         controller = FetchController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)

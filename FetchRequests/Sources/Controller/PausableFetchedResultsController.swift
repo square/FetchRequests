@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 public protocol PausableFetchedResultsControllerDelegate: AnyObject {
     associatedtype FetchedObject: FetchableObject
@@ -55,11 +56,25 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
     private var fetchedObjectsSnapshot: [FetchedObject]?
     private var sectionsSnapshot: [Section]?
 
+    fileprivate let objectWillChangeSubject = PassthroughSubject<Void, Never>()
+    fileprivate let objectDidChangeSubject = PassthroughSubject<Void, Never>()
+
+    public private(set) lazy var objectWillChange = objectWillChangeSubject.eraseToAnyPublisher()
+    public private(set) lazy var objectDidChange = objectDidChangeSubject.eraseToAnyPublisher()
+
+    /// Pause all eventing and return a snapshot of the value
+    ///
+    /// Pausing and unpausing will never trigger the delegate. While paused, the delegate will not fire for any reason.
+    /// If you depend upon your delegate for eventing, you will need to reload any dependencies manually.
+    /// The Publishers will trigger whenever the value of isPaused changes.
     public var isPaused: Bool = false {
         didSet {
             guard oldValue != isPaused else {
                 return
             }
+
+            objectWillChangeSubject.send()
+
             if isPaused {
                 hasFetchedObjectsSnapshot = controller.hasFetchedObjects
                 sectionsSnapshot = controller.sections
@@ -69,6 +84,8 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
                 sectionsSnapshot = nil
                 fetchedObjectsSnapshot = nil
             }
+
+            objectDidChangeSubject.send()
         }
     }
 
@@ -76,13 +93,13 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
     private var delegate: PausableFetchResultsDelegate<FetchedObject>?
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
         controller = FetchedResultsController(
-            request: request,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads
@@ -106,8 +123,8 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
         isPaused = false
     }
 
-    public var request: FetchRequest<FetchedObject> {
-        return controller.request
+    public var definition: FetchDefinition<FetchedObject> {
+        return controller.definition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {
@@ -200,6 +217,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         guard let pausableController = pausableController, !pausableController.isPaused else {
             return
         }
+        pausableController.objectWillChangeSubject.send()
         self.willChange(pausableController)
     }
 
@@ -208,6 +226,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
             return
         }
         self.didChange(pausableController)
+        pausableController.objectDidChangeSubject.send()
     }
 
     func controller(

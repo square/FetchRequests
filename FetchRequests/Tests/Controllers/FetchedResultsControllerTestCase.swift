@@ -21,10 +21,10 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     private var changeEvents: [(change: FetchedResultsChange<IndexPath>, object: TestObject)] = []
 
-    private func createFetchRequest(
+    private func createFetchDefinition(
         associations: [PartialKeyPath<TestObject>] = []
-    ) -> FetchRequest<TestObject> {
-        let request: FetchRequest<TestObject>.Request = { [unowned self] completion in
+    ) -> FetchDefinition<TestObject> {
+        let request: FetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
 
@@ -34,11 +34,11 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchRequest<TestObject>.CreationInclusionCheck = { [unowned self] json in
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
             return self.inclusionCheck?(json) ?? true
         }
 
-        return FetchRequest<TestObject>(
+        return FetchDefinition<TestObject>(
             request: request,
             creationInclusionCheck: inclusionCheck,
             associations: desiredAssociations
@@ -62,7 +62,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testBasicFetch() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -76,7 +76,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testResort() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -88,6 +88,46 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
+    }
+
+    func testReset() {
+        testBasicFetch()
+        controller.setDelegate(self)
+
+        changeEvents.removeAll()
+
+        controller.reset()
+
+        XCTAssertEqual(changeEvents.count, 3)
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.delete(location: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(changeEvents[1].change, FetchedResultsChange.delete(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[2].change, FetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
+
+        XCTAssertFalse(controller.hasFetchedObjects)
+        XCTAssertEqual(controller.fetchedObjects, [])
+    }
+
+    func testClearDelegate() {
+        controller = FetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        XCTAssertEqual(changeEvents.count, 3)
+        XCTAssertEqual(controller.fetchedObjects.count, 3)
+
+        changeEvents.removeAll()
+        controller.clearDelegate()
+
+        try! performFetch(objectIDs)
+
+        XCTAssertEqual(changeEvents.count, 0)
+        XCTAssertEqual(controller.fetchedObjects.count, 3)
     }
 
     func testAccessByIndexPath() {
@@ -111,7 +151,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
     func testFetchAvoidsReplacingInstances() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
 
@@ -138,23 +178,20 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 
             return object
         }
-        let sortedSecondaryObjects = secondaryObjects.sorted(by: controller.sortDescriptors)
-        let sortedSecondaryObjectIDs = sortedSecondaryObjects.map { $0.id }
 
         try! performFetch(secondaryObjects)
 
         XCTAssertEqual(controller.fetchedIDs.count, secondaryObjectIDs.count)
-        XCTAssertEqual(controller.fetchedIDs, sortedSecondaryObjectIDs)
         XCTAssertEqual(controller.sections.count, 1)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, sortedSecondaryObjectIDs)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a", "c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 1, 2, 7, 3])
-        XCTAssertEqual(controller.sections[0].tags, [0, 1, 2, 7, 3])
+        XCTAssertEqual(controller.tags, [3, 0, 2, 6, 7])
+        XCTAssertEqual(controller.sections[0].tags, [3, 0, 2, 6, 7])
     }
 
     func testBasicFetchWithSortDescriptors() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: false),
             ],
@@ -180,7 +217,7 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
 extension FetchedResultsControllerTestCase {
     func testFetchingIntoSections() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -226,7 +263,7 @@ extension FetchedResultsControllerTestCase {
 
     func testFetchingIntoSectionsAvoidsReplacingInstances() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -261,19 +298,19 @@ extension FetchedResultsControllerTestCase {
 
         try! performFetch(secondaryObjects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "c", "b", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "c", "b", "d"])
         XCTAssertEqual(controller.sections.count, 2)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["c", "b", "d"])
 
-        XCTAssertEqual(controller.tags, [0, 4, 6, 1, 2])
-        XCTAssertEqual(controller.sections[0].tags, [0, 4])
+        XCTAssertEqual(controller.tags, [4, 0, 6, 1, 2])
+        XCTAssertEqual(controller.sections[0].tags, [4, 0])
         XCTAssertEqual(controller.sections[1].tags, [6, 1, 2])
     }
 
     func testFetchingIntoSectionsWithSortDescriptors() {
         controller = FetchedResultsController<TestObject>(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
@@ -306,7 +343,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     func testFetchingAssociatedObjects() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
         controller.associatedFetchSize = 3
@@ -356,7 +393,7 @@ extension FetchedResultsControllerTestCase {
     #if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -393,7 +430,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tag]),
+            definition: createFetchDefinition(associations: [\TestObject.tag]),
             debounceInsertsAndReloads: false
         )
 
@@ -430,7 +467,7 @@ extension FetchedResultsControllerTestCase {
 
     func testMissingAssociatedObjectsInvalidatedFromNotifications() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -489,7 +526,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
@@ -584,7 +621,7 @@ extension FetchedResultsControllerTestCase {
     }
 
     func testDeleteFromKVO() {
-        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(definition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -606,7 +643,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectDeleteFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -654,7 +691,7 @@ extension FetchedResultsControllerTestCase {
 
     func testAssociatedObjectArrayDeleteFromKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            definition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -703,7 +740,7 @@ extension FetchedResultsControllerTestCase {
     func testExpectNoReloadFromKVO() {
         // We need a custom controller so that sort descriptors is "empty"
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )
@@ -713,9 +750,9 @@ extension FetchedResultsControllerTestCase {
 
         try! performFetch(objects)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].fetchedIDs, ["c", "d"])
 
@@ -723,19 +760,19 @@ extension FetchedResultsControllerTestCase {
 
         changeEvents.removeAll()
 
-        getObjectAtIndex(1, withObjectID: "z").sectionName = "a"
+        getObjectAtIndex(1, withObjectID: "a").sectionName = "a"
 
         XCTAssert(changeEvents.isEmpty)
 
-        XCTAssertEqual(controller.fetchedIDs, ["a", "z", "b", "c", "d"])
+        XCTAssertEqual(controller.fetchedIDs, ["z", "a", "b", "c", "d"])
         XCTAssertEqual(controller.sections.count, 3)
-        XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "z"])
+        XCTAssertEqual(controller.sections[0].fetchedIDs, ["z", "a"])
         XCTAssertEqual(controller.sections[1].fetchedIDs, ["b"])
         XCTAssertEqual(controller.sections[2].fetchedIDs, ["c", "d"])
     }
 
     func testExpectReloadFromKVO() {
-        controller = FetchedResultsController(request: createFetchRequest(), debounceInsertsAndReloads: false)
+        controller = FetchedResultsController(definition: createFetchDefinition(), debounceInsertsAndReloads: false)
         controller.setDelegate(self)
 
         try! performFetch(["a", "b", "c"])
@@ -753,7 +790,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagID]),
+            definition: createFetchDefinition(associations: [\TestObject.tagID]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -801,7 +838,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectReloadFromAssociatedObjectArrayKVO() {
         controller = FetchedResultsController(
-            request: createFetchRequest(associations: [\TestObject.tagIDs]),
+            definition: createFetchDefinition(associations: [\TestObject.tagIDs]),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -849,7 +886,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectInsertFromBroadcastNotification() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -886,7 +923,7 @@ extension FetchedResultsControllerTestCase {
 
     func testExpectNoInsertFromBroadcastNotification() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
         )
         controller.setDelegate(self)
@@ -920,6 +957,31 @@ extension FetchedResultsControllerTestCase {
         XCTAssertNil(fetchCompletion)
         XCTAssert(changeEvents.isEmpty)
     }
+
+    func testExpectReloadFromDatabaseReset() {
+        controller = FetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        try! performFetch(["a", "b", "c"])
+
+        XCTAssertEqual(changeEvents.count, 3)
+
+        fetchCompletion = nil
+        changeEvents.removeAll()
+
+        let notification = Notification(name: TestObject.dataWasCleared(), object: nil)
+        NotificationCenter.default.post(notification)
+
+        XCTAssertNotNil(fetchCompletion)
+
+        fetchCompletion([TestObject(id: "1")])
+
+        XCTAssertEqual(changeEvents.count, 4)
+        XCTAssertEqual(controller.fetchedIDs, ["1"])
+    }
 }
 
 // MARK: - IndexPath Math
@@ -927,7 +989,7 @@ extension FetchedResultsControllerTestCase {
 extension FetchedResultsControllerTestCase {
     private func setupController() {
         controller = FetchedResultsController(
-            request: createFetchRequest(),
+            definition: createFetchDefinition(),
             sectionNameKeyPath: \.sectionName,
             debounceInsertsAndReloads: false
         )

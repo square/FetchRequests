@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 #if canImport(UIKit)
 import UIKit
@@ -142,9 +143,13 @@ public enum FetchedResultsError: Error {
 
 // MARK: - Sections
 
-public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable {
+public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable {
     public let name: String
     public fileprivate(set) var objects: [FetchedObject]
+
+    public var id: String {
+        return name
+    }
 
     public var numberOfObjects: Int {
         return objects.count
@@ -162,9 +167,14 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
-    public let request: FetchRequest<FetchedObject>
-    public private(set) var sortDescriptors: [NSSortDescriptor]
+    public let definition: FetchDefinition<FetchedObject>
     public let sectionNameKeyPath: SectionNameKeyPath?
+    private var rawSortDescriptors: [NSSortDescriptor] {
+        didSet {
+            sortDescriptors = rawSortDescriptors.finalize(with: self)
+        }
+    }
+    public private(set) var sortDescriptors: [NSSortDescriptor] = []
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
 
@@ -187,7 +197,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     public private(set) var hasFetchedObjects: Bool = false
     public private(set) var fetchedObjects: [FetchedObject] = []
-    private var fetchedObjectIDs: Set<FetchedObject.ID> = []
+    fileprivate private(set) var fetchedObjectIDs: OrderedSet<FetchedObject.ID> = []
+
     private var _indexPathsTable: [FetchedObject: IndexPath]?
     private var indexPathsTable: [FetchedObject: IndexPath] {
         if let existing = _indexPathsTable {
@@ -202,6 +213,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     private let debounceInsertsAndReloads: Bool
     private var objectsToReload: Set<FetchedObject> = []
     private var objectsToInsert: Set<FetchedObject> = []
+
+    private let objectWillChangeSubject = PassthroughSubject<Void, Never>()
+    private let objectDidChangeSubject = PassthroughSubject<Void, Never>()
+
+    public private(set) lazy var objectWillChange = objectWillChangeSubject.eraseToAnyPublisher()
+    public private(set) lazy var objectDidChange = objectDidChangeSubject.eraseToAnyPublisher()
 
     public private(set) var sections: [Section] = [] {
         didSet {
@@ -220,15 +237,19 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }()
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true
     ) {
-        self.request = request
-        self.sortDescriptors = sortDescriptors.finalize(with: sectionNameKeyPath)
+        self.definition = definition
+        self.rawSortDescriptors = sortDescriptors
         self.sectionNameKeyPath = sectionNameKeyPath
         self.debounceInsertsAndReloads = debounceInsertsAndReloads
+
+        super.init()
+
+        self.sortDescriptors = sortDescriptors.finalize(with: self)
     }
 
     deinit {
@@ -241,7 +262,11 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    public func setDelegate<Delegate: FetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<
+        Delegate: FetchedResultsControllerDelegate
+    >(
+        _ delegate: Delegate?
+    ) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             FetchResultsDelegate($0)
         }
@@ -289,7 +314,7 @@ public extension FetchedResultsController {
     func performFetch(completion: @escaping () -> Void) {
         startObservingNotificationsIfNeeded()
 
-        request.request { [weak self] objects in
+        definition.request { [weak self] objects in
             self?.assign(fetchedObjects: objects, completion: completion)
         }
     }
@@ -297,12 +322,19 @@ public extension FetchedResultsController {
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
         assert(Thread.isMainThread)
 
-        sortDescriptors = newSortDescriptors.finalize(with: sectionNameKeyPath)
+        rawSortDescriptors = newSortDescriptors
+
         guard hasFetchedObjects else {
             completion()
             return
         }
-        assign(fetchedObjects: fetchedObjects, dropObjectsToInsert: false, completion: completion)
+
+        assign(
+            fetchedObjects: fetchedObjects,
+            updateFetchOrder: false,
+            dropObjectsToInsert: false,
+            completion: completion
+        )
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {
@@ -336,7 +368,7 @@ private extension FetchedResultsController {
             throw FetchedResultsError.objectNotFound
         }
 
-        guard let association = request.associationsByKeyPath[keyPath] else {
+        guard let association = definition.associationsByKeyPath[keyPath] else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -464,6 +496,7 @@ private extension FetchedResultsController {
 
     func assign(
         fetchedObjects objects: [FetchedObject],
+        updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
         completion: @escaping () -> Void
@@ -476,11 +509,17 @@ private extension FetchedResultsController {
             return
         }
 
-        let sorted = objects.sorted(by: sortDescriptors)
+        let fetchOrder = updateFetchOrder ? OrderedSet(objects.map(\.id)) : fetchedObjectIDs
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.sorted(by: sortDescriptors)
 
         func performAssign() {
             assign(
-                sortedFetchedObjects: sorted,
+                sortedObjects: sortedObjects,
+                initialOrder: fetchOrder,
                 emitChanges: emitChanges,
                 dropObjectsToInsert: dropObjectsToInsert
             )
@@ -494,46 +533,30 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(
-        sortedFetchedObjects objects: [FetchedObject],
+    func assign<C: BidirectionalCollection>(
+        sortedObjects objects: C,
+        initialOrder: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool,
         dropObjectsToInsert: Bool
-    ) {
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         if dropObjectsToInsert {
             objectsToInsert.removeAll()
         }
+
         performChanges(emitChanges: emitChanges) {
-            let operations = diff(fetchedObjects, objects)
+            fetchedObjectIDs = initialOrder
 
-            var index = fetchedObjects.endIndex
-            for operation in operations.reversed() {
-                switch operation.type {
-                case .insert:
-                    break
+            let operations = objects.difference(from: fetchedObjects)
 
-                case .noop:
-                    index -= operation.elements.count
-
-                case .delete:
-                    index -= operation.elements.count
-                    remove(operation.elements, atIndex: index, emitChanges: emitChanges)
-                }
-            }
-
-            index = 0
             for operation in operations {
-                switch operation.type {
-                case .insert:
-                    insert(operation.elements, atIndex: index, emitChanges: emitChanges)
-                    index += operation.elements.count
+                switch operation {
+                case let .remove(index, element, _):
+                    remove(element, atIndex: index, emitChanges: emitChanges)
 
-                case .noop:
-                    index += operation.elements.count
-
-                case .delete:
-                    break
+                case let .insert(index, element, _):
+                    insert(element, atIndex: index, emitChanges: emitChanges)
                 }
             }
         }
@@ -545,23 +568,13 @@ private extension FetchedResultsController {
         }
 
         performChanges(emitChanges: emitChanges) {
-            stopObserving(object)
-
-            sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjects.remove(at: fetchIndex)
             fetchedObjectIDs.remove(object.id)
-
-            notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
-
-            if sections[indexPath.section].numberOfObjects == 0 {
-                let section = sections.remove(at: indexPath.section)
-
-                notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
-            }
+            remove(object, atIndex: fetchIndex, emitChanges: emitChanges)
         }
     }
 
     func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+        // This is snapshotted because we're about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
         guard objects.count <= 100 || !Thread.isMainThread else {
@@ -571,15 +584,23 @@ private extension FetchedResultsController {
             }
             return
         }
+
         insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
     }
 
     private func insert<C: Collection>(
         _ objects: C,
-        fetchedObjectIDs: Set<FetchedObject.ID>,
+        fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
     ) where C.Iterator.Element == FetchedObject {
-        let objects = objects.filter { object in
+        let initialOrder = OrderedSet(objects.map(\.id))
+
+        let fetchOrder = fetchedObjectIDs.union(initialOrder)
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.filter { object in
             guard !object.isDeleted else {
                 return false
             }
@@ -591,7 +612,11 @@ private extension FetchedResultsController {
         }
 
         func performInsert() {
-            insert(sortedObjects: objects, emitChanges: emitChanges)
+            insert(
+                sortedObjects: sortedObjects,
+                initialOrder: initialOrder,
+                emitChanges: emitChanges
+            )
         }
 
         if !Thread.isMainThread {
@@ -601,10 +626,16 @@ private extension FetchedResultsController {
         }
     }
 
-    private func insert<C: Collection>(sortedObjects objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    private func insert<C: BidirectionalCollection>(
+        sortedObjects objects: C,
+        initialOrder: OrderedSet<FetchedObject.ID>,
+        emitChanges: Bool = true
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         performChanges(emitChanges: emitChanges) {
+            fetchedObjectIDs.formUnion(initialOrder)
+
             for object in objects {
                 guard !object.isDeleted else {
                     continue
@@ -616,27 +647,19 @@ private extension FetchedResultsController {
                         continue
                     }
                 }
-                insert([object], atIndex: newFetchIndex, emitChanges: emitChanges)
+
+                insert(object, atIndex: newFetchIndex, emitChanges: emitChanges)
             }
         }
 
         CWLogVerbose("Inserted \(objects.count) objects")
     }
 
-    func reload(_ object: FetchedObject, emitChanges: Bool = true) throws {
-        guard let indexPath = indexPath(for: object) else {
-            throw FetchedResultsError.objectNotFound
-        }
-
-        performChanges(emitChanges: emitChanges) {
-            notifyUpdating(object, at: indexPath, emitChanges: emitChanges)
-        }
-    }
-
     func reload<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
         var objectPaths: [FetchedObject: IndexPath] = [:]
         for object in objects {
             guard let indexPath = indexPath(for: object) else {
+                CWLogError("Failed to reload object with ID: \(object.id)")
                 continue
             }
             objectPaths[object] = indexPath
@@ -669,10 +692,9 @@ private extension FetchedResultsController {
         }
 
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
-        guard sectionIndex < sections.count else {
-            throw FetchedResultsError.objectNotFound
-        }
-        guard let itemIndex = sections[sectionIndex].objects.firstIndex(of: object) else {
+        guard sectionIndex < sections.count,
+              let itemIndex = sections[sectionIndex].objects.firstIndex(of: object)
+        else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -755,12 +777,11 @@ private extension FetchedResultsController {
     }
 
     func removeAll(emitChanges: Bool = true) {
-        performChanges(emitChanges: emitChanges) {
+        performChanges(emitChanges: emitChanges, updateHasFetchedObjects: false) {
             if let delegate = delegate, emitChanges {
-                for (sectionIndex, section) in sections.enumerated() {
-                    for (objectIndex, object) in section.objects.enumerated() {
+                for (sectionIndex, section) in sections.enumerated().reversed() {
+                    for (objectIndex, object) in section.objects.enumerated().reversed() {
                         let indexPath = IndexPath(item: objectIndex, section: sectionIndex)
-
                         delegate.controller(self, didChange: object, for: .delete(location: indexPath))
                     }
 
@@ -797,56 +818,48 @@ private extension FetchedResultsController {
         }
     }
 
-    func remove(_ objects: [FetchedObject], atIndex index: Int, emitChanges: Bool = true) {
-        for (arrayIndex, object) in objects.enumerated().reversed() {
-            let fetchIndex = index + arrayIndex
+    func remove(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        guard let indexPath = self.indexPath(forFetchIndex: index) else {
+            return
+        }
 
-            guard let indexPath = self.indexPath(forFetchIndex: fetchIndex) else {
-                return
-            }
+        stopObserving(object)
 
-            stopObserving(object)
+        fetchedObjects.remove(at: index)
+        sections[indexPath.section].objects.remove(at: indexPath.item)
 
-            fetchedObjects.remove(at: fetchIndex)
-            sections[indexPath.section].objects.remove(at: indexPath.item)
-            fetchedObjectIDs.remove(object.id)
+        notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
 
-            notifyDeleting(object, at: indexPath, emitChanges: emitChanges)
-
-            if sections[indexPath.section].objects.isEmpty {
-                let section = sections.remove(at: indexPath.section)
-                notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
-            }
+        if sections[indexPath.section].objects.isEmpty {
+            let section = sections.remove(at: indexPath.section)
+            notifyDeleting(section, at: indexPath.section, emitChanges: emitChanges)
         }
     }
 
-    func insert(_ objects: [FetchedObject], atIndex index: Int, emitChanges: Bool = true) {
-        for (arrayIndex, object) in objects.enumerated() {
-            let fetchIndex = index + arrayIndex
+    func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
+        assert(fetchedObjectIDs.contains(object.id))
+        
+        let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
+        let sectionIndex = idealSectionIndex(forSectionName: sectionName)
 
-            let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
-            let sectionIndex = idealSectionIndex(forSectionName: sectionName)
+        let sectionPrefix = sections[0..<sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
+        let sectionObjectIndex = index - sectionPrefix
 
-            let sectionPrefix = sections[0..<sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
-            let sectionObjectIndex = fetchIndex - sectionPrefix
+        if sections.endIndex <= sectionIndex || sections[sectionIndex].name != sectionName {
+            assert(sectionObjectIndex == 0, "For some reason a section wasn't deleted")
+            let section = Section(name: sectionName)
+            sections.insert(section, at: sectionIndex)
 
-            if sections.endIndex <= sectionIndex || sections[sectionIndex].name != sectionName {
-                assert(sectionObjectIndex == 0, "For some reason a section wasn't deleted")
-                let section = Section(name: sectionName)
-                sections.insert(section, at: sectionIndex)
-
-                notifyInserting(section, at: sectionIndex, emitChanges: emitChanges)
-            }
-
-            fetchedObjects.insert(object, at: fetchIndex)
-            sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
-            fetchedObjectIDs.insert(object.id)
-
-            let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
-            notifyInserting(object, at: indexPath, emitChanges: emitChanges)
-
-            startObserving(object)
+            notifyInserting(section, at: sectionIndex, emitChanges: emitChanges)
         }
+
+        fetchedObjects.insert(object, at: index)
+        sections[sectionIndex].objects.insert(object, at: sectionObjectIndex)
+
+        let indexPath = IndexPath(item: sectionObjectIndex, section: sectionIndex)
+        notifyInserting(object, at: indexPath, emitChanges: emitChanges)
+
+        startObserving(object)
     }
 
     func startObserving(_ object: FetchedObject) {
@@ -854,7 +867,7 @@ private extension FetchedResultsController {
 
         var observations: [InvalidatableToken] = []
 
-        for association in request.associations {
+        for association in definition.associations {
             let keyPath = association.keyPath
             let observer = association.observeKeyPath(object) { [weak self] object, oldValue, newValue in
                 // Nil out associated value and send change event
@@ -956,11 +969,11 @@ private extension FetchedResultsController {
         memoryPressureToken?.observeIfNeeded { [ weak self] notification in
             self?.removeAllAssociatedValues()
         }
-        request.objectCreationToken.observeIfNeeded { [weak self] data in
+        definition.objectCreationToken.observeIfNeeded { [weak self] data in
             self?.observedObjectUpdate(data)
         }
 
-        for dataResetToken in request.dataResetTokens {
+        for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
                 self?.handleDatabaseClear()
             }
@@ -971,9 +984,9 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.invalidateIfNeeded()
-        request.objectCreationToken.invalidateIfNeeded()
+        definition.objectCreationToken.invalidateIfNeeded()
 
-        for dataResetToken in request.dataResetTokens {
+        for dataResetToken in definition.dataResetTokens {
             dataResetToken.invalidateIfNeeded()
         }
     }
@@ -991,7 +1004,7 @@ private extension FetchedResultsController {
             return
         }
 
-        guard request.creationInclusionCheck(data) else {
+        guard definition.creationInclusionCheck(data) else {
             return
         }
 
@@ -1006,11 +1019,7 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         guard debounceInsertsAndReloads else {
-            do {
-                try reload(object, emitChanges: emitChanges)
-            } catch {
-                CWLogError("Failed to reload object: \(error)")
-            }
+            reload([object], emitChanges: emitChanges)
             return
         }
 
@@ -1042,7 +1051,7 @@ private extension FetchedResultsController {
 
 internal extension FetchedResultsController {
     var listeningForInserts: Bool {
-        return request.objectCreationToken.isObserving
+        return definition.objectCreationToken.isObserving
     }
 }
 
@@ -1073,19 +1082,28 @@ extension FetchedResultsController: InternalFetchResultsControllerProtocol {
 // MARK: Delegate Change Events
 
 private extension FetchedResultsController {
-    func performChanges(emitChanges: Bool = true, changes: () -> Void) {
+    func performChanges(
+        emitChanges: Bool = true,
+        updateHasFetchedObjects: Bool = true,
+        changes: () -> Void
+    ) {
         assert(Thread.isMainThread)
         let delegate = self.delegate
 
         if emitChanges {
+            objectWillChangeSubject.send()
             delegate?.controllerWillChangeContent(self)
         }
 
         changes()
 
-        hasFetchedObjects = true
+        if updateHasFetchedObjects {
+            hasFetchedObjects = true
+        }
+
         if emitChanges {
             delegate?.controllerDidChangeContent(self)
+            objectDidChangeSubject.send()
         }
     }
 
@@ -1357,7 +1375,17 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 private extension Array where Element == NSSortDescriptor {
     func finalize<FetchedObject: FetchableObject>(
-        with sectionNameKeyPath: KeyPath<FetchedObject, String>?
+        with controller: FetchedResultsController<FetchedObject>
+    ) -> Self {
+        return finalize(sectionNameKeyPath: controller.sectionNameKeyPath) { [weak controller] id in
+            // Note: OrderedSet.firstIndex(of:) is *not* O(n)
+            controller?.fetchedObjectIDs.firstIndex(of: id)
+        }
+    }
+
+    func finalize<FetchedObject: FetchableObject>(
+        sectionNameKeyPath: KeyPath<FetchedObject, String>?,
+        insertionOrder: @escaping (FetchedObject.ID) -> Int?
     ) -> Self {
         var sortDescriptors = self
 
@@ -1377,24 +1405,27 @@ private extension Array where Element == NSSortDescriptor {
             sortDescriptors.insert(sectionNameDescriptor, at: 0)
         }
 
-        if FetchedObject.instancesRespond(to: Selector(("id"))) {
-            let idDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            sortDescriptors.append(idDescriptor)
-        } else {
-            let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
-                guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
-                    return .orderedSame
-                }
-                if lhs.id < rhs.id {
-                    return .orderedAscending
-                } else if lhs.id > rhs.id {
-                    return .orderedDescending
-                } else {
-                    return .orderedSame
-                }
+        let idDescriptor = NSSortDescriptor(key: "self", ascending: true) { lhs, rhs in
+            guard let lhs = lhs as? FetchedObject, let rhs = rhs as? FetchedObject else {
+                assert(false, "We were used against the wrong type?")
+                return .orderedSame
             }
-            sortDescriptors.append(idDescriptor)
+
+            let lhsInsertion = insertionOrder(lhs.id) ?? .max
+            let rhsInsertion = insertionOrder(rhs.id) ?? .max
+
+            assert(lhsInsertion != .max)
+            assert(rhsInsertion != .max)
+
+            if lhsInsertion < rhsInsertion {
+                return .orderedAscending
+            } else if lhsInsertion > rhsInsertion {
+                return .orderedDescending
+            } else {
+                return .orderedSame
+            }
         }
+        sortDescriptors.append(idDescriptor)
 
         return sortDescriptors
     }

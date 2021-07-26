@@ -36,7 +36,7 @@ public protocol CollapsibleSectionsFetchedResultsControllerDelegate: AnyObject {
     )
 }
 
-public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatable {
+public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable {
     fileprivate let section: FetchedResultsSection<FetchedObject>
     private let config: SectionCollapseConfig?
     public let isCollapsed: Bool
@@ -45,6 +45,10 @@ public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatab
 
     public var allObjects: [FetchedObject] {
         return section.objects
+    }
+
+    public var id: String {
+        return section.id
     }
 
     public var name: String {
@@ -108,8 +112,8 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     private var sectionConfigs: [String: SectionCollapseConfig] = [:]
 
     public var sections: [CollapsibleResultsSection<FetchedObject>] = []
-    public var request: FetchRequest<FetchedObject> {
-        return fetchController.request
+    public var definition: FetchDefinition<FetchedObject> {
+        return fetchController.definition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {
@@ -134,7 +138,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     }
 
     public init(
-        request: FetchRequest<FetchedObject>,
+        definition: FetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true,
@@ -142,7 +146,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
         sectionConfigCheck: @escaping SectionCollapseConfigCheck = { _ in return nil }
     ) {
         fetchController = FetchedResultsController<FetchedObject>(
-            request: request,
+            definition: definition,
             sortDescriptors: sortDescriptors,
             sectionNameKeyPath: sectionNameKeyPath,
             debounceInsertsAndReloads: debounceInsertsAndReloads

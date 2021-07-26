@@ -7,17 +7,24 @@
 //
 
 import Foundation
+import Combine
 
-internal protocol InternalFetchResultsControllerProtocol: AnyObject, FetchedResultsControllerProtocol {
+internal protocol InternalFetchResultsControllerProtocol: FetchedResultsControllerProtocol {
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 
-public protocol FetchedResultsControllerProtocol {
+public protocol DoublyObservableObject: ObservableObject {
+    associatedtype ObjectDidChangePublisher: Publisher where ObjectWillChangePublisher.Output == ObjectDidChangePublisher.Output, ObjectWillChangePublisher.Failure == ObjectDidChangePublisher.Failure
+
+    var objectDidChange: ObjectDidChangePublisher { get }
+}
+
+public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
     associatedtype FetchedObject: FetchableObject
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
     typealias Section = FetchedResultsSection<FetchedObject>
 
-    var request: FetchRequest<FetchedObject> { get }
+    var definition: FetchDefinition<FetchedObject> { get }
 
     var hasFetchedObjects: Bool { get }
     var sections: [Section] { get }
@@ -25,8 +32,8 @@ public protocol FetchedResultsControllerProtocol {
 
     var associatedFetchSize: Int { get set }
 
-    var sortDescriptors: [NSSortDescriptor] { get }
     var sectionNameKeyPath: SectionNameKeyPath? { get }
+    var sortDescriptors: [NSSortDescriptor] { get }
 
     func performFetch(completion: @escaping () -> Void)
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void)
@@ -47,7 +54,7 @@ public extension FetchedResultsControllerProtocol {
     }
 
     internal func idealSectionIndex(forSectionName name: String) -> Int {
-        guard let descriptor = sortDescriptors.first else {
+        guard let descriptor = sortDescriptors.first, sectionNameKeyPath != nil else {
             return 0
         }
 
@@ -60,7 +67,7 @@ public extension FetchedResultsControllerProtocol {
         }
     }
 
-    internal func idealObjectIndex(for object: FetchedObject, inArray array: [FetchedObject]) -> Int {
+    func idealObjectIndex(for object: FetchedObject, inArray array: [FetchedObject]) -> Int {
         guard !sortDescriptors.isEmpty else {
             return array.endIndex
         }

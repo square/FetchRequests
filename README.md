@@ -33,7 +33,13 @@ It is best when backed by something like a [WebSocket](https://en.wikipedia.org/
 
 To get started, you create a `FetchRequest` which explains your data access patterns.
 The `FetchedResultsController` is the interface to access the your data.
-It will automatically cache your associated values for the lifetime of that controller.
+Objects are sorted with the following heuristic: 
+* Section Name ascending (if present)
+* Passed in sort descriptors
+* Insertion order of the entity ascending
+
+You can associate related values to your fetched entities.
+It will automatically cache these associated values for the lifetime of that controller.
 If a memory pressure event occurs, it will release its hold on those objects, allowing them to be de-inited.
 
 The example app has an UserDefaults-backed storage mechanism.
@@ -53,7 +59,7 @@ Examples:
 ```swift
 struct AllUsersView: View {
     @FetchableRequest(
-        fetchRequest: FetchRequest(request: User.fetchAll),
+        definition: FetchDefinition(request: User.fetchAll),
         sortDescriptors: [
             NSSortDescriptor(
                 key: #keyPath(User.name),
@@ -80,7 +86,7 @@ struct MembersView: View {
     func init(fromID: EntityID) {
         self.fromID = fromID
         _members = FetchableRequest(
-            fetchRequest: Membership.fetchRequest(from: fromID, toEntityType: .user)
+            definition: Membership.fetchDefinition(from: fromID, toEntityType: .user)
         )
     }
 
@@ -90,7 +96,7 @@ struct MembersView: View {
 
 ## Requirements
 
-- iOS 12+ / macOS 10.14+ / tvOS 12+ / watchOS 5+
+- iOS 13+ / macOS 10.15+ / tvOS 13+ / watchOS 6+
 - Xcode 12+
 - Swift 5+
 
@@ -107,7 +113,7 @@ struct MembersView: View {
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 3.0'
+pod 'FetchRequests', '~> 4.0'
 ```
 
 ### Carthage
@@ -115,7 +121,7 @@ pod 'FetchRequests', '~> 3.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```
-github "crewos/FetchRequests" ~> 3.0
+github "crewos/FetchRequests" ~> 4.0
 ```
 
 ### Swift Package Manager
@@ -124,7 +130,7 @@ Install with [Swift Package Manager](https://swift.org/package-manager/) by addi
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/crewos/FetchRequests.git", from: "3.0.0")
+    .package(url: "https://github.com/crewos/FetchRequests.git", from: "4.0.0")
 ]
 ```
 
