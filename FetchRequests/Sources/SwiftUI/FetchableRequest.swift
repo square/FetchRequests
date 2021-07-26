@@ -5,10 +5,10 @@
 //
 
 import Foundation
+import Combine
 import SwiftUI
 
 @propertyWrapper
-@available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
 public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: DynamicProperty {
     @FetchableRequest
     private var base: FetchableResults<FetchedObject>
@@ -39,8 +39,11 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
     }
 }
 
+private class Opaque<T> {
+    var value: T?
+}
+
 @propertyWrapper
-@available(iOS 13, macOS 10.15, tvOS 13, watchOS 6, *)
 public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty {
     @State
     public private(set) var wrappedValue = FetchableResults<FetchedObject>()
@@ -49,7 +52,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
     fileprivate var fetchController: FetchedResultsController<FetchedObject>
 
     @State
-    private var observer = FetchableRequestObserver<FetchedObject>()
+    private var subscription: Opaque<Cancellable> = Opaque()
 
     private let animation: Animation?
 
@@ -76,6 +79,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         controller: FetchedResultsController<FetchedObject>,
         animation: Animation? = nil
     ) {
+        // With iOS 14 we should use StateObject; however, we may lose animation options
         _fetchController = State(initialValue: controller)
         self.animation = animation
     }
@@ -84,7 +88,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         _wrappedValue.update()
         _fetchController.update()
 
-        guard !fetchController.hasFetchedObjects else {
+        guard !hasFetchedObjects else {
             return
         }
 
@@ -96,7 +100,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         let binding = $wrappedValue
         let animation = self.animation
 
-        observer.handler = { [weak controller] in
+        subscription.value = fetchController.objectDidChange.sink { [weak controller] in
             guard let controller = controller else {
                 return
             }
@@ -108,8 +112,6 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
                 )
             }
         }
-
-        fetchController.setDelegate(observer)
     }
 }
 
@@ -162,15 +164,5 @@ extension SectionedFetchableResults: RandomAccessCollection {
 
     public subscript (position: Int) -> FetchedResultsSection<FetchedObject> {
         return contents[position]
-    }
-}
-
-private class FetchableRequestObserver<
-    FetchedObject: FetchableObject
->: FetchedResultsControllerDelegate {
-    var handler: () -> Void = { }
-
-    func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>) {
-        handler()
     }
 }

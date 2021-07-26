@@ -90,6 +90,46 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
+    func testReset() {
+        testBasicFetch()
+        controller.setDelegate(self)
+
+        changeEvents.removeAll()
+
+        controller.reset()
+
+        XCTAssertEqual(changeEvents.count, 3)
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.delete(location: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(changeEvents[1].change, FetchedResultsChange.delete(location: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(changeEvents[2].change, FetchedResultsChange.delete(location: IndexPath(item: 0, section: 0)))
+
+        XCTAssertFalse(controller.hasFetchedObjects)
+        XCTAssertEqual(controller.fetchedObjects, [])
+    }
+
+    func testClearDelegate() {
+        controller = FetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        let objectIDs = ["a", "b", "c"]
+
+        try! performFetch(objectIDs)
+
+        XCTAssertEqual(changeEvents.count, 3)
+        XCTAssertEqual(controller.fetchedObjects.count, 3)
+
+        changeEvents.removeAll()
+        controller.clearDelegate()
+
+        try! performFetch(objectIDs)
+
+        XCTAssertEqual(changeEvents.count, 0)
+        XCTAssertEqual(controller.fetchedObjects.count, 3)
+    }
+
     func testAccessByIndexPath() {
         testBasicFetch()
 
@@ -916,6 +956,31 @@ extension FetchedResultsControllerTestCase {
 
         XCTAssertNil(fetchCompletion)
         XCTAssert(changeEvents.isEmpty)
+    }
+
+    func testExpectReloadFromDatabaseReset() {
+        controller = FetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        try! performFetch(["a", "b", "c"])
+
+        XCTAssertEqual(changeEvents.count, 3)
+
+        fetchCompletion = nil
+        changeEvents.removeAll()
+
+        let notification = Notification(name: TestObject.dataWasCleared(), object: nil)
+        NotificationCenter.default.post(notification)
+
+        XCTAssertNotNil(fetchCompletion)
+
+        fetchCompletion([TestObject(id: "1")])
+
+        XCTAssertEqual(changeEvents.count, 4)
+        XCTAssertEqual(controller.fetchedIDs, ["1"])
     }
 }
 
