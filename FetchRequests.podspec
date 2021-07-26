@@ -1,11 +1,10 @@
 Pod::Spec.new do |s|
   s.name = 'FetchRequests'
-  s.version = '3.2.0'
+  s.version = '4.0.0-rc.1'
   s.license = 'MIT'
   s.summary = 'NSFetchedResultsController inspired eventing'
   s.homepage = 'https://github.com/square/FetchRequests'
-  s.social_media_url = 'https://twitter.com/crew_app'
-  s.authors = { 'Speramus Inc' => 'opensource@crewapp.com' }
+  s.authors = 'Square'
   s.source = { :git => 'https://github.com/square/FetchRequests.git', :tag => s.version }
 
   ios_deployment_target = '12.0'
