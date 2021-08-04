@@ -27,7 +27,7 @@ let package = Package(
                 .product(name: "Collections", package: "swift-collections"),
             ],
             path: "FetchRequests",
-            exclude: ["Tests"]
+            exclude: ["Tests", "Info.plist", "TestsInfo.plist"]
         ),
         .testTarget(
             name: "FetchRequestsTests",
