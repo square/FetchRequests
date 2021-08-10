@@ -145,6 +145,10 @@ When submitting code, please make every effort to follow existing conventions an
 
 Before your code can be accepted into the project you must also sign the [Individual Contributor License Agreement (CLA)](https://spreadsheets.google.com/spreadsheet/viewform?formkey=dDViT2xzUHAwRkI3X3k5Z0lQM091OGc6MQ&ndplr=1).
 
+### Code of Conduct
+
+We expect contributors to adhere to the Square Open Source Code of Conduct. A copy of this document is available [here](https://developer.squareup.com/blog/open-source-code-of-conduct).
+
 ## License
 
 FetchRequests is released under the MIT license.
