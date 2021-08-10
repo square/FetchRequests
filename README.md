@@ -100,6 +100,9 @@ struct MembersView: View {
 - Xcode 12+
 - Swift 5+
 
+When installing via SPM, we will use [Swift Collections](https://github.com/apple/swift-collections).
+Otherwise we will use a [less efficient OrderedSet](https://github.com/square/FetchRequests/blob/main/FetchRequests/Sources/OrderedSetCompat.swift).
+
 ## Communication
 
 - If you **found a bug**, open an issue.
