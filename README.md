@@ -33,7 +33,7 @@ It is best when backed by something like a [WebSocket](https://en.wikipedia.org/
 
 To get started, you create a `FetchRequest` which explains your data access patterns.
 The `FetchedResultsController` is the interface to access the your data.
-Objects are sorted with the following heuristic: 
+Objects are sorted with the following heuristic:
 * Section Name ascending (if present)
 * Passed in sort descriptors
 * Insertion order of the entity ascending
@@ -100,6 +100,9 @@ struct MembersView: View {
 - Xcode 12+
 - Swift 5+
 
+When installing via SPM, we will use [Swift Collections](https://github.com/apple/swift-collections).
+Otherwise we will use a [less efficient OrderedSet](https://github.com/square/FetchRequests/blob/main/FetchRequests/Sources/OrderedSetCompat.swift).
+
 ## Communication
 
 - If you **found a bug**, open an issue.
@@ -142,6 +145,35 @@ When submitting code, please make every effort to follow existing conventions an
 
 Before your code can be accepted into the project you must also sign the [Individual Contributor License Agreement (CLA)](https://spreadsheets.google.com/spreadsheet/viewform?formkey=dDViT2xzUHAwRkI3X3k5Z0lQM091OGc6MQ&ndplr=1).
 
+### Code of Conduct
+
+We expect contributors to adhere to the Square Open Source Code of Conduct. A copy of this document is available [here](https://developer.squareup.com/blog/open-source-code-of-conduct).
+
 ## License
 
-FetchRequests is released under the MIT license. [See LICENSE](https://github.com/square/FetchRequests/blob/main/LICENSE) for details.
+FetchRequests is released under the MIT license.
+
+```
+MIT License
+
+Copyright (c) 2019 Square Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+```
