@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
 ## 4.0.0
-In Progress
+Released on 2021-09-14
 
 * Updated minimum SDKs to iOS 13 and related OSes
 * Added a Swift 5.5 package definition
@@ -12,7 +12,7 @@ In Progress
 * Added `Identifiable` conformance to FetchedResultsSection
 * Removed simplediff in deference to `BidirectionalCollection.difference(from:)`
 * Added `objectWillChange` and `objectDidChange` Publishers to all Controllers
-    * Removed the Wrapper controller as it is duplicative with `objectDidChange` 
+    * Removed the Wrapper controller as it is duplicative with `objectDidChange`
 * Objects are no longer sorted by `id`
     * The `ID` does not need to be comparable
     * Stable sorting is maintained by respecting the insertion order of objects
