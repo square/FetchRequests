@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
-## 4.0.0
+## [4.0.1](https://github.com/square/FetchRequests/releases/tag/4.0.1)
+Released on 2021-10-20
+
+* Respect insertion order for pagination / live updates
+
+## [4.0.0](https://github.com/square/FetchRequests/releases/tag/4.0.0)
 Released on 2021-09-14
 
 * Updated minimum SDKs to iOS 13 and related OSes
