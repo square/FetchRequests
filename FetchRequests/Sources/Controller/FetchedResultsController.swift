@@ -212,7 +212,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private let debounceInsertsAndReloads: Bool
     private var objectsToReload: Set<FetchedObject> = []
-    private var objectsToInsert: Set<FetchedObject> = []
+    private var objectsToInsert: OrderedSet<FetchedObject> = []
 
     private let objectWillChangeSubject = PassthroughSubject<Void, Never>()
     private let objectDidChangeSubject = PassthroughSubject<Void, Never>()
