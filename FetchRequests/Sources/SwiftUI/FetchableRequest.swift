@@ -56,7 +56,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
 
     private let animation: Animation?
 
-    internal var hasFetchedObjects: Bool {
+    public var hasFetchedObjects: Bool {
         return fetchController.hasFetchedObjects
     }
 
