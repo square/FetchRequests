@@ -26,6 +26,7 @@ public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
 
     var definition: FetchDefinition<FetchedObject> { get }
 
+    /// Has performFetch() completed?
     var hasFetchedObjects: Bool { get }
     var sections: [Section] { get }
     var fetchedObjects: [FetchedObject] { get }
