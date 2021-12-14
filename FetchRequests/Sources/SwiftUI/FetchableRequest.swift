@@ -17,6 +17,11 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
         return SectionedFetchableResults(contents: _base.fetchController.sections)
     }
 
+    /// Has performFetch() completed?
+    public var hasFetchedObjects: Bool {
+        return _base.hasFetchedObjects
+    }
+
     public init(
         definition: FetchDefinition<FetchedObject>,
         sectionNameKeyPath: KeyPath<FetchedObject, String>,
@@ -56,6 +61,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
 
     private let animation: Animation?
 
+    /// Has performFetch() completed?
     public var hasFetchedObjects: Bool {
         return fetchController.hasFetchedObjects
     }
