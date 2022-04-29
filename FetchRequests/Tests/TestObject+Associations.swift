@@ -193,7 +193,7 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
     }
 
     convenience init<AssociatedType: TestObject>(
-        for associatedType: Array<AssociatedType>.Type,
+        for associatedType: [AssociatedType].Type,
         keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
