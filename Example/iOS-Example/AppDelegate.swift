@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             rootViewController: ViewController()
         )
         window?.makeKeyAndVisible()
-        
+
         return true
     }
 }

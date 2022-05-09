@@ -147,28 +147,28 @@ public struct SectionedFetchableResults<FetchedObject: FetchableObject> {
 
 extension FetchableResults: RandomAccessCollection {
     public var startIndex: Int {
-      return contents.startIndex
+        return contents.startIndex
     }
 
     public var endIndex: Int {
-      return contents.endIndex
+        return contents.endIndex
     }
 
-    public subscript (position: Int) -> FetchedObject {
+    public subscript(position: Int) -> FetchedObject {
         return contents[position]
     }
 }
 
 extension SectionedFetchableResults: RandomAccessCollection {
     public var startIndex: Int {
-      return contents.startIndex
+        return contents.startIndex
     }
 
     public var endIndex: Int {
-      return contents.endIndex
+        return contents.endIndex
     }
 
-    public subscript (position: Int) -> FetchedResultsSection<FetchedObject> {
+    public subscript(position: Int) -> FetchedResultsSection<FetchedObject> {
         return contents[position]
     }
 }

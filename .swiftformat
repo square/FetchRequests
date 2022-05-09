@@ -1,0 +1,52 @@
+--swiftversion 5.5
+
+--exclude Pods
+
+--rules anyObjectProtocol
+
+--rules braces
+
+--rules duplicateImports
+--rules elseOnSameLine
+
+--rules strongifiedSelf
+--rules andOperator
+
+--rules indent
+  --indent 4
+  --indentcase false
+  --indentstrings true
+  --ifdef outdent
+
+--rules leadingDelimiters
+--rules linebreakAtEndOfFile
+
+--rules redundantGet
+--rules redundantInit
+--rules redundantParens
+--rules redundantVoidReturnType
+--rules semicolons
+--rules spaceAroundBraces
+--rules spaceAroundBrackets
+--rules spaceAroundGenerics
+
+--rules spaceAroundOperators
+--rules spaceAroundParens
+--rules spaceInsideBraces
+--rules spaceInsideBrackets
+--rules spaceInsideComments
+--rules spaceInsideGenerics
+--rules spaceInsideParens
+--rules todos
+
+--rules trailingCommas
+--rules trailingSpace
+--rules typeSugar
+--rules void
+
+--rules wrapArguments
+  --wraparguments before-first
+  --wrapcollections before-first
+  --wrapparameters before-first
+
+--rules wrapMultilineStatementBraces
