@@ -638,7 +638,6 @@ public extension FetchRequestAssociation {
         )
     }
 
-
     /// Array association by optional entity IDs whose creation event can also be observed
     convenience init<
         AssociatedEntity: FetchableObject,

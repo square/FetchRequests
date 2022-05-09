@@ -9,7 +9,7 @@
 import Foundation
 import FetchRequests
 
-// MARK: - CWFetchableObjectProtocol
+// MARK: - FetchableObjectProtocol
 
 extension TestObject: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
@@ -39,10 +39,10 @@ extension TestObject: FetchableObjectProtocol {
 
 extension TestObject {
     static func objectWasCreated() -> Notification.Name {
-        return Notification.Name("CWTestObject.objectWasCreated")
+        return Notification.Name("TestObject.objectWasCreated")
     }
 
     static func dataWasCleared() -> Notification.Name {
-        return Notification.Name("CWTestObject.dataWasCleared")
+        return Notification.Name("TestObject.dataWasCleared")
     }
 }

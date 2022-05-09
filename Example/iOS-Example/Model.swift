@@ -10,18 +10,15 @@ import Foundation
 
 import FetchRequests
 
+@dynamicMemberLookup
 class Model: NSObject {
     typealias ID = String
-    typealias RawData = JSON
 
-    @objc dynamic
-    private(set) var id: ID
-
-    @objc dynamic
-    private(set) var createdAt: Date = .distantPast
-
-    @objc dynamic
-    private(set) var updatedAt: Date = .distantPast
+    struct RawData: Codable, Identifiable, Equatable {
+        let id: ID
+        let createdAt: Date
+        var updatedAt: Date
+    }
 
     @Observable
     var data: RawData {
@@ -30,11 +27,14 @@ class Model: NSObject {
         }
     }
 
-    @objc dynamic
-    private(set) var isDeleted: Bool = false
+    @objc
+    dynamic private(set) var updatedAt: Date = .distantPast
 
-    @objc dynamic
-    var observingUpdates: Bool = false {
+    @objc
+    dynamic private(set) var isDeleted: Bool = false
+
+    @objc
+    dynamic var observingUpdates: Bool = false {
         didSet {
             guard observingUpdates != oldValue else {
                 return
@@ -48,23 +48,21 @@ class Model: NSObject {
         }
     }
 
+    subscript<Property>(dynamicMember keyPath: KeyPath<RawData, Property>) -> Property {
+        data[keyPath: keyPath]
+    }
+
     override init() {
-        id = UUID().uuidString
-        let createdAt = Date().timeIntervalSince1970
-        data = [
-            "id": id,
-            "createdAt": createdAt,
-            "updatedAt": createdAt,
-        ]
+        self.data = RawData(
+            id: UUID().uuidString,
+            createdAt: Date(),
+            updatedAt: Date()
+        )
         super.init()
         integrate(data: data)
     }
 
-    required init?(data: RawData) {
-        guard let id = Model.entityID(from: data) else {
-            return nil
-        }
-        self.id = id
+    required init(data: RawData) {
         self.data = data
         super.init()
         integrate(data: data)
@@ -88,19 +86,27 @@ class Model: NSObject {
     }
 }
 
+// MARK: - Identifiable
+
+extension Model: Identifiable {
+    var id: ID {
+        return data.id
+    }
+}
+
 // MARK: - Persistence Operations
 
 extension Model {
     func save() throws {
-        try type(of: self).save(self)
+        try Self.save(self)
     }
 
     func delete() throws {
-        try type(of: self).delete(self)
+        try Self.delete(self)
     }
 }
 
-// MARK: - CWFetchableObjectProtocol
+// MARK: - FetchableObjectProtocol
 
 extension Model: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
@@ -117,7 +123,7 @@ extension Model: FetchableObjectProtocol {
     }
 
     static func entityID(from data: RawData) -> Model.ID? {
-        return data.id?.string
+        return data.id
     }
 
     func listenForUpdates() {
@@ -129,12 +135,8 @@ extension Model: FetchableObjectProtocol {
 
 private extension Model {
     func integrate(data: RawData) {
-        if let raw = data.createdAt?.double as TimeInterval? {
-            createdAt = Date(timeIntervalSince1970: raw)
-        }
-        if let raw = data.updatedAt?.double as TimeInterval? {
-            updatedAt = Date(timeIntervalSince1970: raw)
-        }
+        // We only need to set KVO-able properties since we're using @dynamicMemberLookup
+        updatedAt = data.updatedAt
     }
 
     func stopObservingEvents() {
@@ -160,7 +162,7 @@ private extension Model {
             fatalError("Bad notification with object \(String(describing: notification.object))")
         }
 
-        guard model.updatedAt > updatedAt else {
+        guard model.updatedAt > self.updatedAt else {
             return
         }
 
