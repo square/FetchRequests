@@ -137,7 +137,7 @@ public extension FetchRequestAssociation {
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
         Token: ObservableToken
-    > (
+    >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
@@ -200,7 +200,7 @@ public extension FetchRequestAssociation {
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
         Token: ObservableToken
-    > (
+    >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
@@ -262,7 +262,7 @@ public extension FetchRequestAssociation {
         AssociatedEntity: FetchableObject,
         AssociatedEntityID: Equatable,
         Token: ObservableToken
-    > (
+    >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
@@ -313,7 +313,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
@@ -401,7 +401,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
@@ -497,7 +497,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
@@ -519,7 +519,7 @@ public extension FetchRequestAssociation {
         AssociatedEntity: FetchableObject,
         Reference: Hashable,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [Reference]>,
         request: @escaping AssocationRequestByID<Reference, AssociatedEntity>,
@@ -621,7 +621,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
@@ -643,7 +643,7 @@ public extension FetchRequestAssociation {
         AssociatedEntity: FetchableObject,
         Reference: Hashable,
         Token: ObservableToken
-    > (
+    >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [Reference]?>,
         request: @escaping AssocationRequestByID<Reference, AssociatedEntity>,
@@ -657,8 +657,8 @@ public extension FetchRequestAssociation {
             let mapping: [FetchedObject.ID: [Reference]] = objects.reduce(into: [:]) { memo, object in
                 let objectID = object.id
                 guard let associatedIDs: [Reference] = object[keyPath: keyPath],
-                    !associatedIDs.isEmpty else
-                {
+                      !associatedIDs.isEmpty
+                else {
                     return
                 }
                 for associatedID in associatedIDs {
@@ -749,7 +749,7 @@ public extension FetchRequestAssociation {
     convenience init<
         EntityID: FetchableEntityID,
         Token: ObservableToken
-    > (
+    >(
         keyPath: KeyPath<FetchedObject, EntityID>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
@@ -821,7 +821,7 @@ public extension FetchRequestAssociation {
     convenience init<
         EntityID: FetchableEntityID,
         Token: ObservableToken
-    > (
+    >(
         keyPath: KeyPath<FetchedObject, EntityID?>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool

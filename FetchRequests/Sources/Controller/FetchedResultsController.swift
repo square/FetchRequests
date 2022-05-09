@@ -181,13 +181,13 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
     private let memoryPressureToken: FetchRequestObservableToken<Notification>? = {
-        #if canImport(UIKit) && !os(watchOS)
+#if canImport(UIKit) && !os(watchOS)
         return FetchRequestObservableToken(
             token: ObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
         )
-        #else
+#else
         return nil
-        #endif
+#endif
     }()
 
     // swiftlint:disable:next weak_delegate
@@ -228,7 +228,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private lazy var context: Context<FetchedObject> = {
         return Context { [weak self] keyPath, objectID in
-            guard let `self` = self else {
+            guard let self = self else {
                 throw FetchedResultsError.objectNotFound
             }
 
@@ -380,7 +380,7 @@ private extension FetchedResultsController {
             let smallIndex = max(0, index - difference)
             let largeIndex = min(fetchedObjects.endIndex - 1, index + difference)
 
-            objects = Array(fetchedObjects[smallIndex...largeIndex])
+            objects = Array(fetchedObjects[smallIndex ... largeIndex])
         }
         let fetchableObjects = objects.filter {
             let objectID = $0.id
@@ -838,11 +838,11 @@ private extension FetchedResultsController {
 
     func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
         assert(fetchedObjectIDs.contains(object.id))
-        
+
         let sectionName = object.sectionName(forKeyPath: sectionNameKeyPath)
         let sectionIndex = idealSectionIndex(forSectionName: sectionName)
 
-        let sectionPrefix = sections[0..<sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
+        let sectionPrefix = sections[0 ..< sectionIndex].reduce(0) { $0 + $1.numberOfObjects }
         let sectionObjectIndex = index - sectionPrefix
 
         if sections.endIndex <= sectionIndex || sections[sectionIndex].name != sectionName {
@@ -878,7 +878,7 @@ private extension FetchedResultsController {
         }
 
         let handleChange: (FetchedObject) -> Void = { [weak self] object in
-            guard let `self` = self else {
+            guard let self = self else {
                 return
             }
             do {
@@ -909,7 +909,7 @@ private extension FetchedResultsController {
         observations += [dataObserver, isDeletedObserver]
 
         let handleSort: (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
-            guard let `self` = self else {
+            guard let self = self else {
                 return
             }
             if let old = old as? NSObject, let new = new as? NSObject {
@@ -966,7 +966,7 @@ private extension FetchedResultsController {
     func startObservingNotificationsIfNeeded() {
         assert(Thread.isMainThread)
 
-        memoryPressureToken?.observeIfNeeded { [ weak self] notification in
+        memoryPressureToken?.observeIfNeeded { [weak self] notification in
             self?.removeAllAssociatedValues()
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in

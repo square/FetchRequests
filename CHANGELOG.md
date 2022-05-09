@@ -7,6 +7,7 @@ Released on 2022-05-XX
 
 * Support array associations by an arbitrary reference instead of just by ID. This is specified via a new referenceAccessor parameter.
 * Updated example to use Codable model
+* Updated linting
 
 ## [4.0.2](https://github.com/square/FetchRequests/releases/tag/4.0.2)
 Released on 2021-12-14

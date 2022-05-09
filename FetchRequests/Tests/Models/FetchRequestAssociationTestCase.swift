@@ -72,7 +72,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? Int), 2)
+            XCTAssertEqual(newValue as? Int, 2)
             calledKVO = true
         }
 
@@ -114,7 +114,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? String), "2")
+            XCTAssertEqual(newValue as? String, "2")
             calledKVO = true
         }
 
@@ -181,7 +181,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? Int), 2)
+            XCTAssertEqual(newValue as? Int, 2)
             calledKVO = true
         }
 
@@ -244,7 +244,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? String), "2")
+            XCTAssertEqual(newValue as? String, "2")
             calledKVO = true
         }
 
@@ -312,7 +312,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? String), "2")
+            XCTAssertEqual(newValue as? String, "2")
             calledKVO = true
         }
 
@@ -376,7 +376,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? String), "2")
+            XCTAssertEqual(newValue as? String, "2")
             calledKVO = true
         }
 
@@ -448,7 +448,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? [String]), ["2"])
+            XCTAssertEqual(newValue as? [String], ["2"])
             calledKVO = true
         }
 
@@ -516,7 +516,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? [String]), ["2"])
+            XCTAssertEqual(newValue as? [String], ["2"])
             calledKVO = true
         }
 
@@ -579,7 +579,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? TestFetchableEntityID), TestFetchableEntityID(id: "2"))
+            XCTAssertEqual(newValue as? TestFetchableEntityID, TestFetchableEntityID(id: "2"))
             calledKVO = true
         }
 
@@ -638,7 +638,7 @@ extension FetchRequestAssociationTestCase {
 
         var calledKVO = false
         let observer = association.observeKeyPath(object) { object, oldValue, newValue in
-            XCTAssertEqual((newValue as? TestFetchableEntityID), TestFetchableEntityID(id: "2"))
+            XCTAssertEqual(newValue as? TestFetchableEntityID, TestFetchableEntityID(id: "2"))
             calledKVO = true
         }
 

@@ -32,7 +32,7 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
         let request: FetchDefinition<TestObject>.Request = { [unowned self] completion in
             self.fetchCompletion = completion
         }
-        
+
         let desiredAssociations = TestObject.fetchRequestAssociations(
             matching: associations
         ) { [unowned self] associationRequest in
@@ -708,7 +708,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
         XCTAssertNil(associationRequest)
     }
 
-    #if canImport(UIKit) && !os(watchOS)
+#if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchController(
             definition: createFetchDefinition(associations: [\TestObject.tag]),
@@ -744,7 +744,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         associationRequest.parentsCompletion([:])
     }
-    #endif
+#endif
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchController(

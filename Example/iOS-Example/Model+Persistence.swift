@@ -73,7 +73,7 @@ extension Model {
             return model
         }
         guard existing.updatedAt <= model.updatedAt,
-            existing.createdAt == model.createdAt
+              existing.createdAt == model.createdAt
         else {
             throw ModelError.invalidDate
         }

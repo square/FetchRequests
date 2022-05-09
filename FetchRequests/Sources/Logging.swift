@@ -32,32 +32,32 @@ func CWLogError(_ message: @autoclosure () -> String, level: DDLogLevel = dynami
 }
 #else
 func CWLogDebug(_ message: @autoclosure () -> String) {
-    #if DEBUG
+#if DEBUG
     NSLog(message())
-    #endif
+#endif
 }
 
 func CWLogInfo(_ message: @autoclosure () -> String) {
-    #if DEBUG
+#if DEBUG
     NSLog(message())
-    #endif
+#endif
 }
 
 func CWLogWarning(_ message: @autoclosure () -> String) {
-    #if DEBUG
+#if DEBUG
     NSLog(message())
-    #endif
+#endif
 }
 
 func CWLogVerbose(_ message: @autoclosure () -> String) {
-    #if DEBUG
+#if DEBUG
     NSLog(message())
-    #endif
+#endif
 }
 
 func CWLogError(_ message: @autoclosure () -> String) {
-    #if DEBUG
+#if DEBUG
     NSLog(message())
-    #endif
+#endif
 }
 #endif
