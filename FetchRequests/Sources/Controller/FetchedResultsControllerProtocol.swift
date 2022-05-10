@@ -113,7 +113,7 @@ public extension FetchedResultsControllerProtocol {
             return nil
         }
 
-        let sectionPrefix = sections[0..<indexPath.section].reduce(0) { $0 + $1.numberOfObjects }
+        let sectionPrefix = sections[0 ..< indexPath.section].reduce(0) { $0 + $1.numberOfObjects }
 
         return sectionPrefix + indexPath.item
     }
@@ -147,7 +147,7 @@ public extension FetchedResultsControllerProtocol {
 
 public extension FetchedResultsControllerProtocol {
     func getIndexPath(before indexPath: IndexPath) -> IndexPath? {
-        guard 0..<sections.count ~= indexPath.section else {
+        guard 0 ..< sections.count ~= indexPath.section else {
             return nil
         }
 
@@ -168,7 +168,7 @@ public extension FetchedResultsControllerProtocol {
     }
 
     func getIndexPath(after indexPath: IndexPath) -> IndexPath? {
-        guard 0..<sections.count ~= indexPath.section else {
+        guard 0 ..< sections.count ~= indexPath.section else {
             return nil
         }
 

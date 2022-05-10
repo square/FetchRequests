@@ -12,8 +12,10 @@ import FetchRequests
 
 enum ModelError: Error {
     case invalidDate
-    case cannotInflate
 }
+
+private let encoder = JSONEncoder()
+private let decoder = JSONDecoder()
 
 // MARK: - Event Notifications
 
@@ -45,24 +47,22 @@ extension Model {
         return UserDefaults.standard.dictionary(forKey: key) ?? [:]
     }
 
-    fileprivate class func updateStorage(_ block: (inout [String: Any]) -> Void) {
+    fileprivate class func updateStorage(_ block: (inout [String: Any]) throws -> Void) rethrows {
         assert(Thread.isMainThread)
 
         let defaults = UserDefaults.standard
         let key = NSStringFromClass(self)
 
         var storage = defaults.dictionary(forKey: key) ?? [:]
-        block(&storage)
+        try block(&storage)
         defaults.set(storage, forKey: key)
     }
 
     private class func validateCanUpdate(_ originalModel: Model) throws -> Model {
-        var data = originalModel.data.dictionary ?? [:]
-        data["updatedAt"] = Date().timeIntervalSince1970
+        var data = originalModel.data
+        data.updatedAt = Date()
 
-        guard let json = JSON(data), let model = self.init(data: json) else {
-            throw ModelError.cannotInflate
-        }
+        let model = Model(data: data)
 
         guard model.createdAt != .distantPast else {
             throw ModelError.invalidDate
@@ -73,8 +73,8 @@ extension Model {
             return model
         }
         guard existing.updatedAt <= model.updatedAt,
-            existing.createdAt == model.createdAt else
-        {
+              existing.createdAt == model.createdAt
+        else {
             throw ModelError.invalidDate
         }
 
@@ -85,8 +85,9 @@ extension Model {
     class func save(_ originalModel: Model) throws {
         let model = try validateCanUpdate(originalModel)
 
-        updateStorage {
-            $0[model.id] = model.data.object
+        try updateStorage {
+            let data = try encoder.encode(model.data)
+            $0[model.id] = data
         }
 
         NotificationCenter.default.post(
@@ -124,17 +125,21 @@ extension Model {
 
 extension NSObjectProtocol where Self: Model {
     static func fetchAll() -> [Self] {
-        return storage.values.lazy.compactMap {
-            Self.RawData($0)
-        }.compactMap {
+        return storage.values.lazy.compactMap { value in
+            value as? Data
+        }.compactMap { data in
+            try? decoder.decode(Model.RawData.self, from: data)
+        }.map {
             Self(data: $0)
         }
     }
 
     static func fetch(byID id: Model.ID) -> Self? {
-        return storage[id].flatMap {
-            Self.RawData($0)
-        }.flatMap {
+        return storage[id].flatMap { value in
+            value as? Data
+        }.flatMap { data in
+            try? decoder.decode(Model.RawData.self, from: data)
+        }.map {
             Self(data: $0)
         }
     }

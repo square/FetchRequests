@@ -130,7 +130,7 @@ private extension ViewController {
     }
 }
 
-// MARK: - CWFetchedResultsControllerDelegate
+// MARK: - FetchedResultsControllerDelegate
 
 extension ViewController: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: FetchedResultsController<Model>) {

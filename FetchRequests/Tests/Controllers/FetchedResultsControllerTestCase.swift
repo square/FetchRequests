@@ -390,7 +390,7 @@ extension FetchedResultsControllerTestCase {
         XCTAssertNil(associationRequest)
     }
 
-    #if canImport(UIKit) && !os(watchOS)
+#if canImport(UIKit) && !os(watchOS)
     func testAssociatedValuesAreDumpedOnMemoryPressure() {
         controller = FetchedResultsController(
             definition: createFetchDefinition(associations: [\TestObject.tag]),
@@ -426,7 +426,7 @@ extension FetchedResultsControllerTestCase {
 
         associationRequest.parentsCompletion([:])
     }
-    #endif
+#endif
 
     func testAssociatedObjectsInvalidatedFromKVO() {
         controller = FetchedResultsController(
@@ -855,7 +855,7 @@ extension FetchedResultsControllerTestCase {
         }
 
         try! performFetch(objects)
-        
+
         // Fault on A
 
         let faultedAssociatedObject = getObjectAtIndex(0, withObjectID: "a").tagObjectArray()

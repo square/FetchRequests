@@ -2,10 +2,17 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.0.3](https://github.com/square/FetchRequests/releases/tag/4.0.3)
+Released on 2022-05-XX
+
+* Support array associations by an arbitrary reference instead of just by ID. This is specified via a new referenceAccessor parameter.
+* Updated example to use Codable model
+* Updated linting
+
 ## [4.0.2](https://github.com/square/FetchRequests/releases/tag/4.0.2)
 Released on 2021-12-14
 
-* Expose `hasFetchedObjects` on FetchableRequest and SectionedFetchableRequest. It has the same semantics as the a Controller.
+* Expose `hasFetchedObjects` on FetchableRequest and SectionedFetchableRequest. It has the same semantics as the property on the Controller.
 
 ## [4.0.1](https://github.com/square/FetchRequests/releases/tag/4.0.1)
 Released on 2021-10-20

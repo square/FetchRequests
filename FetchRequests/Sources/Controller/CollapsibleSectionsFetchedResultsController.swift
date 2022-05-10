@@ -74,7 +74,8 @@ public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatab
         }
 
         if let numberOfItemsToDisplayWhenExceedingMax = config.numberOfItemsToDisplayWhenExceedingMax,
-            section.numberOfObjects > config.maxNumberOfItemsToDisplay {
+           section.numberOfObjects > config.maxNumberOfItemsToDisplay
+        {
             let collapsedObjects = section.objects.prefix(numberOfItemsToDisplayWhenExceedingMax)
             displayableObjects = Array(collapsedObjects)
         } else if section.numberOfObjects > config.maxNumberOfItemsToDisplay {
@@ -280,8 +281,8 @@ extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerD
         }
         for sectionName in sectionsToNotify {
             guard let section = previousSectionsDuringContentChange.first(where: { $0.name == sectionName }),
-                let index = previousSectionsDuringContentChange.firstIndex(of: section) else
-            {
+                  let index = previousSectionsDuringContentChange.firstIndex(of: section)
+            else {
                 continue
             }
 
@@ -330,7 +331,7 @@ extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerD
             let fromSection = sections[fromIndexPath.section]
             let toSection = sections[toIndexPath.section]
 
-            if fromSection.isCollapsed && toSection.isCollapsed {
+            if fromSection.isCollapsed, toSection.isCollapsed {
                 collapsedSectionsModifiedDuringContentChange.insert(fromSection.name)
                 collapsedSectionsModifiedDuringContentChange.insert(toSection.name)
             } else if fromSection.isCollapsed {

@@ -76,15 +76,15 @@ extension JSON: _ObjectiveCBridgeable {
     }
 
     public static func _forceBridgeFromObjectiveC(
-      _ source: BoxedJSON,
-      result: inout JSON?
+        _ source: BoxedJSON,
+        result: inout JSON?
     ) {
         result = source.json
     }
 
     public static func _conditionallyBridgeFromObjectiveC(
-      _ source: BoxedJSON,
-      result: inout JSON?
+        _ source: BoxedJSON,
+        result: inout JSON?
     ) -> Bool {
         result = source.json
         return true
@@ -93,8 +93,8 @@ extension JSON: _ObjectiveCBridgeable {
     public static func _unconditionallyBridgeFromObjectiveC(
         _ source: BoxedJSON?
     ) -> JSON {
-      var result: JSON?
-      _forceBridgeFromObjectiveC(source!, result: &result)
-      return result!
+        var result: JSON?
+        _forceBridgeFromObjectiveC(source!, result: &result)
+        return result!
     }
 }

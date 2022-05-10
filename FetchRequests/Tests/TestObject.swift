@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import FetchRequests
+import FetchRequests
 
 final class TestObject: NSObject {
     typealias RawData = JSON
@@ -39,6 +39,8 @@ final class TestObject: NSObject {
 
         return hasher.finalize()
     }
+
+    // MARK: - Initialization & Integration
 
     required init?(data: RawData) {
         guard let id = TestObject.entityID(from: data) else {

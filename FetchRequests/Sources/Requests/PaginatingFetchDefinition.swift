@@ -79,7 +79,7 @@ public class PausablePaginatingFetchedResultsController<
     FetchedObject: FetchableObject
 >: PausableFetchedResultsController<FetchedObject> {
     private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
-    
+
     public init(
         definition: PaginatingFetchDefinition<FetchedObject>,
         sortDescriptors: [NSSortDescriptor] = [],
@@ -87,7 +87,7 @@ public class PausablePaginatingFetchedResultsController<
         debounceInsertsAndReloads: Bool = true
     ) {
         paginatingDefinition = definition
-        
+
         super.init(
             definition: definition,
             sortDescriptors: sortDescriptors,
@@ -95,7 +95,7 @@ public class PausablePaginatingFetchedResultsController<
             debounceInsertsAndReloads: debounceInsertsAndReloads
         )
     }
-    
+
     public func performPagination() {
         performPagination(with: paginatingDefinition.paginationRequest)
     }
