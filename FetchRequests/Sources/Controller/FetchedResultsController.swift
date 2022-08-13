@@ -47,6 +47,7 @@ public enum FetchedResultsChange<Location: Equatable>: Equatable {
 
 public protocol FetchedResultsControllerDelegate: AnyObject {
     associatedtype FetchedObject: FetchableObject
+    typealias Snapshot = NSDiffableDataSourceSnapshot<String, FetchedObject>
 
     func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>)
     func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>)
@@ -60,6 +61,11 @@ public protocol FetchedResultsControllerDelegate: AnyObject {
         _ controller: FetchedResultsController<FetchedObject>,
         didChange section: FetchedResultsSection<FetchedObject>,
         for change: FetchedResultsChange<Int>
+    )
+
+    func controller(
+        _ controller: FetchedResultsController<FetchedObject>,
+        didChangeContentWith snapshot: Snapshot
     )
 }
 
@@ -80,17 +86,26 @@ public extension FetchedResultsControllerDelegate {
         for change: FetchedResultsChange<Int>
     ) {
     }
+
+    func controller(
+        _ controller: FetchedResultsController<FetchedObject>,
+        didChangeContentWith snapshot: Snapshot
+    ) {
+    }
 }
 
 internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
     typealias Controller = FetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
+    typealias Snapshot = Controller.Snapshot
 
     private let willChange: (_ controller: Controller) -> Void
     private let didChange: (_ controller: Controller) -> Void
 
     private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
     private let changeSection: (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+
+    private let didChangeContentWith: (_ controller: Controller, _ snapshot: Snapshot) -> Void
 
     init<Parent: FetchedResultsControllerDelegate>(
         _ parent: Parent
@@ -107,6 +122,9 @@ internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResu
         }
         changeSection = { [weak parent] controller, section, change in
             parent?.controller(controller, didChange: section, for: change)
+        }
+        didChangeContentWith = { [weak parent] controller, snapshot in
+            parent?.controller(controller, didChangeContentWith: snapshot)
         }
     }
 
@@ -132,6 +150,10 @@ internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResu
         for change: FetchedResultsChange<Int>
     ) {
         self.changeSection(controller, section, change)
+    }
+
+    func controller(_ controller: FetchedResultsController<FetchedObject>, didChangeContentWith snapshot: Snapshot) {
+        self.didChangeContentWith(controller, snapshot)
     }
 }
 
@@ -166,6 +188,7 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+    public typealias Snapshot = NSDiffableDataSourceSnapshot<String, FetchedObject>
 
     public let definition: FetchDefinition<FetchedObject>
     public let sectionNameKeyPath: SectionNameKeyPath?
@@ -219,6 +242,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     public private(set) lazy var objectWillChange = objectWillChangeSubject.eraseToAnyPublisher()
     public private(set) lazy var objectDidChange = objectDidChangeSubject.eraseToAnyPublisher()
+
+    private(set) var snapshot: Snapshot = Snapshot()
 
     public private(set) var sections: [Section] = [] {
         didSet {
@@ -1103,6 +1128,7 @@ private extension FetchedResultsController {
 
         if emitChanges {
             delegate?.controllerDidChangeContent(self)
+            delegate?.controller(self, didChangeContentWith: snapshot)
             objectDidChangeSubject.send()
         }
     }
@@ -1120,6 +1146,7 @@ private extension FetchedResultsController {
 
     func notifyInserting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotObjectInsertOperation(for: object, at: indexPath)
         guard let delegate = delegate, emitChanges else {
             return
         }
@@ -1129,6 +1156,7 @@ private extension FetchedResultsController {
 
     func notifyMoving(_ object: FetchedObject, from fromIndexPath: IndexPath, to toIndexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotObjectMoveOperation(for: object, at: toIndexPath)
         guard let delegate = delegate, emitChanges else {
             return
         }
@@ -1138,6 +1166,7 @@ private extension FetchedResultsController {
 
     func notifyUpdating(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotObjectUpdateOperation(for: object)
         guard let delegate = delegate, emitChanges else {
             return
         }
@@ -1147,6 +1176,7 @@ private extension FetchedResultsController {
 
     func notifyDeleting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotObjectDeleteOperation(for: object)
         guard let delegate = delegate, emitChanges else {
             return
         }
@@ -1156,6 +1186,7 @@ private extension FetchedResultsController {
 
     func notifyInserting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotSectionInsertOperation(for: section, at: sectionIndex)
         guard let delegate = delegate, emitChanges else {
             return
         }
@@ -1165,11 +1196,184 @@ private extension FetchedResultsController {
 
     func notifyDeleting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
+        performSnapshotSectionDeleteOperation(for: section)
         guard let delegate = delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: section, for: .delete(location: sectionIndex))
+    }
+}
+
+// MARK: - Snapshot Object Event Helpers
+
+private extension FetchedResultsController {
+    enum SnapshotInsertOrMoveOperation<T> {
+        case append
+        case before(T)
+        case after(T)
+    }
+
+    func performSnapshotObjectInsertOperation(
+        for object: FetchedObject,
+        at indexPath: IndexPath
+    ) {
+        let operation = objectInsertionOperation(for: object, at: indexPath)
+        switch operation {
+        case .append:
+            let section = sections[indexPath.section]
+            snapshot.appendItems([object], toSection: section.name)
+
+        case let .before(nextObject):
+            snapshot.insertItems([object], beforeItem: nextObject)
+
+        case let .after(previousObject):
+            snapshot.insertItems([object], afterItem: previousObject)
+        }
+    }
+
+    func objectInsertionOperation(
+        for object: FetchedObject,
+        at indexPath: IndexPath
+    ) -> SnapshotInsertOrMoveOperation<FetchedObject> {
+        if indexPath.row > 0 {
+            let previousIndexPath = IndexPath(row: indexPath.row - 1, section: indexPath.section)
+            let previousAnnouncement = self.object(at: previousIndexPath)
+            return .after(previousAnnouncement)
+        } else if sections[indexPath.section].numberOfObjects > 1 { // > 1 because this item is already in section
+            let nextIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+            let nextAnnouncement = self.object(at: nextIndexPath)
+            return .before(nextAnnouncement)
+        } else {
+            return .append
+        }
+    }
+
+    func performSnapshotObjectMoveOperation(
+        for object: FetchedObject,
+        at indexPath: IndexPath
+    ) {
+        let operation = objectMoveOperation(for: object, at: indexPath)
+        switch operation {
+        case .append:
+            let section = sections[indexPath.section]
+            snapshot.appendItems([object], toSection: section.name)
+
+        case let .before(nextObject):
+            snapshot.moveItem(object, beforeItem: nextObject)
+
+        case let .after(previousObject):
+            snapshot.moveItem(object, afterItem: previousObject)
+        }
+    }
+
+    func objectMoveOperation(
+        for object: FetchedObject,
+        at indexPath: IndexPath
+    ) -> SnapshotInsertOrMoveOperation<FetchedObject> {
+        if indexPath.row > 0 {
+            let previousIndexPath = IndexPath(row: indexPath.row - 1, section: indexPath.section)
+            let previousAnnouncement = self.object(at: previousIndexPath)
+            return .after(previousAnnouncement)
+        } else if sections[indexPath.section].numberOfObjects > 1 { // > 1 because this item is already moved into the section
+            let firstIndexPath = IndexPath(row: 1, section: indexPath.section)
+            let firstAnnouncementInSection = self.object(at: firstIndexPath)
+            return .before(firstAnnouncementInSection)
+        } else {
+            return .append
+        }
+    }
+
+    func performSnapshotObjectUpdateOperation(for object: FetchedObject) {
+        if #available(iOSApplicationExtension 15.0, *) {
+            snapshot.reconfigureItems([object])
+        } else {
+            snapshot.reloadItems([object])
+        }
+    }
+
+    func performSnapshotObjectDeleteOperation(for object: FetchedObject) {
+        snapshot.deleteItems([object])
+    }
+}
+
+// MARK: - Snapshot Section Event Helpers
+
+private extension FetchedResultsController {
+    func performSnapshotSectionInsertOperation(
+        for section: Section,
+        at sectionIndex: Int
+    ) {
+        let operation = sectionInsertOperation(for: section, at: sectionIndex)
+        switch operation {
+        case .append:
+            snapshot.appendSections([section.name])
+
+        case let .before(nextSection):
+            snapshot.insertSections([section.name], beforeSection: nextSection.name)
+
+        case let .after(previousSection):
+            snapshot.insertSections([section.name], afterSection: previousSection.name)
+        }
+    }
+
+    func sectionInsertOperation(
+        for section: Section,
+        at sectionIndex: Int
+    ) -> SnapshotInsertOrMoveOperation<Section> {
+        if sectionIndex > 0 {
+            let previousSectionIndex = sectionIndex - 1
+            let previousSection = sections[previousSectionIndex]
+            return .after(previousSection)
+        } else if sections.count > 1 { // > 1 because the new section has already been added
+            let nextSectionIndex = sectionIndex + 1
+            let nextSection = sections[nextSectionIndex]
+            return .before(nextSection)
+        } else {
+            return .append
+        }
+    }
+
+    func performSnapshotSectionMoveOperation(
+        for section: Section,
+        to sectionIndex: Int
+    ) {
+        let operation = sectionMoveOperation(for: section, to: sectionIndex)
+        switch operation {
+        case .append:
+            snapshot.appendSections([section.name])
+
+        case let .before(nextSection):
+            snapshot.moveSection(section.name, beforeSection: nextSection.name)
+
+        case let .after(previousSection):
+            snapshot.moveSection(section.name, afterSection: previousSection.name)
+        }
+    }
+
+    func sectionMoveOperation(
+        for section: Section,
+        to toSectionIndex: Int
+    ) -> SnapshotInsertOrMoveOperation<Section> {
+        if toSectionIndex > 0 {
+            let previousSectionIndex = toSectionIndex - 1
+            let previousSection = sections[previousSectionIndex]
+            return .after(previousSection)
+        } else if sections.count > 1 { // > 1 because the section has already been moved
+            let nextSectionIndex = toSectionIndex + 1
+            let nextSection = sections[nextSectionIndex]
+            return .before(nextSection)
+        } else {
+            return .append
+        }
+    }
+
+    func performSnapshotSectionDeleteOperation(for section: Section) {
+        snapshot.deleteSections([section.name])
+    }
+
+    func performSnapshotSectionUpdateOperation(for section: Section) {
+        snapshot.reloadSections([section.name])
     }
 }
 

@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 
 public protocol PausableFetchedResultsControllerDelegate: AnyObject {
     associatedtype FetchedObject: FetchableObject
+    typealias Snapshot = NSDiffableDataSourceSnapshot<String, FetchedObject>
 
     func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
     func controllerDidChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
@@ -24,6 +26,11 @@ public protocol PausableFetchedResultsControllerDelegate: AnyObject {
         _ controller: PausableFetchedResultsController<FetchedObject>,
         didChange section: FetchedResultsSection<FetchedObject>,
         for change: FetchedResultsChange<Int>
+    )
+
+    func controller(
+        _ controller: PausableFetchedResultsController<FetchedObject>,
+        didChangeContentWith snapshot: Snapshot
     )
 }
 
@@ -42,6 +49,12 @@ public extension PausableFetchedResultsControllerDelegate {
         _ controller: PausableFetchedResultsController<FetchedObject>,
         didChange section: FetchedResultsSection<FetchedObject>,
         for change: FetchedResultsChange<Int>
+    ) {
+    }
+
+    func controller(
+        _ controller: PausableFetchedResultsController<FetchedObject>,
+        didChangeContentWith snapshot: Snapshot
     ) {
     }
 }
@@ -83,6 +96,7 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
                 hasFetchedObjectsSnapshot = nil
                 sectionsSnapshot = nil
                 fetchedObjectsSnapshot = nil
+                delegate?.controller(controller, didChangeContentWith: controller.snapshot)
             }
 
             objectDidChangeSubject.send()
@@ -183,6 +197,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
     typealias ParentController = FetchedResultsController<FetchedObject>
     typealias PausableController = PausableFetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
+    typealias Snapshot = ParentController.Snapshot
 
     private weak var pausableController: PausableController?
 
@@ -191,6 +206,8 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
 
     private let changeObject: (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
     private let changeSection: (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+
+    private let didChangeContentWith: (_ controller: PausableController, _ snapshot: Snapshot) -> Void
 
     init<Parent: PausableFetchedResultsControllerDelegate>(
         _ parent: Parent,
@@ -210,6 +227,10 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         }
         changeSection = { [weak parent] controller, section, change in
             parent?.controller(controller, didChange: section, for: change)
+        }
+
+        didChangeContentWith = { [weak parent] controller, snapshot in
+            parent?.controller(controller, didChangeContentWith: snapshot)
         }
     }
 
@@ -249,5 +270,15 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
             return
         }
         self.changeSection(pausableController, section, change)
+    }
+
+    func controller(
+        _ controller: ParentController,
+        didChangeContentWith snapshot: Snapshot
+    ) {
+        guard let pausableController = pausableController, !pausableController.isPaused else {
+            return
+        }
+        self.didChangeContentWith(pausableController, snapshot)
     }
 }
