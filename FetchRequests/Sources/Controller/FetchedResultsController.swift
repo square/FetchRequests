@@ -607,7 +607,7 @@ private extension FetchedResultsController {
             return !fetchedObjectIDs.contains(object.id)
         }.sorted(by: sortDescriptors)
 
-        guard !objects.isEmpty else {
+        guard !sortedObjects.isEmpty else {
             return
         }
 
