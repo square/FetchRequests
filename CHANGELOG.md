@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
+Released on 2022-08-30
+
+* Reduce some cases of no-op eventing
+
 ## [4.0.3](https://github.com/square/FetchRequests/releases/tag/4.0.3)
 Released on 2022-05-09
 
