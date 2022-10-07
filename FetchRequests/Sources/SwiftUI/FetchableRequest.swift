@@ -107,7 +107,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         let animation = self.animation
 
         subscription.value = fetchController.objectDidChange.sink { [weak controller] in
-            guard let controller = controller else {
+            guard let controller else {
                 return
             }
             withAnimation(animation) {

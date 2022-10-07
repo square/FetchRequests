@@ -41,7 +41,7 @@ private extension InternalFetchResultsControllerProtocol {
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
-            guard let pageResults = pageResults else {
+            guard let pageResults else {
                 return
             }
             self?.manuallyInsert(objects: pageResults, emitChanges: true)

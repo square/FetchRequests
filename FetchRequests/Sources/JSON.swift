@@ -436,7 +436,7 @@ public enum JSONError: Error {
     case invalidContent
 }
 
-private extension Dictionary where Key == String, Value == Any {
+private extension [String: Any] {
     func encodableDictionary() throws -> [String: JSON] {
         return try reduce(into: [:]) { memo, kvp in
             guard let value = JSON(kvp.value) else {
@@ -447,7 +447,7 @@ private extension Dictionary where Key == String, Value == Any {
     }
 }
 
-private extension Array where Element == Any {
+private extension [Any] {
     func encodableArray() throws -> [JSON] {
         return try map { element in
             guard let value = JSON(element) else {

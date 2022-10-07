@@ -60,7 +60,7 @@ public class FetchRequestAssociation<FetchedObject: FetchableObject> {
     ) {
         let wrappedObserveKeyPath: KeyPathObservation = { object, changeHandler in
             observeKeyPath(object) { object, oldValue, newValue in
-                guard let oldValue = oldValue, let newValue = newValue else {
+                guard let oldValue, let newValue else {
                     return
                 }
                 changeHandler(object, oldValue, newValue)

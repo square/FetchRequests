@@ -47,7 +47,7 @@ extension Model {
         return UserDefaults.standard.dictionary(forKey: key) ?? [:]
     }
 
-    fileprivate class func updateStorage(_ block: (inout [String: Any]) throws -> Void) rethrows {
+    private class func updateStorage(_ block: (inout [String: Any]) throws -> Void) rethrows {
         assert(Thread.isMainThread)
 
         let defaults = UserDefaults.standard

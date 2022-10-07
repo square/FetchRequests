@@ -212,7 +212,7 @@ extension RandomAccessCollection where Index: Strideable {
 
 extension FetchableObjectProtocol where Self: NSObject {
     func sectionName(forKeyPath keyPath: KeyPath<Self, String>?) -> String {
-        guard let keyPath = keyPath else {
+        guard let keyPath else {
             return ""
         }
         return self[keyPath: keyPath]

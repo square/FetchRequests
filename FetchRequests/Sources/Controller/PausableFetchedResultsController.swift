@@ -214,7 +214,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
     }
 
     func controllerWillChangeContent(_ controller: ParentController) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
         pausableController.objectWillChangeSubject.send()
@@ -222,7 +222,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
     }
 
     func controllerDidChangeContent(_ controller: ParentController) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
         self.didChange(pausableController)
@@ -234,7 +234,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
         self.changeObject(pausableController, object, change)
@@ -245,7 +245,7 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
         self.changeSection(pausableController, section, change)

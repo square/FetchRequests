@@ -46,7 +46,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
         }
 
         let isDeletedObserver = entity.observeIsDeletedChanges { [weak self, weak entity] in
-            guard let entity = entity else {
+            guard let entity else {
                 return
             }
             self?.observedDeletionEvent(with: entity)
@@ -147,7 +147,7 @@ extension AssociatedValueReference {
 
             stopObservingAndUpdateValue(to: newValue)
 
-            if let currentChangeHandler = currentChangeHandler {
+            if let currentChangeHandler {
                 observeChanges(currentChangeHandler)
                 currentChangeHandler(false)
             }
