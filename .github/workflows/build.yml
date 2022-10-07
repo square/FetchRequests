@@ -17,9 +17,9 @@ jobs:
         platform:
           - iOS
           - tvOS
-          #- watchOS
+          - watchOS
           - macOS
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
       - name: Checkout
         uses: actions/checkout@v2
