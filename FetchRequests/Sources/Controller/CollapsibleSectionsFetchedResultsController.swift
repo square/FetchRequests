@@ -68,7 +68,7 @@ public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatab
         self.isCollapsed = collapsed
         self.config = config
 
-        guard let config = config, collapsed else {
+        guard let config, collapsed else {
             displayableObjects = section.objects
             return
         }

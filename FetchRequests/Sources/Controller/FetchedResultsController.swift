@@ -228,7 +228,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private lazy var context: Context<FetchedObject> = {
         return Context { [weak self] keyPath, objectID in
-            guard let self = self else {
+            guard let self else {
                 throw FetchedResultsError.objectNotFound
             }
 
@@ -463,7 +463,7 @@ private extension FetchedResultsController {
             reference?.observeChanges { [weak self, weak object] invalid in
                 assert(Thread.isMainThread)
 
-                guard let object = object else {
+                guard let object else {
                     return
                 }
 
@@ -778,7 +778,7 @@ private extension FetchedResultsController {
 
     func removeAll(emitChanges: Bool = true) {
         performChanges(emitChanges: emitChanges, updateHasFetchedObjects: false) {
-            if let delegate = delegate, emitChanges {
+            if let delegate, emitChanges {
                 for (sectionIndex, section) in sections.enumerated().reversed() {
                     for (objectIndex, object) in section.objects.enumerated().reversed() {
                         let indexPath = IndexPath(item: objectIndex, section: sectionIndex)
@@ -878,7 +878,7 @@ private extension FetchedResultsController {
         }
 
         let handleChange: (FetchedObject) -> Void = { [weak self] object in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             do {
@@ -893,14 +893,14 @@ private extension FetchedResultsController {
         }
 
         let dataObserver = object.observeDataChanges { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return
             }
             handleChange(object)
         }
 
         let isDeletedObserver = object.observeIsDeletedChanges { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return
             }
             handleChange(object)
@@ -909,7 +909,7 @@ private extension FetchedResultsController {
         observations += [dataObserver, isDeletedObserver]
 
         let handleSort: (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             if let old = old as? NSObject, let new = new as? NSObject {
@@ -1120,7 +1120,7 @@ private extension FetchedResultsController {
 
     func notifyInserting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1129,7 +1129,7 @@ private extension FetchedResultsController {
 
     func notifyMoving(_ object: FetchedObject, from fromIndexPath: IndexPath, to toIndexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1138,7 +1138,7 @@ private extension FetchedResultsController {
 
     func notifyUpdating(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1147,7 +1147,7 @@ private extension FetchedResultsController {
 
     func notifyDeleting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1156,7 +1156,7 @@ private extension FetchedResultsController {
 
     func notifyInserting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1165,7 +1165,7 @@ private extension FetchedResultsController {
 
     func notifyDeleting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1209,7 +1209,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
             return weakContainer?.value
         }
         set {
-            if let newValue = newValue {
+            if let newValue {
                 objc_setAssociatedObject(self, &AssociatedKeys.context, Weak(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             } else {
                 objc_setAssociatedObject(self, &AssociatedKeys.context, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -1218,7 +1218,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self>) throws -> Value? {
-        guard let context = context else {
+        guard let context else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -1373,7 +1373,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 }
 
-private extension Array where Element == NSSortDescriptor {
+private extension [NSSortDescriptor] {
     func finalize<FetchedObject: FetchableObject>(
         with controller: FetchedResultsController<FetchedObject>
     ) -> Self {
@@ -1389,7 +1389,7 @@ private extension Array where Element == NSSortDescriptor {
     ) -> Self {
         var sortDescriptors = self
 
-        if let sectionNameKeyPath = sectionNameKeyPath {
+        if let sectionNameKeyPath {
             assert(sectionNameKeyPath._kvcKeyPathString != nil, "\(sectionNameKeyPath) is not KVC compliant?")
 
             // Make sure we have our section name included if appropriate
