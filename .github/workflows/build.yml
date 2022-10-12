@@ -42,7 +42,7 @@ jobs:
       - name: Swift Lint
         run: swiftlint --strict
       - name: Swift Format
-        run: swiftformat --lint
+        run: swiftformat --lint .
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
