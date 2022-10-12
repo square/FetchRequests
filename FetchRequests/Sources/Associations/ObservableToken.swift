@@ -136,7 +136,7 @@ internal class FetchRequestObservableToken<Parameter>: ObservableToken {
         _invalidate = invalidate
     }
 
-    init<Token: ObservableToken>(token: Token) where Token.Parameter == Parameter {
+    init(token: some ObservableToken<Parameter>) {
         _observe = { token.observe(handler: $0) }
         _invalidate = { token.invalidate() }
     }

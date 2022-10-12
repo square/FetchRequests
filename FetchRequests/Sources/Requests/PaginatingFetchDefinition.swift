@@ -16,14 +16,17 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
 
     internal let paginationRequest: PaginationRequest
 
-    public init<VoidToken: ObservableToken, DataToken: ObservableToken>(
+    public init<
+        VoidToken: ObservableToken<Void>,
+        DataToken: ObservableToken<FetchedObject.RawData>
+    >(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,
         objectCreationToken: DataToken,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
         associations: [FetchRequestAssociation<FetchedObject>] = [],
         dataResetTokens: [VoidToken] = []
-    ) where VoidToken.Parameter == Void, DataToken.Parameter == FetchedObject.RawData {
+    ) {
         self.paginationRequest = paginationRequest
         super.init(
             request: request,
