@@ -748,12 +748,12 @@ public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
         EntityID: FetchableEntityID,
-        Token: ObservableToken
+        Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
         keyPath: KeyPath<FetchedObject, EntityID>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == EntityID.FetchableEntity.RawData {
+    ) {
         typealias AssociatedType = EntityID.FetchableEntity
 
         var valuesSet: Set<EntityID> = []
@@ -820,12 +820,12 @@ public extension FetchRequestAssociation {
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
         EntityID: FetchableEntityID,
-        Token: ObservableToken
+        Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
         keyPath: KeyPath<FetchedObject, EntityID?>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == EntityID.FetchableEntity.RawData {
+    ) {
         typealias AssociatedType = EntityID.FetchableEntity
 
         var valuesSet: Set<EntityID> = []
