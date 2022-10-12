@@ -533,12 +533,12 @@ private extension FetchedResultsController {
         }
     }
 
-    func assign(
-        sortedObjects objects: some BidirectionalCollection<FetchedObject>,
+    func assign<C: BidirectionalCollection>(
+        sortedObjects objects: C,
         initialOrder: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool,
         dropObjectsToInsert: Bool
-    ) {
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         if dropObjectsToInsert {
@@ -573,10 +573,10 @@ private extension FetchedResultsController {
         }
     }
 
-    func insert(
-        _ objects: some Collection<FetchedObject>,
+    func insert<C: Collection>(
+        _ objects: C,
         emitChanges: Bool = true
-    ) {
+    ) where C.Element == FetchedObject {
         // This is snapshotted because we're about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
@@ -591,11 +591,11 @@ private extension FetchedResultsController {
         insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
     }
 
-    private func insert(
-        _ objects: some Collection<FetchedObject>,
+    private func insert<C: Collection>(
+        _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
-    ) {
+    ) where C.Element == FetchedObject {
         let initialOrder = OrderedSet(objects.map(\.id))
 
         let fetchOrder = fetchedObjectIDs.union(initialOrder)
@@ -629,11 +629,11 @@ private extension FetchedResultsController {
         }
     }
 
-    private func insert(
-        sortedObjects objects: some BidirectionalCollection<FetchedObject>,
+    private func insert<C: BidirectionalCollection>(
+        sortedObjects objects: C,
         initialOrder: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
-    ) {
+    ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
 
         performChanges(emitChanges: emitChanges) {
@@ -658,10 +658,10 @@ private extension FetchedResultsController {
         CWLogVerbose("Inserted \(objects.count) objects")
     }
 
-    func reload(
-        _ objects: some Collection<FetchedObject>,
+    func reload<C: Collection>(
+        _ objects: C,
         emitChanges: Bool = true
-    ) {
+    ) where C.Element == FetchedObject {
         var objectPaths: [FetchedObject: IndexPath] = [:]
         for object in objects {
             guard let indexPath = indexPath(for: object) else {

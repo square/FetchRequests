@@ -31,7 +31,7 @@ struct OrderedSet<Element: Hashable> {
         indexed = [:]
     }
 
-    init(_ sequence: some Sequence<Element>) {
+    init<S: Sequence>(_ sequence: S) where S.Element == Element {
         self.init()
         sequence.forEach { insert($0) }
     }
@@ -134,25 +134,33 @@ extension OrderedSet: SetAlgebra {
 
     // Copies
 
-    func union(_ other: some Sequence<Element>) -> OrderedSet<Element> {
+    func union<S: Sequence>(
+        _ other: S
+    ) -> OrderedSet<Element> where S.Element == Element {
         var copy = self
         copy.formUnion(other)
         return copy
     }
 
-    func intersection(_ other: some Sequence<Element>) -> OrderedSet<Element> {
+    func intersection<S: Sequence>(
+        _ other: S
+    ) -> OrderedSet<Element> where S.Element == Element {
         var copy = self
         copy.formIntersection(other)
         return copy
     }
 
-    func symmetricDifference(_ other: some Sequence<Element>) -> OrderedSet<Element>  {
+    func symmetricDifference<S: Sequence>(
+        _ other: S
+    ) -> OrderedSet<Element> where S.Element == Element {
         var copy = self
         copy.formSymmetricDifference(other)
         return copy
     }
 
-    func subtracting(_ other: some Sequence<Element>) -> OrderedSet<Element>  {
+    func subtracting<S: Sequence>(
+        _ other: S
+    ) -> OrderedSet<Element> where S.Element == Element {
         var copy = self
         copy.subtract(other)
         return copy
@@ -160,7 +168,9 @@ extension OrderedSet: SetAlgebra {
 
     // Mutating
 
-    mutating func formUnion(_ other: some Sequence<Element>) {
+    mutating func formUnion<S: Sequence>(
+        _ other: S
+    ) where S.Element == Element {
         let maxCapacity = elements.count + other.underestimatedCount
         if capacity < maxCapacity {
             reserveCapacity(maxCapacity)
@@ -169,13 +179,17 @@ extension OrderedSet: SetAlgebra {
         other.forEach { insert($0) }
     }
 
-    mutating func formIntersection(_ other: some Sequence<Element>) {
+    mutating func formIntersection<S: Sequence>(
+        _ other: S
+    ) where S.Element == Element {
         unordered.formIntersection(other)
         let newElements = elements.filter { !unordered.contains($0) }
         elements = newElements
     }
 
-    mutating func formSymmetricDifference(_ other: some Sequence<Element>) {
+    mutating func formSymmetricDifference<S: Sequence>(
+        _ other: S
+    ) where S.Element == Element {
         let maxCapacity = elements.count + other.underestimatedCount
         if capacity < maxCapacity {
             reserveCapacity(maxCapacity)
@@ -190,7 +204,9 @@ extension OrderedSet: SetAlgebra {
         }
     }
 
-    mutating func subtract(_ other: some Sequence<Element>) {
+    mutating func subtract<S: Sequence>(
+        _ other: S
+    ) where S.Element == Element {
         unordered.subtract(other)
         let newElements = elements.filter { !unordered.contains($0) }
         elements = newElements
