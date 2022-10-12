@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-public protocol PausableFetchedResultsControllerDelegate: AnyObject {
+public protocol PausableFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)

@@ -21,7 +21,7 @@ public protocol InvalidatableToken: AnyObject {
     func invalidate()
 }
 
-public protocol ObservableToken: InvalidatableToken {
+public protocol ObservableToken<Parameter>: InvalidatableToken {
     associatedtype Parameter
 
     func observe(handler: @escaping (Parameter) -> Void)

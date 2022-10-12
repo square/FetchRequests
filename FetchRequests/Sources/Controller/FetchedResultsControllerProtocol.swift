@@ -19,8 +19,9 @@ public protocol DoublyObservableObject: ObservableObject {
     var objectDidChange: ObjectDidChangePublisher { get }
 }
 
-public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
+public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservableObject {
     associatedtype FetchedObject: FetchableObject
+
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
     typealias Section = FetchedResultsSection<FetchedObject>
 
