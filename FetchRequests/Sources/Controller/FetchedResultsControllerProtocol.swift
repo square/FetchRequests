@@ -193,7 +193,7 @@ public extension FetchedResultsControllerProtocol {
 // MARK: - Binary Search
 
 extension RandomAccessCollection where Index: Strideable {
-    func binarySearch(matching: (Iterator.Element) -> Bool) -> Self.Index {
+    func binarySearch(matching: (Element) -> Bool) -> Self.Index {
         var lowerIndex = startIndex
         var upperIndex = endIndex
 

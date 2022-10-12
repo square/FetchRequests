@@ -905,8 +905,8 @@ private extension Sequence {
     }
 }
 
-private extension Sequence where Iterator.Element: FetchableObjectProtocol {
-    func createLookupTable() -> [Iterator.Element.ID: Iterator.Element] {
+private extension Sequence where Element: FetchableObjectProtocol {
+    func createLookupTable() -> [Element.ID: Element] {
         return self.associated(by: \.id)
     }
 }
