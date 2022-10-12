@@ -9,8 +9,8 @@ Pod::Spec.new do |s|
 
   ios_deployment_target = '13.0'
   tvos_deployment_target = '13.0'
-  macos_deployment_target = '10.15'
   watchos_deployment_target = '6.0'
+  macos_deployment_target = '10.15'
 
   s.ios.deployment_target = ios_deployment_target
   s.tvos.deployment_target = tvos_deployment_target
@@ -28,8 +28,8 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'FetchRequests/Tests/**/*.swift'
 
     test_spec.ios.deployment_target = ios_deployment_target
-    test_spec.watchos.deployment_target = watchos_deployment_target
     test_spec.tvos.deployment_target = tvos_deployment_target
+    test_spec.watchos.deployment_target = watchos_deployment_target
     test_spec.macos.deployment_target = macos_deployment_target
   end
 
