@@ -110,14 +110,17 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
 // MARK: - Wrapper Functions
 
 extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
+    @MainActor
     public func performFetch(completion: @escaping () -> Void) {
         controller.performFetch(completion: completion)
     }
 
+    @MainActor
     public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
         controller.resort(using: newSortDescriptors, completion: completion)
     }
 
+    @MainActor
     public func reset() {
         controller.reset()
         isPaused = false
@@ -176,6 +179,7 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
 // MARK: - InternalFetchResultsControllerProtocol
 
 extension PausableFetchedResultsController: InternalFetchResultsControllerProtocol {
+    @MainActor
     internal func manuallyInsert(objects: [FetchedObject], emitChanges: Bool = true) {
         controller.manuallyInsert(objects: objects, emitChanges: emitChanges)
     }
@@ -183,18 +187,18 @@ extension PausableFetchedResultsController: InternalFetchResultsControllerProtoc
 
 // MARK: - PausableFetchResultsDelegate
 
-internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
+internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject> {
     typealias ParentController = FetchedResultsController<FetchedObject>
     typealias PausableController = PausableFetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
 
     private weak var pausableController: PausableController?
 
-    private let willChange: (_ controller: PausableController) -> Void
-    private let didChange: (_ controller: PausableController) -> Void
+    private let willChange: @MainActor (_ controller: PausableController) -> Void
+    private let didChange: @MainActor (_ controller: PausableController) -> Void
 
-    private let changeObject: (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+    private let changeObject: @MainActor (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: @MainActor (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
     init<Parent: PausableFetchedResultsControllerDelegate>(
         _ parent: Parent,
@@ -216,7 +220,9 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
             parent?.controller(controller, didChange: section, for: change)
         }
     }
+}
 
+extension PausableFetchResultsDelegate: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: ParentController) {
         guard let pausableController, !pausableController.isPaused else {
             return

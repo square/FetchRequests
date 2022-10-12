@@ -176,6 +176,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
 
 // MARK: - Helper Methods
 public extension CollapsibleSectionsFetchedResultsController {
+    @MainActor
     func update(section: CollapsibleResultsSection<FetchedObject>, maximumNumberOfItemsToDisplay max: Int, whenExceedingMax: Int? = nil) {
         guard let sectionIndex = sections.firstIndex(of: section) else {
             return
@@ -187,6 +188,7 @@ public extension CollapsibleSectionsFetchedResultsController {
         }
     }
 
+    @MainActor
     func expand(section: Section) {
         guard let sectionIndex = sections.firstIndex(of: section) else {
             return
@@ -197,6 +199,7 @@ public extension CollapsibleSectionsFetchedResultsController {
         }
     }
 
+    @MainActor
     func collapse(section: Section) {
         guard let sectionIndex = sections.firstIndex(of: section) else {
             return
@@ -207,6 +210,7 @@ public extension CollapsibleSectionsFetchedResultsController {
         }
     }
 
+    @MainActor
     private func performChanges(onIndex sectionIndex: Int, changes: (Section) -> Void) {
         let section = sections[sectionIndex]
         controllerWillChangeContent(fetchController)
@@ -259,10 +263,12 @@ public extension CollapsibleSectionsFetchedResultsController {
 
 // MARK: - Fetch Methods
 public extension CollapsibleSectionsFetchedResultsController {
+    @MainActor
     func performFetch(completion: (() -> Void)? = nil) {
         fetchController.performFetch(completion: completion ?? {})
     }
 
+    @MainActor
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: (() -> Void)? = nil) {
         fetchController.resort(using: newSortDescriptors, completion: completion ?? {})
     }

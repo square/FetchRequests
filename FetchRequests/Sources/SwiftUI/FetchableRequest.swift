@@ -39,6 +39,7 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
         _base = FetchableRequest(controller: controller, animation: animation)
     }
 
+    @MainActor
     public mutating func update() {
         _base.update()
     }
@@ -90,6 +91,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         self.animation = animation
     }
 
+    @MainActor
     public mutating func update() {
         _wrappedValue.update()
         _fetchController.update()
