@@ -54,6 +54,7 @@ opt_in_rules:
   - reduce_into
   - redundant_nil_coalescing
   - redundant_objc_attribute
+  - self_binding
   - sorted_first_last
   - static_operator
   - strong_iboutlet
@@ -69,6 +70,7 @@ opt_in_rules:
   - xct_specific_matcher
 excluded:
   - Pods
+  - .build
 
 type_name:
   excluded:
@@ -92,7 +94,7 @@ large_tuple:
   warning: 3
   error: 4
 deployment_target:
-  iOS_deployment_target: 10
-  tvOS_deployment_target: 10
-  watchOS_deployment_target: 3
-  macOS_deployment_target: 10.13
+  iOS_deployment_target: 13
+  tvOS_deployment_target: 13
+  watchOS_deployment_target: 6
+  macOS_deployment_target: 10.15
