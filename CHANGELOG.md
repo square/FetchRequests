@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [5.0](https://github.com/square/FetchRequests/releases/tag/5.0.0)
+Released on TKTKTK
+
+* Requires Swift 5.7
+
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
 
