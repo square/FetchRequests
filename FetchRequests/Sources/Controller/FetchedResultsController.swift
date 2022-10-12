@@ -45,7 +45,7 @@ public enum FetchedResultsChange<Location: Equatable>: Equatable {
     }
 }
 
-public protocol FetchedResultsControllerDelegate: AnyObject {
+public protocol FetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>)
@@ -573,7 +573,10 @@ private extension FetchedResultsController {
         }
     }
 
-    func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    func insert<C: Collection>(
+        _ objects: C,
+        emitChanges: Bool = true
+    ) where C.Element == FetchedObject {
         // This is snapshotted because we're about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
@@ -592,7 +595,7 @@ private extension FetchedResultsController {
         _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
-    ) where C.Iterator.Element == FetchedObject {
+    ) where C.Element == FetchedObject {
         let initialOrder = OrderedSet(objects.map(\.id))
 
         let fetchOrder = fetchedObjectIDs.union(initialOrder)
@@ -655,7 +658,10 @@ private extension FetchedResultsController {
         CWLogVerbose("Inserted \(objects.count) objects")
     }
 
-    func reload<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    func reload<C: Collection>(
+        _ objects: C,
+        emitChanges: Bool = true
+    ) where C.Element == FetchedObject {
         var objectPaths: [FetchedObject: IndexPath] = [:]
         for object in objects {
             guard let indexPath = indexPath(for: object) else {

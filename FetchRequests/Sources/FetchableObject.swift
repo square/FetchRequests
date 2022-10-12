@@ -12,7 +12,7 @@ import Foundation
 public typealias FetchableObject = NSObject & FetchableObjectProtocol
 
 /// A class of types whose instances hold raw data of that entity
-public protocol RawDataRepresentable {
+public protocol RawDataRepresentable<RawData> {
     associatedtype RawData
 
     /// Initialize a fetchable object from raw data

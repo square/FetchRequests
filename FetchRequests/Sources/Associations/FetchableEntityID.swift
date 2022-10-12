@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol FetchableEntityID: Hashable {
+public protocol FetchableEntityID<FetchableEntity>: Hashable {
     associatedtype FetchableEntity: FetchableObject
 
     init?(from entity: FetchableEntity)

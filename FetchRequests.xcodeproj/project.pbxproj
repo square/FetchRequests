@@ -488,7 +488,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 471C508022C6D0DC007F73E9 /* Build configuration list for PBXNativeTarget "FetchRequests-iOS" */;
 			buildPhases = (
-				4736ABDC22CC3A1500253EB6 /* SwiftLint */,
 				471C506722C6D0DB007F73E9 /* Headers */,
 				471C506822C6D0DB007F73E9 /* Sources */,
 				471C506922C6D0DB007F73E9 /* Frameworks */,
@@ -649,7 +648,7 @@
 			attributes = {
 				CLASSPREFIX = "";
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Speramus Inc.";
 				TargetAttributes = {
 					471C506B22C6D0DB007F73E9 = {
@@ -746,27 +745,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		4736ABDC22CC3A1500253EB6 /* SwiftLint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftLint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "PATH=$PATH:/usr/local/bin:/opt/homebrew/bin:/opt/brew/bin\n\nif which swiftlint >/dev/null; then\n    swiftlint --strict\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		471C506822C6D0DB007F73E9 /* Sources */ = {
@@ -1290,6 +1268,7 @@
 		47A6ED4422CA90A20034A854 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1304,6 +1283,7 @@
 		47A6ED4522CA90A20034A854 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1319,6 +1299,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1335,6 +1316,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

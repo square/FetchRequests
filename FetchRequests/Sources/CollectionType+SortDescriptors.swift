@@ -8,7 +8,7 @@
 
 import Foundation
 
-public extension Sequence where Iterator.Element: NSSortDescriptor {
+public extension Sequence where Element: NSSortDescriptor {
     var comparator: Comparator {
         return { lhs, rhs in
             for sort in self {
@@ -22,8 +22,8 @@ public extension Sequence where Iterator.Element: NSSortDescriptor {
     }
 }
 
-public extension Sequence where Iterator.Element: NSObject {
-    func sorted(by descriptors: [NSSortDescriptor]) -> [Iterator.Element] {
+public extension Sequence where Element: NSObject {
+    func sorted(by descriptors: [NSSortDescriptor]) -> [Element] {
         guard !descriptors.isEmpty else {
             return Array(self)
         }
@@ -31,7 +31,7 @@ public extension Sequence where Iterator.Element: NSObject {
         return sorted(by: descriptors.comparator)
     }
 
-    private func sorted(by comparator: Comparator) -> [Iterator.Element] {
+    private func sorted(by comparator: Comparator) -> [Element] {
         return sorted { comparator($0, $1) == .orderedAscending }
     }
 }

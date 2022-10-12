@@ -136,13 +136,13 @@ public extension FetchRequestAssociation {
         AssociatedEntity: FetchableObject,
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
-        Token: ObservableToken
+        Token: ObservableToken<RawAssociatedEntity>
     >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         creationObserved: @escaping CreationObserved<AssociatedEntity, RawAssociatedEntity>
-    ) where Token.Parameter == RawAssociatedEntity {
+    ) {
         let creationTokenGenerator: TokenGenerator<FetchedObject, FetchRequestObservableToken<Any>> = { parentObject in
             let token = creationTokenGenerator(parentObject)
             return token.map { FetchRequestObservableToken(typeErasedToken: $0) }
@@ -199,13 +199,13 @@ public extension FetchRequestAssociation {
         AssociatedEntity: FetchableObject,
         RawAssociatedEntity,
         AssociatedEntityID: Equatable,
-        Token: ObservableToken
+        Token: ObservableToken<RawAssociatedEntity>
     >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         creationObserved: @escaping CreationObserved<AssociatedEntity, RawAssociatedEntity>
-    ) where Token.Parameter == RawAssociatedEntity {
+    ) {
         let creationTokenGenerator: TokenGenerator<FetchedObject, FetchRequestObservableToken<Any>> = { parentObject in
             let token = creationTokenGenerator(parentObject)
             return token.map { FetchRequestObservableToken(typeErasedToken: $0) }
@@ -261,13 +261,13 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         AssociatedEntityID: Equatable,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity>
     >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == AssociatedEntity {
+    ) {
         self.init(
             keyPath: keyPath,
             request: request,
@@ -285,13 +285,13 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         AssociatedEntityID: Equatable,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity>
     >(
         keyPath: KeyPath<FetchedObject, AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == AssociatedEntity {
+    ) {
         self.init(
             keyPath: keyPath,
             request: request,
@@ -312,14 +312,14 @@ public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
         AssociatedEntity: FetchableObject,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
             var valuesSet: Set<AssociatedEntity.ID> = []
             var valuesOrdered: [AssociatedEntity.ID] = []
@@ -400,14 +400,14 @@ public extension FetchRequestAssociation {
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
         AssociatedEntity: FetchableObject,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: AssociatedEntity.Type,
         keyPath: KeyPath<FetchedObject, AssociatedEntity.ID?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
             var valuesSet: Set<AssociatedEntity.ID> = []
             var valuesOrdered: [AssociatedEntity.ID] = []
@@ -496,14 +496,14 @@ public extension FetchRequestAssociation {
     /// Array association by non-optional entity IDs whose creation event can also be observed
     convenience init<
         AssociatedEntity: FetchableObject,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         self.init(
             for: associatedType,
             keyPath: keyPath,
@@ -518,7 +518,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Reference: Hashable,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [Reference]>,
@@ -526,7 +526,7 @@ public extension FetchRequestAssociation {
         referenceAccessor: @escaping (AssociatedEntity) -> Reference,
         creationTokenGenerator: @escaping TokenGenerator<[Reference], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
             var valuesSet: Set<Reference> = []
             var valuesOrdered: [Reference] = []
@@ -620,14 +620,14 @@ public extension FetchRequestAssociation {
     /// Array association by optional entity IDs whose creation event can also be observed
     convenience init<
         AssociatedEntity: FetchableObject,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         self.init(
             for: associatedType,
             keyPath: keyPath,
@@ -642,7 +642,7 @@ public extension FetchRequestAssociation {
     convenience init<
         AssociatedEntity: FetchableObject,
         Reference: Hashable,
-        Token: ObservableToken
+        Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
         keyPath: KeyPath<FetchedObject, [Reference]?>,
@@ -650,7 +650,7 @@ public extension FetchRequestAssociation {
         referenceAccessor: @escaping (AssociatedEntity) -> Reference,
         creationTokenGenerator: @escaping TokenGenerator<[Reference], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
-    ) where Token.Parameter == AssociatedEntity.RawData {
+    ) {
         let rawRequest: AssocationRequestByParent<Any> = { objects, completion in
             var valuesSet: Set<Reference> = []
             var valuesOrdered: [Reference] = []
@@ -748,12 +748,12 @@ public extension FetchRequestAssociation {
     /// Association by non-optional entity ID whose creation event can also be observed
     convenience init<
         EntityID: FetchableEntityID,
-        Token: ObservableToken
+        Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
         keyPath: KeyPath<FetchedObject, EntityID>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == EntityID.FetchableEntity.RawData {
+    ) {
         typealias AssociatedType = EntityID.FetchableEntity
 
         var valuesSet: Set<EntityID> = []
@@ -820,12 +820,12 @@ public extension FetchRequestAssociation {
     /// Association by optional entity ID whose creation event can also be observed
     convenience init<
         EntityID: FetchableEntityID,
-        Token: ObservableToken
+        Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
         keyPath: KeyPath<FetchedObject, EntityID?>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
-    ) where Token.Parameter == EntityID.FetchableEntity.RawData {
+    ) {
         typealias AssociatedType = EntityID.FetchableEntity
 
         var valuesSet: Set<EntityID> = []
@@ -905,8 +905,8 @@ private extension Sequence {
     }
 }
 
-private extension Sequence where Iterator.Element: FetchableObjectProtocol {
-    func createLookupTable() -> [Iterator.Element.ID: Iterator.Element] {
+private extension Sequence where Element: FetchableObjectProtocol {
+    func createLookupTable() -> [Element.ID: Element] {
         return self.associated(by: \.id)
     }
 }

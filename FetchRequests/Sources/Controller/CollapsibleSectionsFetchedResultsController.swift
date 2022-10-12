@@ -18,7 +18,7 @@ public struct SectionCollapseConfig: Equatable {
     }
 }
 
-public protocol CollapsibleSectionsFetchedResultsControllerDelegate: AnyObject {
+public protocol CollapsibleSectionsFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: CollapsibleSectionsFetchedResultsController<FetchedObject>)
@@ -159,7 +159,11 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
         fetchController.setDelegate(self)
     }
 
-    public func setDelegate<Delegate: CollapsibleSectionsFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<
+        Delegate: CollapsibleSectionsFetchedResultsControllerDelegate
+    >(
+        _ delegate: Delegate?
+    ) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             CollapsibleSectionsFetchResultsDelegate($0)
         }

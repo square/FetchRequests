@@ -19,8 +19,9 @@ public protocol DoublyObservableObject: ObservableObject {
     var objectDidChange: ObjectDidChangePublisher { get }
 }
 
-public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
+public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservableObject {
     associatedtype FetchedObject: FetchableObject
+
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
     typealias Section = FetchedResultsSection<FetchedObject>
 
@@ -192,7 +193,7 @@ public extension FetchedResultsControllerProtocol {
 // MARK: - Binary Search
 
 extension RandomAccessCollection where Index: Strideable {
-    func binarySearch(matching: (Iterator.Element) -> Bool) -> Self.Index {
+    func binarySearch(matching: (Element) -> Bool) -> Self.Index {
         var lowerIndex = startIndex
         var upperIndex = endIndex
 

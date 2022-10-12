@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-public protocol PausableFetchedResultsControllerDelegate: AnyObject {
+public protocol PausableFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
@@ -156,7 +156,11 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
         return sectionsSnapshot ?? controller.sections
     }
 
-    public func setDelegate<Delegate: PausableFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
+    public func setDelegate<
+        Delegate: PausableFetchedResultsControllerDelegate
+    >(
+        _ delegate: Delegate?
+    ) where Delegate.FetchedObject == FetchedObject {
         self.delegate = delegate.flatMap {
             PausableFetchResultsDelegate($0, pausableController: self)
         }
