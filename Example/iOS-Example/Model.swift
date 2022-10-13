@@ -110,7 +110,7 @@ extension Model {
 
 extension Model: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        return _data.observeChanges { @MainActor(unsafe) change in
+        return _data.observeChanges { change in
             handler()
         }
     }
