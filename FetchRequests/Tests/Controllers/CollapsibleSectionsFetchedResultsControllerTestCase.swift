@@ -12,12 +12,13 @@ import XCTest
 // swiftlint:disable force_try implicitly_unwrapped_optional
 
 // swiftlint:disable:next type_name
+@MainActor
 class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     typealias FetchController = CollapsibleSectionsFetchedResultsController<TestObject>
 
     private var controller: CollapsibleSectionsFetchedResultsController<TestObject>!
 
-    private var fetchCompletion: (([TestObject]) -> Void)!
+    private var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
 

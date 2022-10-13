@@ -10,10 +10,11 @@ import XCTest
 @testable import FetchRequests
 
 // swiftlint:disable force_try implicitly_unwrapped_optional
+@MainActor
 class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: FetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (([TestObject]) -> Void)!
+    private(set) var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
 

@@ -14,7 +14,7 @@ import XCTest
 class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: PaginatingFetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (([TestObject]) -> Void)!
+    private(set) var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
 
     private var paginationCurrentResults: [TestObject]!
     private var paginationCompletion: (([TestObject]?) -> Void)!
