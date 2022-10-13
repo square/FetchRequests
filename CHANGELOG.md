@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 Released on TKTKTK
 
 * Requires Swift 5.7
+* Protocols define their primary associated types
 
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
