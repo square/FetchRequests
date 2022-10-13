@@ -11,7 +11,7 @@ import Foundation
 public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDefinition<FetchedObject> {
     public typealias PaginationRequest = (
         _ currentResults: [FetchedObject],
-        _ completion: @escaping @MainActor ([FetchedObject]?) -> Void
+        _ completion: @escaping ([FetchedObject]?) -> Void
     ) -> Void
 
     internal let paginationRequest: PaginationRequest
