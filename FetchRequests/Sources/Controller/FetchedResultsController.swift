@@ -235,7 +235,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
                 throw FetchedResultsError.objectNotFound
             }
 
-            return try self.associatedValue(with: keyPath, forObjectID: objectID)
+            return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
         }
     }()
 
@@ -327,7 +327,7 @@ public extension FetchedResultsController {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            self?.unsafeAssign(fetchedObjects: objects, completion: completion)
+            self?.assign(fetchedObjects: objects, completion: completion)
         }
     }
 
@@ -369,7 +369,7 @@ public extension FetchedResultsController {
 // MARK: Associated Values
 
 private extension FetchedResultsController {
-    func associatedValue(
+    func unsafeAssociatedValue(
         with keyPath: PartialKeyPath<FetchedObject>,
         forObjectID objectID: FetchedObject.ID
     ) throws -> Any? {
@@ -379,11 +379,35 @@ private extension FetchedResultsController {
             return holder.value
         }
 
-        guard let index = fetchedObjects.firstIndex(where: { $0.id == objectID }) else {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                do {
+                    try self?.fetchAssociatedValues(around: key)
+                } catch {
+                    CWLogVerbose("Invalid async association request for \(key): \(error)")
+                }
+            }
+            return nil
+        } else {
+            try fetchAssociatedValues(around: key)
+
+            // On the off chance that the fetch is synchronous, return the new hash value
+            let holder = associatedValues[key]
+            return holder?.value
+        }
+    }
+
+    @MainActor(unsafe)
+    func fetchAssociatedValues(
+        around key: AssociatedValueKey<FetchedObject>
+    ) throws {
+        assert(Thread.isMainThread)
+
+        guard let index = fetchedObjects.firstIndex(where: { $0.id == key.id }) else {
             throw FetchedResultsError.objectNotFound
         }
 
-        guard let association = definition.associationsByKeyPath[keyPath] else {
+        guard let association = definition.associationsByKeyPath[key.keyPath] else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -399,7 +423,7 @@ private extension FetchedResultsController {
         }
         let fetchableObjects = objects.filter {
             let objectID = $0.id
-            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+            let key = AssociatedValueKey(id: objectID, keyPath: key.keyPath)
             return associatedValues[key] == nil
         }
 
@@ -408,7 +432,7 @@ private extension FetchedResultsController {
         for object in fetchableObjects {
             // Mark fetchable objects as visited
             let objectID = object.id
-            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+            let key = AssociatedValueKey(id: objectID, keyPath: key.keyPath)
             let reference = association.referenceGenerator(object)
 
             valueReferences[key] = reference
@@ -416,52 +440,19 @@ private extension FetchedResultsController {
         }
 
         association.request(fetchableObjects) { [weak self] values in
-            self?.unsafeAssignAssociatedValues(
+            self?.assignAssociatedValues(
                 values,
-                with: keyPath,
+                with: key.keyPath,
                 for: fetchableObjects,
                 references: valueReferences
-            ) {
-                // Finished assignment
-            }
+            )
         }
-
-        // On the off chance that the fetch is synchronous, return the new hash value
-        let holder = associatedValues[key]
-        return holder?.value
     }
 }
 
 // MARK: Contents
 
 private extension FetchedResultsController {
-    func unsafeAssignAssociatedValues(
-        _ values: [FetchedObject.ID: Any],
-        with keyPath: PartialKeyPath<FetchedObject>,
-        for objects: [FetchedObject],
-        references: [AssociatedValueKey<FetchedObject>: AssociatedValueReference],
-        emitChanges: Bool = true,
-        completion: @escaping () -> Void
-    ) {
-        @MainActor
-        func performAssignAssociations() {
-            assignAssociatedValues(
-                values,
-                with: keyPath,
-                for: objects,
-                references: references,
-                emitChanges: emitChanges
-            )
-            completion()
-        }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: performAssignAssociations)
-        } else {
-            performAssignAssociations()
-        }
-    }
-
     @MainActor
     func assignAssociatedValues(
         _ values: [FetchedObject.ID: Any],
@@ -578,7 +569,7 @@ private extension FetchedResultsController {
             return
         }
 
-        @MainActor
+        @MainActor(unsafe)
         func performAssign() {
             assign(
                 sortedObjects: sortedObjects,
@@ -721,7 +712,7 @@ private extension FetchedResultsController {
             return
         }
 
-        @MainActor
+        @MainActor(unsafe)
         func performInsert() {
             insert(
                 sortedObjects: sortedObjects,

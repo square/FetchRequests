@@ -9,8 +9,8 @@
 import Foundation
 
 public class FetchDefinition<FetchedObject: FetchableObject> {
-    public typealias Request = (_ completion: @escaping ([FetchedObject]) -> Void) -> Void
-    public typealias CreationInclusionCheck = (_ rawData: FetchedObject.RawData) -> Bool
+    public typealias Request = (_ completion: @escaping @MainActor ([FetchedObject]) -> Void) -> Void
+    public typealias CreationInclusionCheck = @MainActor (_ rawData: FetchedObject.RawData) -> Bool
 
     internal let request: Request
     internal let objectCreationToken: FetchRequestObservableToken<FetchedObject.RawData>
