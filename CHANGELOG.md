@@ -7,7 +7,12 @@ Released on TKTKTK
 
 * Requires Swift 5.7
 * Protocols define their primary associated types
-* Annotate a bunch of methods as @MainActor
+* Annotate many methods as @MainActor
+    * All delegate methods
+    * All code with assert(Thread.isMainThread)
+* Faulting an association when you're off the main thread will have different characteristics
+    * If the association already exists, nothing will change
+    * If the association does not already exit, it will always return nil and hit the main thread to batch fetch the associations
 
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
