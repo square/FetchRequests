@@ -183,7 +183,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
-    private let memoryPressureToken: FetchRequestObservableToken<Notification>? = {
+    private lazy var memoryPressureToken: FetchRequestObservableToken<Notification>? = {
 #if canImport(UIKit) && !os(watchOS)
         return FetchRequestObservableToken(
             token: ObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
@@ -1182,7 +1182,6 @@ internal extension FetchedResultsController {
 // MARK: - InternalFetchResultsControllerProtocol
 
 extension FetchedResultsController: InternalFetchResultsControllerProtocol {
-    @MainActor
     internal func manuallyInsert(objects: [FetchedObject], emitChanges: Bool = true) {
         assert(Thread.isMainThread)
 

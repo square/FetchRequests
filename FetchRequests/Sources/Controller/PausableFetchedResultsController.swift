@@ -180,7 +180,6 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
 // MARK: - InternalFetchResultsControllerProtocol
 
 extension PausableFetchedResultsController: InternalFetchResultsControllerProtocol {
-    @MainActor
     internal func manuallyInsert(objects: [FetchedObject], emitChanges: Bool = true) {
         controller.manuallyInsert(objects: objects, emitChanges: emitChanges)
     }

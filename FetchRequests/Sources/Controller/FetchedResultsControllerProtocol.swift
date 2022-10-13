@@ -10,6 +10,7 @@ import Foundation
 import Combine
 
 internal protocol InternalFetchResultsControllerProtocol: FetchedResultsControllerProtocol {
+    @MainActor
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 
