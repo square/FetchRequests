@@ -139,6 +139,8 @@ extension AssociatedValueReference {
 
     @MainActor
     private func observedCreationEvent(with entity: Any) {
+        assert(Thread.isMainThread)
+
         // We just received a notification about an entity being created
 
         switch creationObserved(value, entity) {

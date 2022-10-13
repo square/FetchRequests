@@ -519,6 +519,8 @@ private extension FetchedResultsController {
         keyPath: PartialKeyPath<FetchedObject>,
         emitChanges: Bool = true
     ) {
+        assert(Thread.isMainThread)
+
         let objectID = object.id
         guard let indexPath = indexPath(for: object) else {
             return
@@ -982,16 +984,16 @@ private extension FetchedResultsController {
         for association in definition.associations {
             let keyPath = association.keyPath
             let observer = association.observeKeyPath(object) { [weak self] object, oldValue, newValue in
-                performOnMainThread {
-                    // Nil out associated value and send change event
-                    self?.removeAssociatedValue(for: object, keyPath: keyPath)
-                }
+                // Nil out associated value and send change event
+                self?.removeAssociatedValue(for: object, keyPath: keyPath)
             }
 
             observations.append(observer)
         }
 
         let handleChange: @MainActor (FetchedObject) -> Void = { [weak self] object in
+            assert(Thread.isMainThread)
+
             guard let self else {
                 return
             }
@@ -1022,10 +1024,13 @@ private extension FetchedResultsController {
 
         observations += [dataObserver, isDeletedObserver]
 
-        let handleSort: (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
+        let handleSort: @MainActor (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
+            assert(Thread.isMainThread)
+
             guard let self else {
                 return
             }
+
             if let old = old as? NSObject, let new = new as? NSObject {
                 guard old != new else {
                     return

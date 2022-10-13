@@ -14,7 +14,16 @@ Released on TKTKTK
     * If the association already exists, nothing will change
     * If the association does not already exit, it will always return nil and hit the main thread to batch fetch the associations
 * More eventing supports occurring off of the main thread
-    * It will bounce to the main thread to actually perform the change
+    * If needed, it will async bounce to the main thread to actually perform the change
+    * Newly allowed Events:
+        * Associated Value creation events
+        * Entity creation events
+        * Data reset events
+    * Note any changes to your model still must occur on the main thread
+        * data
+        * isDeleted
+        * NSSortDescriptor keyPaths
+        * Association keyPaths
 
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
