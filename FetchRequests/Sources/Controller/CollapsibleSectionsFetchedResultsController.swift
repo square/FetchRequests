@@ -18,6 +18,7 @@ public struct SectionCollapseConfig: Equatable {
     }
 }
 
+@MainActor
 public protocol CollapsibleSectionsFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
@@ -402,15 +403,15 @@ extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerD
     }
 }
 
-private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableObject>: CollapsibleSectionsFetchedResultsControllerDelegate {
+private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableObject> {
     typealias Controller = CollapsibleSectionsFetchedResultsController<FetchedObject>
     typealias Section = CollapsibleResultsSection<FetchedObject>
 
-    private let willChange: (_ controller: Controller) -> Void
-    private let didChange: (_ controller: Controller) -> Void
+    private let willChange: @MainActor (_ controller: Controller) -> Void
+    private let didChange: @MainActor (_ controller: Controller) -> Void
 
-    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
     init<Parent: CollapsibleSectionsFetchedResultsControllerDelegate>(
         _ parent: Parent
@@ -429,7 +430,9 @@ private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableOb
             parent?.controller(controller, didChange: section, for: change)
         }
     }
+}
 
+extension CollapsibleSectionsFetchResultsDelegate: CollapsibleSectionsFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
         self.willChange(controller)
     }

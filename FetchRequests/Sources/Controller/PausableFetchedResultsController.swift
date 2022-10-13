@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+@MainActor
 public protocol PausableFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
