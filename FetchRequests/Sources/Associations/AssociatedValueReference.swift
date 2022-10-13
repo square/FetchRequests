@@ -71,11 +71,14 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
 }
 
 class AssociatedValueReference: NSObject {
+    typealias CreationObserved = (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
+    typealias ChangeHandler = (_ invalidate: Bool) -> Void
+
     private let creationObserver: FetchRequestObservableToken<Any>?
-    private let creationObserved: (Any?, Any) -> AssociationReplacement<Any>
+    private let creationObserved: CreationObserved
 
     fileprivate(set) var value: Any?
-    fileprivate var changeHandler: ((_ invalidate: Bool) -> Void)?
+    fileprivate var changeHandler: ChangeHandler?
 
     var canObserveCreation: Bool {
         return creationObserver != nil
@@ -83,7 +86,7 @@ class AssociatedValueReference: NSObject {
 
     init(
         creationObserver: FetchRequestObservableToken<Any>? = nil,
-        creationObserved: @escaping (Any?, Any) -> AssociationReplacement<Any> = { _, _ in .same },
+        creationObserved: @escaping CreationObserved = { _, _ in .same },
         value: Any? = nil
     ) {
         self.creationObserver = creationObserver
@@ -107,7 +110,7 @@ extension AssociatedValueReference {
         self.value = value
     }
 
-    func observeChanges(_ changeHandler: @escaping (_ invalidate: Bool) -> Void) {
+    func observeChanges(_ changeHandler: @escaping ChangeHandler) {
         stopObserving()
 
         self.changeHandler = changeHandler
