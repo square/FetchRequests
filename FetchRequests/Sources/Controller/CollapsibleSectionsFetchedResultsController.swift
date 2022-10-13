@@ -89,6 +89,8 @@ public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatab
 }
 
 public class CollapsibleSectionsFetchedResultsController<FetchedObject: FetchableObject>: NSObject {
+    public typealias Delegate = CollapsibleSectionsFetchedResultsControllerDelegate<FetchedObject>
+
     public typealias BackingFetchController = FetchedResultsController<FetchedObject>
     public typealias Section = CollapsibleResultsSection<FetchedObject>
     public typealias SectionCollapseCheck = (_ section: BackingFetchController.Section) -> Bool
@@ -109,7 +111,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     private let sectionConfigCheck: SectionCollapseConfigCheck
 
     // swiftlint:disable:next weak_delegate
-    private var delegate: CollapsibleSectionsFetchResultsDelegate<FetchedObject>?
+    private var delegate: DelegateThunk<FetchedObject>?
 
     private var sectionConfigs: [String: SectionCollapseConfig] = [:]
 
@@ -160,18 +162,16 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
         fetchController.setDelegate(self)
     }
 
-    public func setDelegate<
-        Delegate: CollapsibleSectionsFetchedResultsControllerDelegate
-    >(
-        _ delegate: Delegate?
-    ) where Delegate.FetchedObject == FetchedObject {
+    // MARK: - Delegate
+
+    public func setDelegate(_ delegate: (some Delegate)?) {
         self.delegate = delegate.flatMap {
-            CollapsibleSectionsFetchResultsDelegate($0)
+            DelegateThunk($0)
         }
     }
 
     public func clearDelegate() {
-        self.delegate = nil
+        delegate = nil
     }
 }
 
@@ -403,9 +403,14 @@ extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerD
     }
 }
 
-private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableObject> {
+// MARK: - DelegateThunk
+
+private class DelegateThunk<FetchedObject: FetchableObject> {
+    typealias Parent = CollapsibleSectionsFetchedResultsControllerDelegate<FetchedObject>
     typealias Controller = CollapsibleSectionsFetchedResultsController<FetchedObject>
     typealias Section = CollapsibleResultsSection<FetchedObject>
+
+    private weak var parent: (any Parent)?
 
     private let willChange: @MainActor (_ controller: Controller) -> Void
     private let didChange: @MainActor (_ controller: Controller) -> Void
@@ -413,9 +418,9 @@ private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableOb
     private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
     private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: CollapsibleSectionsFetchedResultsControllerDelegate>(
-        _ parent: Parent
-    ) where Parent.FetchedObject == FetchedObject {
+    init(_ parent: some Parent) {
+        self.parent = parent
+
         willChange = { [weak parent] controller in
             parent?.controllerWillChangeContent(controller)
         }
@@ -432,7 +437,7 @@ private class CollapsibleSectionsFetchResultsDelegate<FetchedObject: FetchableOb
     }
 }
 
-extension CollapsibleSectionsFetchResultsDelegate: CollapsibleSectionsFetchedResultsControllerDelegate {
+extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
         self.willChange(controller)
     }

@@ -83,9 +83,14 @@ public extension FetchedResultsControllerDelegate {
     }
 }
 
-internal class FetchResultsDelegate<FetchedObject: FetchableObject> {
+// MARK: - DelegateThunk
+
+private class DelegateThunk<FetchedObject: FetchableObject> {
+    typealias Parent = FetchedResultsControllerDelegate<FetchedObject>
     typealias Controller = FetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
+
+    private weak var parent: (any Parent)?
 
     private let willChange: @MainActor (_ controller: Controller) -> Void
     private let didChange: @MainActor (_ controller: Controller) -> Void
@@ -93,9 +98,9 @@ internal class FetchResultsDelegate<FetchedObject: FetchableObject> {
     private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
     private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: FetchedResultsControllerDelegate>(
-        _ parent: Parent
-    ) where Parent.FetchedObject == FetchedObject {
+    init(_ parent: some Parent) {
+        self.parent = parent
+
         willChange = { [weak parent] controller in
             parent?.controllerWillChangeContent(controller)
         }
@@ -112,7 +117,7 @@ internal class FetchResultsDelegate<FetchedObject: FetchableObject> {
     }
 }
 
-extension FetchResultsDelegate: FetchedResultsControllerDelegate {
+extension DelegateThunk: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
         self.willChange(controller)
     }
@@ -183,6 +188,8 @@ func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () ->
 }
 
 public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
+    public typealias Delegate = FetchedResultsControllerDelegate<FetchedObject>
+
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
@@ -211,7 +218,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }()
 
     // swiftlint:disable:next weak_delegate
-    private var delegate: FetchResultsDelegate<FetchedObject>?
+    private var delegate: DelegateThunk<FetchedObject>?
 
     public var associatedFetchSize: Int = 10
 
@@ -278,18 +285,16 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    public func setDelegate<
-        Delegate: FetchedResultsControllerDelegate
-    >(
-        _ delegate: Delegate?
-    ) where Delegate.FetchedObject == FetchedObject {
+    // MARK: - Delegate
+
+    public func setDelegate(_ delegate: (some Delegate)?) {
         self.delegate = delegate.flatMap {
-            FetchResultsDelegate($0)
+            DelegateThunk($0)
         }
     }
 
     public func clearDelegate() {
-        self.delegate = nil
+        delegate = nil
     }
 
     // MARK: - Actions
