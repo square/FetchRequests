@@ -256,12 +256,15 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     deinit {
-        if Thread.isMainThread {
+        @MainActor(unsafe)
+        func cleanup() {
             reset(emitChanges: false)
+        }
+
+        if !Thread.isMainThread {
+            DispatchQueue.main.sync(execute: cleanup)
         } else {
-            DispatchQueue.main.sync {
-                reset(emitChanges: false)
-            }
+            cleanup()
         }
     }
 
@@ -301,7 +304,9 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         guard !objectsToInsert.isEmpty else {
             return
         }
-        insert(objectsToInsert)
+        insert(objectsToInsert) {
+            // Finished insert
+        }
         objectsToInsert.removeAll()
     }
 
@@ -322,7 +327,7 @@ public extension FetchedResultsController {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            self?.assign(fetchedObjects: objects, completion: completion)
+            self?.unsafeAssign(fetchedObjects: objects, completion: completion)
         }
     }
 
@@ -354,7 +359,7 @@ public extension FetchedResultsController {
         reset(emitChanges: true)
     }
 
-    @MainActor(unsafe)
+    @MainActor
     private func reset(emitChanges: Bool) {
         stopObservingNotifications()
         removeAll(emitChanges: emitChanges)
@@ -416,7 +421,9 @@ private extension FetchedResultsController {
                 with: keyPath,
                 for: fetchableObjects,
                 references: valueReferences
-            )
+            ) {
+                // Finished assignment
+            }
         }
 
         // On the off chance that the fetch is synchronous, return the new hash value
@@ -433,10 +440,11 @@ private extension FetchedResultsController {
         with keyPath: PartialKeyPath<FetchedObject>,
         for objects: [FetchedObject],
         references: [AssociatedValueKey<FetchedObject>: AssociatedValueReference],
-        emitChanges: Bool = true
+        emitChanges: Bool = true,
+        completion: @escaping () -> Void
     ) {
         @MainActor
-        func assign() {
+        func performAssignAssociations() {
             assignAssociatedValues(
                 values,
                 with: keyPath,
@@ -444,12 +452,13 @@ private extension FetchedResultsController {
                 references: references,
                 emitChanges: emitChanges
             )
+            completion()
         }
 
         if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: assign)
+            DispatchQueue.main.async(execute: performAssignAssociations)
         } else {
-            assign()
+            performAssignAssociations()
         }
     }
 
@@ -523,7 +532,26 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func assign(
+        fetchedObjects objects: [FetchedObject],
+        updateFetchOrder: Bool = true,
+        emitChanges: Bool = true,
+        dropObjectsToInsert: Bool = true,
+        completion: @escaping () -> Void
+    ) {
+        assert(Thread.isMainThread)
+
+        unsafeAssign(
+            fetchedObjects: objects,
+            updateFetchOrder: updateFetchOrder,
+            emitChanges: emitChanges,
+            dropObjectsToInsert: dropObjectsToInsert,
+            completion: completion
+        )
+    }
+
+    private func unsafeAssign(
         fetchedObjects objects: [FetchedObject],
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
@@ -532,18 +560,23 @@ private extension FetchedResultsController {
     ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.assign(fetchedObjects: objects, emitChanges: emitChanges, completion: completion)
+            Task.detached(priority: .userInitiated) { [weak self] in
+                assert(!Thread.isMainThread)
+                self?.unsafeAssign(
+                    fetchedObjects: objects,
+                    emitChanges: emitChanges,
+                    completion: completion
+                )
             }
             return
         }
 
         let fetchOrder = updateFetchOrder ? OrderedSet(objects.map(\.id)) : fetchedObjectIDs
-        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
-            fetchOrder.firstIndex(of: id)
-        }
+        let sortedObjects = sortedAssignableObjects(objects, fetchOrder: fetchOrder)
 
-        let sortedObjects = objects.sorted(by: sortDescriptors)
+        guard !sortedObjects.isEmpty else {
+            return
+        }
 
         @MainActor
         func performAssign() {
@@ -561,6 +594,19 @@ private extension FetchedResultsController {
         } else {
             performAssign()
         }
+    }
+
+    private func sortedAssignableObjects<C: Collection>(
+        _ objects: C,
+        fetchOrder: OrderedSet<FetchedObject.ID>
+    ) -> [FetchedObject] where C.Element == FetchedObject {
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.sorted(by: sortDescriptors)
+
+        return sortedObjects
     }
 
     @MainActor
@@ -605,22 +651,21 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func insert<C: Collection>(
         _ objects: C,
-        emitChanges: Bool = true
+        emitChanges: Bool = true,
+        completion: @escaping () -> Void
     ) where C.Element == FetchedObject {
-        // This is snapshotted because we're about to be off the main thread
+        // This is snapshotted because we're potentially about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
-        guard objects.count <= 100 || !Thread.isMainThread else {
-            // Bounce ourself off of the main queue
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
-            }
-            return
-        }
-
-        insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
+        unsafeInsert(
+            objects,
+            fetchedObjectIDs: fetchedObjectIDs,
+            emitChanges: emitChanges,
+            completion: completion
+        )
     }
 
     private func sortedInsertableObjects<C: Collection>(
@@ -645,11 +690,26 @@ private extension FetchedResultsController {
         return sortedObjects
     }
 
-    private func insert<C: Collection>(
+    private func unsafeInsert<C: Collection>(
         _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
-        emitChanges: Bool = true
+        emitChanges: Bool = true,
+        completion: @escaping () -> Void
     ) where C.Element == FetchedObject {
+        guard objects.count <= 100 || !Thread.isMainThread else {
+            // Bounce ourself off of the main queue
+            Task.detached(priority: .userInitiated) { [weak self] in
+                assert(!Thread.isMainThread)
+                self?.unsafeInsert(
+                    objects,
+                    fetchedObjectIDs: fetchedObjectIDs,
+                    emitChanges: emitChanges,
+                    completion: completion
+                )
+            }
+            return
+        }
+
         let initialOrder = OrderedSet(objects.map(\.id))
         let sortedObjects = sortedInsertableObjects(
             objects,
@@ -668,6 +728,7 @@ private extension FetchedResultsController {
                 initialOrder: initialOrder,
                 emitChanges: emitChanges
             )
+            completion()
         }
 
         if !Thread.isMainThread {
@@ -1141,7 +1202,9 @@ extension FetchedResultsController: InternalFetchResultsControllerProtocol {
         objects.forEach { $0.listenForUpdates() }
 
         guard debounceInsertsAndReloads else {
-            insert(objects, emitChanges: emitChanges)
+            insert(objects, emitChanges: emitChanges) {
+                // Finished insert
+            }
             return
         }
 
