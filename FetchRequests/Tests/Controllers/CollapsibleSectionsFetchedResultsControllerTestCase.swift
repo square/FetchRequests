@@ -9,9 +9,8 @@
 import XCTest
 @testable import FetchRequests
 
-// swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional type_name
 
-// swiftlint:disable:next type_name
 @MainActor
 class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     typealias FetchController = CollapsibleSectionsFetchedResultsController<TestObject>
