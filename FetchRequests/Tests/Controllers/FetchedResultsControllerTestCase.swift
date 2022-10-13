@@ -14,7 +14,7 @@ import XCTest
 class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: FetchedResultsController<TestObject>!
 
-    private(set) var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
+    private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
 

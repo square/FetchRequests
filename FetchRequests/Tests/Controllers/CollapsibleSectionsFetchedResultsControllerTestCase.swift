@@ -17,7 +17,7 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
 
     private var controller: CollapsibleSectionsFetchedResultsController<TestObject>!
 
-    private var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
+    private var fetchCompletion: (([TestObject]) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
 

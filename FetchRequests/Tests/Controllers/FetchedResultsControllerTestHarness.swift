@@ -18,7 +18,7 @@ protocol FetchedResultsControllerTestHarness {
         FetchController.FetchedObject == TestObject
 
     var controller: FetchController! { get }
-    var fetchCompletion: (@MainActor ([TestObject]) -> Void)! { get }
+    var fetchCompletion: (([TestObject]) -> Void)! { get }
 }
 
 extension FetchedResultsControllerTestHarness {

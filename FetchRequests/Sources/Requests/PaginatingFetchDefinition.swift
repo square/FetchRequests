@@ -47,7 +47,9 @@ private extension InternalFetchResultsControllerProtocol {
             guard let pageResults else {
                 return
             }
-            self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            performOnMainThread {
+                self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            }
         }
     }
 }

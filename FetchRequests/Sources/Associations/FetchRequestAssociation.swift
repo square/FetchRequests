@@ -17,9 +17,9 @@ public enum AssociationReplacement<T> {
 /// Map an associated value's key to object
 public class FetchRequestAssociation<FetchedObject: FetchableObject> {
     /// Fetch associated values given a list of parent objects
-    public typealias AssocationRequestByParent<AssociatedEntity> = @MainActor (_ objects: [FetchedObject], _ completion: @escaping @MainActor ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
+    public typealias AssocationRequestByParent<AssociatedEntity> = @MainActor (_ objects: [FetchedObject], _ completion: @escaping ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
     /// Fetch associated values given a list of associated IDs
-    public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = @MainActor (_ objects: [AssociatedEntityID], _ completion: @escaping @MainActor ([AssociatedEntity]) -> Void) -> Void
+    public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = @MainActor (_ objects: [AssociatedEntityID], _ completion: @escaping ([AssociatedEntity]) -> Void) -> Void
     /// Event that represents the creation of an associated value object
     public typealias CreationObserved<Value, Comparison> = (Value?, Comparison) -> AssociationReplacement<Value>
     /// Start observing a source object

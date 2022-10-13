@@ -199,6 +199,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
+    @MainActor
     private lazy var memoryPressureToken: FetchRequestObservableToken<Notification>? = {
 #if canImport(UIKit) && !os(watchOS)
         return FetchRequestObservableToken(
@@ -336,7 +337,7 @@ public extension FetchedResultsController {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            self?.assign(fetchedObjects: objects, completion: completion)
+            self?.unsafeAssign(fetchedObjects: objects, completion: completion)
         }
     }
 
@@ -449,12 +450,14 @@ private extension FetchedResultsController {
         }
 
         association.request(fetchableObjects) { [weak self] values in
-            self?.assignAssociatedValues(
-                values,
-                with: key.keyPath,
-                for: fetchableObjects,
-                references: valueReferences
-            )
+            performOnMainThread {
+                self?.assignAssociatedValues(
+                    values,
+                    with: key.keyPath,
+                    for: fetchableObjects,
+                    references: valueReferences
+                )
+            }
         }
     }
 }
