@@ -17,7 +17,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     private(set) var fetchCompletion: (@MainActor ([TestObject]) -> Void)!
 
     private var paginationCurrentResults: [TestObject]!
-    private var paginationCompletion: (([TestObject]?) -> Void)!
+    private var paginationCompletion: (@MainActor ([TestObject]?) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
 

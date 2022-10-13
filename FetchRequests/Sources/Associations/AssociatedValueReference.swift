@@ -55,6 +55,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
         return [dataObserver, isDeletedObserver]
     }
 
+    @MainActor
     private func observedDeletionEvent(with entity: Entity) {
         var invalidate = false
         if let value = value as? Entity, value == entity {
@@ -71,8 +72,8 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
 }
 
 class AssociatedValueReference: NSObject {
-    typealias CreationObserved = (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
-    typealias ChangeHandler = (_ invalidate: Bool) -> Void
+    typealias CreationObserved = @MainActor (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
+    typealias ChangeHandler = @MainActor (_ invalidate: Bool) -> Void
 
     private let creationObserver: FetchRequestObservableToken<Any>?
     private let creationObserved: CreationObserved
@@ -118,8 +119,9 @@ extension AssociatedValueReference {
         startObservingValue()
 
         creationObserver?.observeIfNeeded { [weak self] entity in
-            assert(Thread.isMainThread)
-            self?.observedCreationEvent(with: entity)
+            performOnMainThread {
+                self?.observedCreationEvent(with: entity)
+            }
         }
     }
 
@@ -135,6 +137,7 @@ extension AssociatedValueReference {
         changeHandler = nil
     }
 
+    @MainActor
     private func observedCreationEvent(with entity: Any) {
         // We just received a notification about an entity being created
 

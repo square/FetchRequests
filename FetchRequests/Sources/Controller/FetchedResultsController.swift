@@ -166,6 +166,22 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 
 // MARK: - FetchedResultsController
 
+func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () -> Void) {
+    if !Thread.isMainThread {
+        if async {
+            DispatchQueue.main.async(execute: handler)
+        } else {
+            DispatchQueue.main.sync(execute: handler)
+        }
+    } else {
+        @MainActor(unsafe)
+        func unsafeHandler() {
+            handler()
+        }
+        unsafeHandler()
+    }
+}
+
 public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
@@ -256,15 +272,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     deinit {
-        @MainActor(unsafe)
-        func cleanup() {
-            reset(emitChanges: false)
-        }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.sync(execute: cleanup)
-        } else {
-            cleanup()
+        performOnMainThread(async: false) {
+            self.reset(emitChanges: false)
         }
     }
 
@@ -569,21 +578,14 @@ private extension FetchedResultsController {
             return
         }
 
-        @MainActor(unsafe)
-        func performAssign() {
-            assign(
+        performOnMainThread {
+            self.assign(
                 sortedObjects: sortedObjects,
                 initialOrder: fetchOrder,
                 emitChanges: emitChanges,
                 dropObjectsToInsert: dropObjectsToInsert
             )
             completion()
-        }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: performAssign)
-        } else {
-            performAssign()
         }
     }
 
@@ -712,20 +714,13 @@ private extension FetchedResultsController {
             return
         }
 
-        @MainActor(unsafe)
-        func performInsert() {
-            insert(
+        performOnMainThread {
+            self.insert(
                 sortedObjects: sortedObjects,
                 initialOrder: initialOrder,
                 emitChanges: emitChanges
             )
             completion()
-        }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: performInsert)
-        } else {
-            performInsert()
         }
     }
 
@@ -987,14 +982,16 @@ private extension FetchedResultsController {
         for association in definition.associations {
             let keyPath = association.keyPath
             let observer = association.observeKeyPath(object) { [weak self] object, oldValue, newValue in
-                // Nil out associated value and send change event
-                self?.removeAssociatedValue(for: object, keyPath: keyPath)
+                performOnMainThread {
+                    // Nil out associated value and send change event
+                    self?.removeAssociatedValue(for: object, keyPath: keyPath)
+                }
             }
 
             observations.append(observer)
         }
 
-        let handleChange: (FetchedObject) -> Void = { [weak self] object in
+        let handleChange: @MainActor (FetchedObject) -> Void = { [weak self] object in
             guard let self else {
                 return
             }
@@ -1086,15 +1083,21 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.observeIfNeeded { [weak self] notification in
-            self?.removeAllAssociatedValues()
+            performOnMainThread {
+                self?.removeAllAssociatedValues()
+            }
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in
-            self?.observedObjectUpdate(data)
+            performOnMainThread {
+                self?.observedObjectUpdate(data)
+            }
         }
 
         for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
-                self?.handleDatabaseClear()
+                performOnMainThread {
+                    self?.handleDatabaseClear()
+                }
             }
         }
     }

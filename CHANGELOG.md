@@ -13,6 +13,8 @@ Released on TKTKTK
 * Faulting an association when you're off the main thread will have different characteristics
     * If the association already exists, nothing will change
     * If the association does not already exit, it will always return nil and hit the main thread to batch fetch the associations
+* More eventing supports occurring off of the main thread
+    * It will bounce to the main thread to actually perform the change
 
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
