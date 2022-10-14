@@ -112,6 +112,18 @@ extension JSONTestCase {
         XCTAssertEqual(dictRepresentable.dictionary as NSDictionary?, dict as NSDictionary)
         XCTAssertEqual(dictInit?.dictionary as NSDictionary?, dict as NSDictionary)
     }
+
+    func testConvertible() {
+        let myValue: UInt64 = 1
+
+        let jsonArray: JSON = [myValue]
+        let jsonDictionary: JSON = [
+            "key": [myValue],
+        ]
+
+        XCTAssertEqual(jsonArray[0], myValue.jsonRepresentation())
+        XCTAssertEqual(jsonDictionary.key?[0], myValue.jsonRepresentation())
+    }
 }
 
 // MARK: - Subscripts

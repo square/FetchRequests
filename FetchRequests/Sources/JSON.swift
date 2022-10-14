@@ -577,17 +577,17 @@ extension JSON: JSONConvertible {
     }
 }
 
-extension [JSON]: JSONConvertible {
+extension Array: JSONConvertible where Element: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .array(map(\.object))
+        return .array(map { $0.jsonRepresentation().object })
     }
 }
 
-extension [String: JSON]: JSONConvertible {
+extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
     public func jsonRepresentation() -> JSON {
         return .dictionary(
             reduce(into: [:]) { memo, kvp in
-                memo[kvp.key] = kvp.value.object
+                memo[kvp.key] = kvp.value.jsonRepresentation().object
             }
         )
     }
