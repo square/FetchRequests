@@ -597,6 +597,12 @@ extension String: JSONConvertible {
     }
 }
 
+extension NSString: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .string(self as String)
+    }
+}
+
 extension NSNull: JSONConvertible {
     public func jsonRepresentation() -> JSON {
         return .null
