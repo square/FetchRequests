@@ -25,8 +25,10 @@ public enum JSON {
         } else if let value = value as? JSONConvertible {
             self.init(value)
         } else if let value = value as? [String: Any] {
+            // This intentionally does not deeply evaluate child values
             self = .dictionary(value)
         } else if let value = value as? [Any] {
+            // This intentionally does not deeply evaluate child values
             self = .array(value)
         } else {
             return nil
@@ -573,17 +575,17 @@ extension JSON: JSONConvertible {
     }
 }
 
-extension Array: JSONConvertible where Element: JSONConvertible {
+extension [JSON]: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .array(map { $0.jsonRepresentation().object })
+        return .array(map(\.object))
     }
 }
 
-extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
+extension [String: JSON]: JSONConvertible {
     public func jsonRepresentation() -> JSON {
         return .dictionary(
             reduce(into: [:]) { memo, kvp in
-                memo[kvp.key] = kvp.value.jsonRepresentation().object
+                memo[kvp.key] = kvp.value.object
             }
         )
     }
