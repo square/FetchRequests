@@ -42,8 +42,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: PaginatingFetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
-            return self.inclusionCheck?(json) ?? true
+        let inclusionCheck: PaginatingFetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
+            return self.inclusionCheck?(rawData) ?? true
         }
 
         return PaginatingFetchDefinition<TestObject>(

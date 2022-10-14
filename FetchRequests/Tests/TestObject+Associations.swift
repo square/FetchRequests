@@ -42,7 +42,7 @@ extension TestObject {
             guard case let .parents(objects, _) = self else {
                 return nil
             }
-            return objects.map { $0.id }
+            return objects.map(\.id)
         }
 
         var tagIDs: [String]! {
@@ -180,8 +180,8 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             creationTokenGenerator: { objectID in
                 return TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let includeID = AssociatedType.entityID(from: json) else {
+                    include: { rawData in
+                        guard let includeID = AssociatedType.entityID(from: rawData) else {
                             return false
                         }
                         return objectID == includeID
@@ -204,8 +204,8 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             creationTokenGenerator: { objectIDs in
                 return TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let objectID = AssociatedType.entityID(from: json) else {
+                    include: { rawData in
+                        guard let objectID = AssociatedType.entityID(from: rawData) else {
                             return false
                         }
                         return objectIDs.contains(objectID)

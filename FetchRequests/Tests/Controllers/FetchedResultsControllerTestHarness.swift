@@ -50,20 +50,20 @@ extension FetchedResultsControllerTestHarness {
 
 extension FetchedResultsController where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.map { $0.id }
+        return fetchedObjects.map(\.id)
     }
 
     var tags: [Int] {
-        return fetchedObjects.map { $0.tag }
+        return fetchedObjects.map(\.tag)
     }
 }
 
 extension FetchedResultsSection where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return objects.map { $0.id }
+        return objects.map(\.id)
     }
 
     var tags: [Int] {
-        return objects.map { $0.tag }
+        return objects.map(\.tag)
     }
 }

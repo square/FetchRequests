@@ -16,15 +16,15 @@ class FetchRequestAssociationTestCase: XCTestCase {
     private var objects: [TestObject] = []
 
     private var objectIDs: [String] {
-        return objects.map { $0.id }
+        return objects.map(\.id)
     }
 
     private var tags: [Int] {
-        return objects.map { $0.tag }
+        return objects.map(\.tag)
     }
 
     private var tagIDs: [String] {
-        return objects.map { $0.nonOptionalTagID }
+        return objects.map(\.nonOptionalTagID)
     }
 
     override func setUp() {
@@ -767,7 +767,7 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
-        return TestObject.fetch(byIDs: objectIDs.map { $0.id })
+        return TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping ([TestObject]) -> Void) {

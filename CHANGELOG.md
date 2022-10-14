@@ -7,6 +7,7 @@ Released on TKTKTK
 
 * Requires Swift 5.7
 * Protocols define their primary associated types
+* JSON literal arrays and dictionaries now must be strongly typed via the `JSONConvertible` protocol
 * Annotate many methods as @MainActor
     * All delegate methods
     * All code with assert(Thread.isMainThread)
