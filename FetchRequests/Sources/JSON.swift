@@ -22,31 +22,21 @@ public enum JSON {
     public init?(_ value: Any) {
         if let value = value as? Data {
             self.init(data: value)
-        } else if let value = value as? JSON {
-            self = value
-        } else if let value = value as? String {
-            self = .string(value)
-        } else if let value = value as? NSNumber, value.isBool {
-            self = .bool(value.boolValue)
-        } else if let value = value as? NSNumber {
-            self = .number(value)
-        } else if let value = value as? [JSON] {
-            self = .array(value.map(\.object))
-        } else if let value = value as? [Any] {
-            self = .array(value)
-        } else if let value = value as? [String: JSON] {
-            self = .dictionary(
-                value.reduce(into: [:]) { memo, kvp in
-                    memo[kvp.key] = kvp.value.object
-                }
-            )
+        } else if let value = value as? JSONConvertible {
+            self.init(value)
         } else if let value = value as? [String: Any] {
+            // This intentionally does not deeply evaluate child values
             self = .dictionary(value)
-        } else if let _ = value as? NSNull {
-            self = .null
+        } else if let value = value as? [Any] {
+            // This intentionally does not deeply evaluate child values
+            self = .array(value)
         } else {
             return nil
         }
+    }
+
+    public init(_ value: JSONConvertible) {
+        self = value.jsonRepresentation()
     }
 
     public init?(
@@ -385,42 +375,44 @@ extension JSON: Collection {
 // MARK: - Literals
 
 extension JSON: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, Any)...) {
+    public init(dictionaryLiteral elements: (String, JSONConvertible)...) {
+        // This should be consistent with [String: JSONConvertible].jsonRepresentation()
         let data: [String: Any] = elements.reduce(into: [:]) { memo, element in
-            memo[element.0] = element.1
+            memo[element.0] = element.1.jsonRepresentation().object
         }
         self = .dictionary(data)
     }
 }
 
 extension JSON: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Any...) {
-        let data: [Any] = elements
+    public init(arrayLiteral elements: JSONConvertible...) {
+        // This should be consistent with [JSONConvertible].jsonRepresentation()
+        let data: [Any] = elements.map { $0.jsonRepresentation().object }
         self = .array(data)
     }
 }
 
 extension JSON: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
-        self = .string(value)
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: Bool) {
-        self = .bool(value)
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Double) {
-        self = .number(NSNumber(value: value))
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
-        self = .number(NSNumber(value: value))
+        self.init(value)
     }
 }
 
@@ -499,7 +491,7 @@ extension JSON: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        let object: Any
+        let object: JSONConvertible
 
         if container.decodeNil() {
             object = NSNull()
@@ -511,57 +503,34 @@ extension JSON: Decodable {
             object = array
         } else if let dictionary = try? container.decode([String: JSON].self) {
             object = dictionary
+        } else if let int = try? container.decode(Int64.self) {
+            object = int
+        } else if let int = try? container.decode(Int32.self) {
+            object = int
+        } else if let int = try? container.decode(Int16.self) {
+            object = int
+        } else if let int = try? container.decode(Int8.self) {
+            object = int
+        } else if let int = try? container.decode(Int.self) {
+            object = int
+        } else if let int = try? container.decode(UInt64.self) {
+            object = int
+        } else if let int = try? container.decode(UInt32.self) {
+            object = int
+        } else if let int = try? container.decode(UInt16.self) {
+            object = int
+        } else if let int = try? container.decode(UInt8.self) {
+            object = int
+        } else if let int = try? container.decode(UInt.self) {
+            object = int
+        } else if let double = try? container.decode(Double.self) {
+            object = double
+        } else if let float = try? container.decode(Float.self) {
+            object = float
         } else {
-            var signedNumber: NSNumber? {
-                if let int = try? container.decode(Int64.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(Int32.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(Int16.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(Int8.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(Int.self) {
-                    return NSNumber(value: int)
-                } else {
-                    return nil
-                }
-            }
-            var unsignedNumber: NSNumber? {
-                if let int = try? container.decode(UInt64.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(UInt32.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(UInt16.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(UInt8.self) {
-                    return NSNumber(value: int)
-                } else if let int = try? container.decode(UInt.self) {
-                    return NSNumber(value: int)
-                } else {
-                    return nil
-                }
-            }
-            var floatingPointNumber: NSNumber? {
-                if let double = try? container.decode(Double.self) {
-                    return NSNumber(value: double)
-                } else if let float = try? container.decode(Float.self) {
-                    return NSNumber(value: float)
-                } else {
-                    return nil
-                }
-            }
-
-            guard let number = signedNumber ?? unsignedNumber ?? floatingPointNumber else {
-                throw JSONError.invalidContent
-            }
-            object = number
-        }
-
-        guard let data = JSON(object) else {
             throw JSONError.invalidContent
         }
-        self = data
+        self = object.jsonRepresentation()
     }
 }
 
@@ -593,5 +562,139 @@ private extension NSNumber {
         case integer
         case floatingPoint
         case boolean
+    }
+}
+
+// MARK: - JSONConvertible
+
+public protocol JSONConvertible {
+    func jsonRepresentation() -> JSON
+}
+
+extension JSON: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return self
+    }
+}
+
+extension Array: JSONConvertible where Element: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .array(map { $0.jsonRepresentation().object })
+    }
+}
+
+extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .dictionary(
+            reduce(into: [:]) { memo, kvp in
+                memo[kvp.key] = kvp.value.jsonRepresentation().object
+            }
+        )
+    }
+}
+
+extension String: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .string(self)
+    }
+}
+
+extension NSString: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .string(self as String)
+    }
+}
+
+extension NSNull: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .null
+    }
+}
+
+extension NSNumber: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        if self.isBool {
+            return .bool(boolValue)
+        } else {
+            return .number(self)
+        }
+    }
+}
+
+extension Bool: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .bool(self)
+    }
+}
+
+extension Int64: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Int32: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Int16: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Int8: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Int: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension UInt64: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension UInt32: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension UInt16: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension UInt8: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension UInt: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Double: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
+    }
+}
+
+extension Float: JSONConvertible {
+    public func jsonRepresentation() -> JSON {
+        return .number(NSNumber(value: self))
     }
 }

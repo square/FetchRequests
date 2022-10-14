@@ -39,7 +39,7 @@ extension JSONTestCase {
 
         XCTAssertTrue(enumValue.bool ?? false)
         XCTAssertTrue(boolRepresentable.bool ?? false)
-        XCTAssertTrue(nsnumberBoolInit?.bool ?? false)
+        XCTAssertTrue(nsnumberBoolInit.bool ?? false)
         XCTAssertEqual(enumValue, nsnumberBoolInit)
         XCTAssertEqual(enumValue, boolRepresentable)
         XCTAssertNotEqual(nsnumberBoolInit, nsnumberNumberInit)
@@ -84,7 +84,7 @@ extension JSONTestCase {
         XCTAssertEqual(enumValue, stringRepresentable)
         XCTAssertEqual(enumValue.string, string)
         XCTAssertEqual(stringRepresentable.string, string)
-        XCTAssertEqual(stringInit?.string, string)
+        XCTAssertEqual(stringInit.string, string)
     }
 
     func testArray() {
@@ -111,6 +111,19 @@ extension JSONTestCase {
         XCTAssertEqual(enumValue.dictionary as NSDictionary?, dict as NSDictionary)
         XCTAssertEqual(dictRepresentable.dictionary as NSDictionary?, dict as NSDictionary)
         XCTAssertEqual(dictInit?.dictionary as NSDictionary?, dict as NSDictionary)
+    }
+
+    func testConvertible() {
+        let myValue: UInt64 = 1
+
+        let jsonArray: JSON = [myValue]
+        let jsonDictionary: JSON = [
+            "key": [myValue],
+            "key2": jsonArray,
+        ]
+
+        XCTAssertEqual(jsonArray[0], myValue.jsonRepresentation())
+        XCTAssertEqual(jsonDictionary.key?[0], myValue.jsonRepresentation())
     }
 }
 
@@ -411,6 +424,7 @@ extension JSONTestCase {
     func testJsonNSObjectForBoxedJSON() {
         let dict = NSDictionary(dictionary: ["name": "Alexa"])
         let boxed = BoxedJSON(__object: dict)
-        XCTAssertTrue(boxed?.json.name?.string == "Alexa")
+        XCTAssertNotNil(boxed)
+        XCTAssertEqual(boxed?.json.name?.string, "Alexa")
     }
 }
