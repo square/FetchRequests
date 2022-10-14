@@ -376,17 +376,19 @@ extension JSON: Collection {
 
 extension JSON: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, JSONConvertible)...) {
-        let data: [String: JSON] = elements.reduce(into: [:]) { memo, element in
-            memo[element.0] = element.1.jsonRepresentation()
+        // This should be consistent with [String: JSONConvertible].jsonRepresentation()
+        let data: [String: Any] = elements.reduce(into: [:]) { memo, element in
+            memo[element.0] = element.1.jsonRepresentation().object
         }
-        self.init(data)
+        self = .dictionary(data)
     }
 }
 
 extension JSON: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: JSONConvertible...) {
-        let data: [JSON] = elements.map { $0.jsonRepresentation() }
-        self.init(data)
+        // This should be consistent with [JSONConvertible].jsonRepresentation()
+        let data: [Any] = elements.map { $0.jsonRepresentation().object }
+        self = .array(data)
     }
 }
 
