@@ -119,6 +119,7 @@ extension JSONTestCase {
         let jsonArray: JSON = [myValue]
         let jsonDictionary: JSON = [
             "key": [myValue],
+            "key2": jsonArray,
         ]
 
         XCTAssertEqual(jsonArray[0], myValue.jsonRepresentation())
