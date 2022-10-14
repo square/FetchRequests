@@ -201,14 +201,14 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         let effectiveSortDescriptorKeys = [
             #selector(getter: TestObject.sectionName),
             NSSelectorFromString("self"),
-        ].map { $0.description }
+        ].map(\.description)
 
         try! performFetch(["a", "b", "c"])
 
         controller.associatedFetchSize = 20
 
         XCTAssert(controller.definition === fetchDefinition)
-        XCTAssertEqual(controller.sortDescriptors.map { $0.key }, effectiveSortDescriptorKeys)
+        XCTAssertEqual(controller.sortDescriptors.map(\.key), effectiveSortDescriptorKeys)
         XCTAssertEqual(controller.sectionNameKeyPath, \TestObject.sectionName)
         XCTAssertEqual(controller.associatedFetchSize, 20)
         XCTAssertTrue(controller.hasFetchedObjects)

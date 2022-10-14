@@ -1313,24 +1313,24 @@ private extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 extension CollapsibleSectionsFetchedResultsController where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.compactMap { $0.id }
+        return fetchedObjects.map(\.id)
     }
 
     var tags: [Int] {
-        return fetchedObjects.compactMap { $0.tag }
+        return fetchedObjects.map(\.tag)
     }
 }
 
 extension CollapsibleResultsSection where FetchedObject: TestObject {
     var allFetchedIDs: [String] {
-        return allObjects.compactMap { $0.id }
+        return allObjects.map(\.id)
     }
 
     var displayableFetchedIDs: [String] {
-        return displayableObjects.compactMap { $0.id }
+        return displayableObjects.map(\.id)
     }
 
     var allTags: [Int] {
-        return allObjects.compactMap { $0.tag }
+        return allObjects.map(\.tag)
     }
 }

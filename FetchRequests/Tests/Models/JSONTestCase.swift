@@ -213,7 +213,7 @@ extension JSONTestCase {
 
         XCTAssertEqual(value.count, 1)
 
-        XCTAssertEqual(value.compactMap { $0.value.bool }, [true])
+        XCTAssertEqual(value.compactMap(\.value.bool), [true])
 
         value[.value(isStart: true)] = "abc"
 

@@ -31,7 +31,7 @@ public enum JSON {
         } else if let value = value as? NSNumber {
             self = .number(value)
         } else if let value = value as? [JSON] {
-            self = .array(value.map { $0.object })
+            self = .array(value.map(\.object))
         } else if let value = value as? [Any] {
             self = .array(value)
         } else if let value = value as? [String: JSON] {

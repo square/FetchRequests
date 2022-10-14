@@ -42,7 +42,7 @@ extension TestObject {
             guard case let .parents(objects, _) = self else {
                 return nil
             }
-            return objects.map { $0.id }
+            return objects.map(\.id)
         }
 
         var tagIDs: [String]! {
