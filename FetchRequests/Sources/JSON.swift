@@ -379,38 +379,38 @@ extension JSON: ExpressibleByDictionaryLiteral {
         let data: [String: JSON] = elements.reduce(into: [:]) { memo, element in
             memo[element.0] = element.1.jsonRepresentation()
         }
-        self = .dictionary(data)
+        self.init(data)
     }
 }
 
 extension JSON: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: JSONConvertible...) {
         let data: [JSON] = elements.map { $0.jsonRepresentation() }
-        self = .array(data)
+        self.init(data)
     }
 }
 
 extension JSON: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
-        self = .string(value)
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: Bool) {
-        self = .bool(value)
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Double) {
-        self = .number(NSNumber(value: value))
+        self.init(value)
     }
 }
 
 extension JSON: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
-        self = .number(NSNumber(value: value))
+        self.init(value)
     }
 }
 

@@ -39,7 +39,7 @@ extension JSONTestCase {
 
         XCTAssertTrue(enumValue.bool ?? false)
         XCTAssertTrue(boolRepresentable.bool ?? false)
-        XCTAssertTrue(nsnumberBoolInit?.bool ?? false)
+        XCTAssertTrue(nsnumberBoolInit.bool ?? false)
         XCTAssertEqual(enumValue, nsnumberBoolInit)
         XCTAssertEqual(enumValue, boolRepresentable)
         XCTAssertNotEqual(nsnumberBoolInit, nsnumberNumberInit)
@@ -84,7 +84,7 @@ extension JSONTestCase {
         XCTAssertEqual(enumValue, stringRepresentable)
         XCTAssertEqual(enumValue.string, string)
         XCTAssertEqual(stringRepresentable.string, string)
-        XCTAssertEqual(stringInit?.string, string)
+        XCTAssertEqual(stringInit.string, string)
     }
 
     func testArray() {
@@ -411,6 +411,7 @@ extension JSONTestCase {
     func testJsonNSObjectForBoxedJSON() {
         let dict = NSDictionary(dictionary: ["name": "Alexa"])
         let boxed = BoxedJSON(__object: dict)
-        XCTAssertTrue(boxed?.json.name?.string == "Alexa")
+        XCTAssertNotNil(boxed)
+        XCTAssertEqual(boxed?.json.name?.string, "Alexa")
     }
 }
