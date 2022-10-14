@@ -7,7 +7,7 @@ Released on TKTKTK
 
 * Requires Swift 5.7
 * Protocols define their primary associated types
-* JSON literal arrays and dictionaries now must be strongly typed
+* JSON literal arrays and dictionaries now must be strongly typed via the `JSONConvertible` protocol
 
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
