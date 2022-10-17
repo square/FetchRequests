@@ -13,7 +13,7 @@ Released on TKTKTK
     * All code with assert(Thread.isMainThread)
 * Faulting an association when you're off the main thread will have different characteristics
     * If the association already exists, nothing will change
-    * If the association does not already exit, it will always return nil and hit the main thread to batch fetch the associations
+    * If the association does not already exist, it will always return nil and hit the main thread to batch fetch the associations
 * More eventing supports occurring off of the main thread
     * If needed, it will async bounce to the main thread to actually perform the change
     * Newly allowed Events:
