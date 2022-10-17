@@ -265,13 +265,16 @@ public extension CollapsibleSectionsFetchedResultsController {
 // MARK: - Fetch Methods
 public extension CollapsibleSectionsFetchedResultsController {
     @MainActor
-    func performFetch(completion: (() -> Void)? = nil) {
-        fetchController.performFetch(completion: completion ?? {})
+    func performFetch(completion: @escaping @MainActor () -> Void = {}) {
+        fetchController.performFetch(completion: completion)
     }
 
     @MainActor
-    func resort(using newSortDescriptors: [NSSortDescriptor], completion: (() -> Void)? = nil) {
-        fetchController.resort(using: newSortDescriptors, completion: completion ?? {})
+    func resort(
+        using newSortDescriptors: [NSSortDescriptor],
+        completion: @escaping @MainActor () -> Void = {}
+    ) {
+        fetchController.resort(using: newSortDescriptors, completion: completion)
     }
 }
 

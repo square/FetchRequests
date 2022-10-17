@@ -338,7 +338,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
 public extension FetchedResultsController {
     @MainActor
-    func performFetch(completion: @escaping () -> Void) {
+    func performFetch(completion: @escaping @MainActor () -> Void) {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
@@ -347,7 +347,10 @@ public extension FetchedResultsController {
     }
 
     @MainActor
-    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+    func resort(
+        using newSortDescriptors: [NSSortDescriptor],
+        completion: @escaping @MainActor () -> Void
+    ) {
         assert(Thread.isMainThread)
 
         rawSortDescriptors = newSortDescriptors
@@ -548,7 +551,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping () -> Void
+        completion: @escaping @MainActor () -> Void
     ) {
         assert(Thread.isMainThread)
 
@@ -566,7 +569,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping () -> Void
+        completion: @escaping @MainActor () -> Void
     ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
@@ -658,7 +661,7 @@ private extension FetchedResultsController {
     func insert<C: Collection>(
         _ objects: C,
         emitChanges: Bool = true,
-        completion: @escaping () -> Void
+        completion: @escaping @MainActor () -> Void
     ) where C.Element == FetchedObject {
         // This is snapshotted because we're potentially about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
@@ -697,7 +700,7 @@ private extension FetchedResultsController {
         _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true,
-        completion: @escaping () -> Void
+        completion: @escaping @MainActor () -> Void
     ) where C.Element == FetchedObject {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
