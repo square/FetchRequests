@@ -10,6 +10,7 @@ import Foundation
 import Combine
 
 internal protocol InternalFetchResultsControllerProtocol: FetchedResultsControllerProtocol {
+    @MainActor
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 
@@ -37,8 +38,11 @@ public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservabl
     var sectionNameKeyPath: SectionNameKeyPath? { get }
     var sortDescriptors: [NSSortDescriptor] { get }
 
+    @MainActor
     func performFetch(completion: @escaping () -> Void)
+    @MainActor
     func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void)
+    @MainActor
     func reset()
 
     func indexPath(for object: FetchedObject) -> IndexPath?
@@ -47,10 +51,12 @@ public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservabl
 // MARK: - Index Paths
 
 public extension FetchedResultsControllerProtocol {
+    @MainActor
     func performFetch() {
         performFetch(completion: {})
     }
 
+    @MainActor
     func resort(using newSortDescriptors: [NSSortDescriptor]) {
         resort(using: newSortDescriptors, completion: {})
     }

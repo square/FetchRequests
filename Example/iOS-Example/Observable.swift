@@ -17,9 +17,12 @@ struct Change<Value> {
 
 @propertyWrapper
 class Observable<Value> {
-    fileprivate var observers: Atomic<[UUID: (Change<Value>) -> Void]> = Atomic(wrappedValue: [:])
+    typealias Handler = @MainActor (Change<Value>) -> Void
+
+    fileprivate var observers: Atomic<[UUID: Handler]> = Atomic(wrappedValue: [:])
 
     var wrappedValue: Value {
+        @MainActor(unsafe)
         didSet {
             assert(Thread.isMainThread)
 
@@ -34,7 +37,7 @@ class Observable<Value> {
         self.wrappedValue = wrappedValue
     }
 
-    func observe(handler: @escaping (Change<Value>) -> Void) -> InvalidatableToken {
+    func observe(handler: @escaping Handler) -> InvalidatableToken {
         let token = Token(parent: self)
         observers.mutate { value in
             value[token.uuid] = handler
@@ -44,7 +47,7 @@ class Observable<Value> {
 }
 
 extension Observable where Value: Equatable {
-    func observeChanges(handler: @escaping (Change<Value>) -> Void) -> InvalidatableToken {
+    func observeChanges(handler: @escaping Handler) -> InvalidatableToken {
         return observe { change in
             guard change.oldValue != change.newValue else {
                 return

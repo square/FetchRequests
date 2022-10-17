@@ -9,6 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
+@MainActor
 class FetchRequestAssociationTestCase: XCTestCase {
     typealias Association = FetchRequestAssociation<TestObject>
 

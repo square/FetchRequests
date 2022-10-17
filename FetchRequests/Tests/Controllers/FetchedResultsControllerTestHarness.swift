@@ -12,6 +12,7 @@ import Foundation
 
 // swiftlint:disable implicitly_unwrapped_optional
 
+@MainActor
 protocol FetchedResultsControllerTestHarness {
     associatedtype FetchController: FetchedResultsControllerProtocol where
         FetchController.FetchedObject == TestObject
@@ -21,12 +22,14 @@ protocol FetchedResultsControllerTestHarness {
 }
 
 extension FetchedResultsControllerTestHarness {
+    @MainActor
     func performFetch(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) throws {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         try performFetch(objects, file: file, line: line)
     }
 
+    @MainActor
     func performFetch(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) throws {
         controller.performFetch()
 
