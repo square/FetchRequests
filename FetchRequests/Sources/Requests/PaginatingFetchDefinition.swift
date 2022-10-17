@@ -9,7 +9,7 @@
 import Foundation
 
 public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDefinition<FetchedObject> {
-    public typealias PaginationRequest = (
+    public typealias PaginationRequest = @MainActor (
         _ currentResults: [FetchedObject],
         _ completion: @escaping ([FetchedObject]?) -> Void
     ) -> Void
@@ -39,6 +39,7 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
 }
 
 private extension InternalFetchResultsControllerProtocol {
+    @MainActor
     func performPagination(
         with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
     ) {
@@ -75,6 +76,7 @@ public class PaginatingFetchedResultsController<
         )
     }
 
+    @MainActor
     public func performPagination() {
         performPagination(with: paginatingDefinition.paginationRequest)
     }
@@ -101,6 +103,7 @@ public class PausablePaginatingFetchedResultsController<
         )
     }
 
+    @MainActor
     public func performPagination() {
         performPagination(with: paginatingDefinition.paginationRequest)
     }
