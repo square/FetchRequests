@@ -2,6 +2,30 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [5.0](https://github.com/square/FetchRequests/releases/tag/5.0.0)
+Released on 2022-10-25
+
+* Requires Swift 5.7
+* Protocols define their primary associated types
+* JSON literal arrays and dictionaries now must be strongly typed via the `JSONConvertible` protocol
+* Annotate many methods as @MainActor
+    * All delegate methods
+    * All code with assert(Thread.isMainThread)
+* Faulting an association when you're off the main thread will have different characteristics
+    * If the association already exists, nothing will change
+    * If the association does not already exist, it will always return nil and hit the main thread to batch fetch the associations
+* More eventing supports occurring off of the main thread
+    * If needed, it will async bounce to the main thread to actually perform the change
+    * Newly allowed Events:
+        * Associated Value creation events
+        * Entity creation events
+        * Data reset events
+    * Note any changes to your model still must occur on the main thread
+        * data
+        * isDeleted
+        * NSSortDescriptor keyPaths
+        * Association keyPaths
+
 ## [4.0.4](https://github.com/square/FetchRequests/releases/tag/4.0.4)
 Released on 2022-08-30
 

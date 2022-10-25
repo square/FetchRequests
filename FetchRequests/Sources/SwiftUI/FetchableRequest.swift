@@ -39,6 +39,7 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
         _base = FetchableRequest(controller: controller, animation: animation)
     }
 
+    @MainActor(unsafe)
     public mutating func update() {
         _base.update()
     }
@@ -90,6 +91,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         self.animation = animation
     }
 
+    @MainActor(unsafe)
     public mutating func update() {
         _wrappedValue.update()
         _fetchController.update()
@@ -107,7 +109,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         let animation = self.animation
 
         subscription.value = fetchController.objectDidChange.sink { [weak controller] in
-            guard let controller = controller else {
+            guard let controller else {
                 return
             }
             withAnimation(animation) {

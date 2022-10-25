@@ -10,6 +10,7 @@ import Foundation
 import Combine
 
 internal protocol InternalFetchResultsControllerProtocol: FetchedResultsControllerProtocol {
+    @MainActor
     func manuallyInsert(objects: [FetchedObject], emitChanges: Bool)
 }
 
@@ -19,8 +20,9 @@ public protocol DoublyObservableObject: ObservableObject {
     var objectDidChange: ObjectDidChangePublisher { get }
 }
 
-public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
+public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservableObject {
     associatedtype FetchedObject: FetchableObject
+
     typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
     typealias Section = FetchedResultsSection<FetchedObject>
 
@@ -36,8 +38,11 @@ public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
     var sectionNameKeyPath: SectionNameKeyPath? { get }
     var sortDescriptors: [NSSortDescriptor] { get }
 
-    func performFetch(completion: @escaping () -> Void)
-    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void)
+    @MainActor
+    func performFetch(completion: @escaping @MainActor () -> Void)
+    @MainActor
+    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping @MainActor () -> Void)
+    @MainActor
     func reset()
 
     func indexPath(for object: FetchedObject) -> IndexPath?
@@ -46,10 +51,12 @@ public protocol FetchedResultsControllerProtocol: DoublyObservableObject {
 // MARK: - Index Paths
 
 public extension FetchedResultsControllerProtocol {
+    @MainActor
     func performFetch() {
         performFetch(completion: {})
     }
 
+    @MainActor
     func resort(using newSortDescriptors: [NSSortDescriptor]) {
         resort(using: newSortDescriptors, completion: {})
     }
@@ -192,7 +199,7 @@ public extension FetchedResultsControllerProtocol {
 // MARK: - Binary Search
 
 extension RandomAccessCollection where Index: Strideable {
-    func binarySearch(matching: (Iterator.Element) -> Bool) -> Self.Index {
+    func binarySearch(matching: (Element) -> Bool) -> Self.Index {
         var lowerIndex = startIndex
         var upperIndex = endIndex
 
@@ -212,7 +219,7 @@ extension RandomAccessCollection where Index: Strideable {
 
 extension FetchableObjectProtocol where Self: NSObject {
     func sectionName(forKeyPath keyPath: KeyPath<Self, String>?) -> String {
-        guard let keyPath = keyPath else {
+        guard let keyPath else {
             return ""
         }
         return self[keyPath: keyPath]

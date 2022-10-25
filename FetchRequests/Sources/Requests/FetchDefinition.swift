@@ -9,8 +9,8 @@
 import Foundation
 
 public class FetchDefinition<FetchedObject: FetchableObject> {
-    public typealias Request = (_ completion: @escaping ([FetchedObject]) -> Void) -> Void
-    public typealias CreationInclusionCheck = (_ rawData: FetchedObject.RawData) -> Bool
+    public typealias Request = @MainActor (_ completion: @escaping ([FetchedObject]) -> Void) -> Void
+    public typealias CreationInclusionCheck = @MainActor (_ rawData: FetchedObject.RawData) -> Bool
 
     internal let request: Request
     internal let objectCreationToken: FetchRequestObservableToken<FetchedObject.RawData>
@@ -20,13 +20,16 @@ public class FetchDefinition<FetchedObject: FetchableObject> {
 
     internal let associationsByKeyPath: [FetchRequestAssociation<FetchedObject>.AssociationKeyPath: FetchRequestAssociation<FetchedObject>]
 
-    public init<VoidToken: ObservableToken, DataToken: ObservableToken>(
+    public init<
+        VoidToken: ObservableToken<Void>,
+        DataToken: ObservableToken<FetchedObject.RawData>
+    >(
         request: @escaping Request,
         objectCreationToken: DataToken,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
         associations: [FetchRequestAssociation<FetchedObject>] = [],
         dataResetTokens: [VoidToken] = []
-    ) where VoidToken.Parameter == Void, DataToken.Parameter == FetchedObject.RawData {
+    ) {
         self.request = request
         self.objectCreationToken = FetchRequestObservableToken(token: objectCreationToken)
         self.creationInclusionCheck = creationInclusionCheck

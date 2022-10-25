@@ -10,6 +10,7 @@ import XCTest
 
 @testable import FetchRequests
 
+@MainActor
 class FetchableRequestTestCase: XCTestCase {
 }
 

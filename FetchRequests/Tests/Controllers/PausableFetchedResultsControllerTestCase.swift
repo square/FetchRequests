@@ -35,8 +35,8 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
-            return self.inclusionCheck?(json) ?? true
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
+            return self.inclusionCheck?(rawData) ?? true
         }
 
         return FetchDefinition<TestObject>(
@@ -201,14 +201,14 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         let effectiveSortDescriptorKeys = [
             #selector(getter: TestObject.sectionName),
             NSSelectorFromString("self"),
-        ].map { $0.description }
+        ].map(\.description)
 
         try! performFetch(["a", "b", "c"])
 
         controller.associatedFetchSize = 20
 
         XCTAssert(controller.definition === fetchDefinition)
-        XCTAssertEqual(controller.sortDescriptors.map { $0.key }, effectiveSortDescriptorKeys)
+        XCTAssertEqual(controller.sortDescriptors.map(\.key), effectiveSortDescriptorKeys)
         XCTAssertEqual(controller.sectionNameKeyPath, \TestObject.sectionName)
         XCTAssertEqual(controller.associatedFetchSize, 20)
         XCTAssertTrue(controller.hasFetchedObjects)

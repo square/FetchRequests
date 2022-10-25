@@ -105,7 +105,7 @@ extension ViewController {
             style: .destructive,
             title: NSLocalizedString("Delete", comment: "Delete")
         ) { [weak self] action, view, completion in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             let model = self.controller.object(at: indexPath)

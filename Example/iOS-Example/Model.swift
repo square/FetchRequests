@@ -109,12 +109,14 @@ extension Model {
 // MARK: - FetchableObjectProtocol
 
 extension Model: FetchableObjectProtocol {
-    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
-        return _data.observeChanges { change in handler() }
+    func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
+        return _data.observeChanges { change in
+            handler()
+        }
     }
 
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken {
-        return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
+    func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
+        return self.observe(\.isDeleted, options: [.old, .new]) { @MainActor(unsafe) object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }

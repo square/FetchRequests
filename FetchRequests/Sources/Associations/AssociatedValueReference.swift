@@ -46,7 +46,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
         }
 
         let isDeletedObserver = entity.observeIsDeletedChanges { [weak self, weak entity] in
-            guard let entity = entity else {
+            guard let entity else {
                 return
             }
             self?.observedDeletionEvent(with: entity)
@@ -55,6 +55,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
         return [dataObserver, isDeletedObserver]
     }
 
+    @MainActor
     private func observedDeletionEvent(with entity: Entity) {
         var invalidate = false
         if let value = value as? Entity, value == entity {
@@ -71,11 +72,14 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
 }
 
 class AssociatedValueReference: NSObject {
+    typealias CreationObserved = @MainActor (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
+    typealias ChangeHandler = @MainActor (_ invalidate: Bool) -> Void
+
     private let creationObserver: FetchRequestObservableToken<Any>?
-    private let creationObserved: (Any?, Any) -> AssociationReplacement<Any>
+    private let creationObserved: CreationObserved
 
     fileprivate(set) var value: Any?
-    fileprivate var changeHandler: ((_ invalidate: Bool) -> Void)?
+    fileprivate var changeHandler: ChangeHandler?
 
     var canObserveCreation: Bool {
         return creationObserver != nil
@@ -83,7 +87,7 @@ class AssociatedValueReference: NSObject {
 
     init(
         creationObserver: FetchRequestObservableToken<Any>? = nil,
-        creationObserved: @escaping (Any?, Any) -> AssociationReplacement<Any> = { _, _ in .same },
+        creationObserved: @escaping CreationObserved = { _, _ in .same },
         value: Any? = nil
     ) {
         self.creationObserver = creationObserver
@@ -107,7 +111,7 @@ extension AssociatedValueReference {
         self.value = value
     }
 
-    func observeChanges(_ changeHandler: @escaping (_ invalidate: Bool) -> Void) {
+    func observeChanges(_ changeHandler: @escaping ChangeHandler) {
         stopObserving()
 
         self.changeHandler = changeHandler
@@ -115,8 +119,9 @@ extension AssociatedValueReference {
         startObservingValue()
 
         creationObserver?.observeIfNeeded { [weak self] entity in
-            assert(Thread.isMainThread)
-            self?.observedCreationEvent(with: entity)
+            performOnMainThread {
+                self?.observedCreationEvent(with: entity)
+            }
         }
     }
 
@@ -132,7 +137,10 @@ extension AssociatedValueReference {
         changeHandler = nil
     }
 
+    @MainActor
     private func observedCreationEvent(with entity: Any) {
+        assert(Thread.isMainThread)
+
         // We just received a notification about an entity being created
 
         switch creationObserved(value, entity) {
@@ -147,7 +155,7 @@ extension AssociatedValueReference {
 
             stopObservingAndUpdateValue(to: newValue)
 
-            if let currentChangeHandler = currentChangeHandler {
+            if let currentChangeHandler {
                 observeChanges(currentChangeHandler)
                 currentChangeHandler(false)
             }

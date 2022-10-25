@@ -1,16 +1,15 @@
---swiftversion 5.5
+--swiftversion 5.7
 
 --exclude Pods
 
+--rules andOperator
 --rules anyObjectProtocol
 
+--rules blankLineAfterImports
 --rules braces
-
 --rules duplicateImports
 --rules elseOnSameLine
-
---rules strongifiedSelf
---rules andOperator
+--rules genericExtensions
 
 --rules indent
   --indent 4
@@ -21,24 +20,28 @@
 --rules leadingDelimiters
 --rules linebreakAtEndOfFile
 
+--rules redundantFileprivate
 --rules redundantGet
 --rules redundantInit
+--rules redundantOptionalBinding
 --rules redundantParens
 --rules redundantVoidReturnType
 --rules semicolons
+
 --rules spaceAroundBraces
 --rules spaceAroundBrackets
 --rules spaceAroundGenerics
-
 --rules spaceAroundOperators
 --rules spaceAroundParens
+
 --rules spaceInsideBraces
 --rules spaceInsideBrackets
 --rules spaceInsideComments
 --rules spaceInsideGenerics
 --rules spaceInsideParens
---rules todos
 
+--rules strongifiedSelf
+--rules todos
 --rules trailingCommas
 --rules trailingSpace
 --rules typeSugar

@@ -10,6 +10,7 @@ import XCTest
 @testable import FetchRequests
 
 // swiftlint:disable force_try implicitly_unwrapped_optional
+@MainActor
 class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
     private(set) var controller: FetchedResultsController<TestObject>!
 
@@ -34,8 +35,8 @@ class FetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTest
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
-            return self.inclusionCheck?(json) ?? true
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
+            return self.inclusionCheck?(rawData) ?? true
         }
 
         return FetchDefinition<TestObject>(
@@ -501,8 +502,8 @@ extension FetchedResultsControllerTestCase {
 
         // Broadcast tagID 0
 
-        inclusionCheck = { json in
-            TestObject.entityID(from: json) != "0"
+        inclusionCheck = { rawData in
+            TestObject.entityID(from: rawData) != "0"
         }
 
         let updateName = TestObject.objectWasCreated()
@@ -939,8 +940,8 @@ extension FetchedResultsControllerTestCase {
 
         let newObject = TestObject(id: "d")
 
-        inclusionCheck = { json in
-            TestObject.entityID(from: json) != newObject.id
+        inclusionCheck = { rawData in
+            TestObject.entityID(from: rawData) != newObject.id
         }
 
         let update = newObject.data

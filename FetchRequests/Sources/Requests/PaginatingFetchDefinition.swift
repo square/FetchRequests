@@ -9,21 +9,24 @@
 import Foundation
 
 public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDefinition<FetchedObject> {
-    public typealias PaginationRequest = (
+    public typealias PaginationRequest = @MainActor (
         _ currentResults: [FetchedObject],
         _ completion: @escaping ([FetchedObject]?) -> Void
     ) -> Void
 
     internal let paginationRequest: PaginationRequest
 
-    public init<VoidToken: ObservableToken, DataToken: ObservableToken>(
+    public init<
+        VoidToken: ObservableToken<Void>,
+        DataToken: ObservableToken<FetchedObject.RawData>
+    >(
         request: @escaping Request,
         paginationRequest: @escaping PaginationRequest,
         objectCreationToken: DataToken,
         creationInclusionCheck: @escaping CreationInclusionCheck = { _ in true },
         associations: [FetchRequestAssociation<FetchedObject>] = [],
         dataResetTokens: [VoidToken] = []
-    ) where VoidToken.Parameter == Void, DataToken.Parameter == FetchedObject.RawData {
+    ) {
         self.paginationRequest = paginationRequest
         super.init(
             request: request,
@@ -36,15 +39,18 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
 }
 
 private extension InternalFetchResultsControllerProtocol {
+    @MainActor
     func performPagination(
         with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
-            guard let pageResults = pageResults else {
+            guard let pageResults else {
                 return
             }
-            self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            performOnMainThread {
+                self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            }
         }
     }
 }
@@ -70,6 +76,7 @@ public class PaginatingFetchedResultsController<
         )
     }
 
+    @MainActor
     public func performPagination() {
         performPagination(with: paginatingDefinition.paginationRequest)
     }
@@ -96,6 +103,7 @@ public class PausablePaginatingFetchedResultsController<
         )
     }
 
+    @MainActor
     public func performPagination() {
         performPagination(with: paginatingDefinition.paginationRequest)
     }

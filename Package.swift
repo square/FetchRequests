@@ -1,14 +1,15 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.7
 
 import PackageDescription
 
 let package = Package(
     name: "FetchRequests",
     platforms: [
-        .macOS(.v10_15),
+        .macCatalyst(.v13),
         .iOS(.v13),
         .tvOS(.v13),
         .watchOS(.v6),
+        .macOS(.v10_15),
     ],
     products: [
         .library(
@@ -26,7 +27,7 @@ let package = Package(
                 .product(name: "Collections", package: "swift-collections"),
             ],
             path: "FetchRequests",
-            exclude: ["Tests"]
+            exclude: ["Tests", "Info.plist", "TestsInfo.plist"]
         ),
         .testTarget(
             name: "FetchRequestsTests",

@@ -12,7 +12,7 @@ import Foundation
 public typealias FetchableObject = NSObject & FetchableObjectProtocol
 
 /// A class of types whose instances hold raw data of that entity
-public protocol RawDataRepresentable {
+public protocol RawDataRepresentable<RawData> {
     associatedtype RawData
 
     /// Initialize a fetchable object from raw data
@@ -34,10 +34,10 @@ public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawData
     static func entityID(from data: RawData) -> ID?
 
     /// Listen for changes to the underlying data of `self`
-    func observeDataChanges(_ handler: @escaping () -> Void) -> InvalidatableToken
+    func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken
 
     /// Listen for changes to whether `self` is deleted
-    func observeIsDeletedChanges(_ handler: @escaping () -> Void) -> InvalidatableToken
+    func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken
 
     /// Enforce listening for changes to the underlying data of `self`
     func listenForUpdates()

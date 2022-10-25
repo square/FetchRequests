@@ -45,7 +45,8 @@ public enum FetchedResultsChange<Location: Equatable>: Equatable {
     }
 }
 
-public protocol FetchedResultsControllerDelegate: AnyObject {
+@MainActor
+public protocol FetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: FetchedResultsController<FetchedObject>)
@@ -82,19 +83,24 @@ public extension FetchedResultsControllerDelegate {
     }
 }
 
-internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
+// MARK: - DelegateThunk
+
+private class DelegateThunk<FetchedObject: FetchableObject> {
+    typealias Parent = FetchedResultsControllerDelegate<FetchedObject>
     typealias Controller = FetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
 
-    private let willChange: (_ controller: Controller) -> Void
-    private let didChange: (_ controller: Controller) -> Void
+    private weak var parent: (any Parent)?
 
-    private let changeObject: (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+    private let willChange: @MainActor (_ controller: Controller) -> Void
+    private let didChange: @MainActor (_ controller: Controller) -> Void
 
-    init<Parent: FetchedResultsControllerDelegate>(
-        _ parent: Parent
-    ) where Parent.FetchedObject == FetchedObject {
+    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+
+    init(_ parent: some Parent) {
+        self.parent = parent
+
         willChange = { [weak parent] controller in
             parent?.controllerWillChangeContent(controller)
         }
@@ -109,7 +115,9 @@ internal class FetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResu
             parent?.controller(controller, didChange: section, for: change)
         }
     }
+}
 
+extension DelegateThunk: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
         self.willChange(controller)
     }
@@ -163,7 +171,25 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 
 // MARK: - FetchedResultsController
 
+func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () -> Void) {
+    if !Thread.isMainThread {
+        if async {
+            DispatchQueue.main.async(execute: handler)
+        } else {
+            DispatchQueue.main.sync(execute: handler)
+        }
+    } else {
+        @MainActor(unsafe)
+        func unsafeHandler() {
+            handler()
+        }
+        unsafeHandler()
+    }
+}
+
 public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
+    public typealias Delegate = FetchedResultsControllerDelegate<FetchedObject>
+
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
 
@@ -180,7 +206,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private var associatedValues: [AssociatedValueKey<FetchedObject>: AssociatedValueReference] = [:]
 
-    private let memoryPressureToken: FetchRequestObservableToken<Notification>? = {
+    @MainActor
+    private lazy var memoryPressureToken: FetchRequestObservableToken<Notification>? = {
 #if canImport(UIKit) && !os(watchOS)
         return FetchRequestObservableToken(
             token: ObservableNotificationCenterToken(name: UIApplication.didReceiveMemoryWarningNotification)
@@ -191,7 +218,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }()
 
     // swiftlint:disable:next weak_delegate
-    private var delegate: FetchResultsDelegate<FetchedObject>?
+    private var delegate: DelegateThunk<FetchedObject>?
 
     public var associatedFetchSize: Int = 10
 
@@ -228,11 +255,11 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
     private lazy var context: Context<FetchedObject> = {
         return Context { [weak self] keyPath, objectID in
-            guard let self = self else {
+            guard let self else {
                 throw FetchedResultsError.objectNotFound
             }
 
-            return try self.associatedValue(with: keyPath, forObjectID: objectID)
+            return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
         }
     }()
 
@@ -253,32 +280,27 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     deinit {
-        if Thread.isMainThread {
-            reset(emitChanges: false)
-        } else {
-            DispatchQueue.main.sync {
-                reset(emitChanges: false)
-            }
+        performOnMainThread(async: false) {
+            self.reset(emitChanges: false)
         }
     }
 
-    public func setDelegate<
-        Delegate: FetchedResultsControllerDelegate
-    >(
-        _ delegate: Delegate?
-    ) where Delegate.FetchedObject == FetchedObject {
+    // MARK: - Delegate
+
+    public func setDelegate(_ delegate: (some Delegate)?) {
         self.delegate = delegate.flatMap {
-            FetchResultsDelegate($0)
+            DelegateThunk($0)
         }
     }
 
     public func clearDelegate() {
-        self.delegate = nil
+        delegate = nil
     }
 
     // MARK: - Actions
 
     @objc
+    @MainActor
     private func debouncedReload() {
         assert(Thread.isMainThread)
 
@@ -290,17 +312,21 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     @objc
+    @MainActor
     private func debouncedInsert() {
         assert(Thread.isMainThread)
 
         guard !objectsToInsert.isEmpty else {
             return
         }
-        insert(objectsToInsert)
+        insert(objectsToInsert) {
+            // Finished insert
+        }
         objectsToInsert.removeAll()
     }
 
     @objc
+    @MainActor
     private func debouncedFetch() {
         assert(Thread.isMainThread)
 
@@ -311,15 +337,24 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 // MARK: Fetches
 
 public extension FetchedResultsController {
-    func performFetch(completion: @escaping () -> Void) {
+    @MainActor
+    func performFetch(completion: @escaping @MainActor () -> Void) {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            self?.assign(fetchedObjects: objects, completion: completion)
+            guard let self else {
+                completion()
+                return
+            }
+            self.unsafeAssign(fetchedObjects: objects, completion: completion)
         }
     }
 
-    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+    @MainActor
+    func resort(
+        using newSortDescriptors: [NSSortDescriptor],
+        completion: @escaping @MainActor () -> Void
+    ) {
         assert(Thread.isMainThread)
 
         rawSortDescriptors = newSortDescriptors
@@ -341,10 +376,12 @@ public extension FetchedResultsController {
         return indexPathsTable[object]
     }
 
+    @MainActor
     func reset() {
         reset(emitChanges: true)
     }
 
+    @MainActor
     private func reset(emitChanges: Bool) {
         stopObservingNotifications()
         removeAll(emitChanges: emitChanges)
@@ -354,7 +391,7 @@ public extension FetchedResultsController {
 // MARK: Associated Values
 
 private extension FetchedResultsController {
-    func associatedValue(
+    func unsafeAssociatedValue(
         with keyPath: PartialKeyPath<FetchedObject>,
         forObjectID objectID: FetchedObject.ID
     ) throws -> Any? {
@@ -364,11 +401,35 @@ private extension FetchedResultsController {
             return holder.value
         }
 
-        guard let index = fetchedObjects.firstIndex(where: { $0.id == objectID }) else {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                do {
+                    try self?.fetchAssociatedValues(around: key)
+                } catch {
+                    CWLogVerbose("Invalid async association request for \(key): \(error)")
+                }
+            }
+            return nil
+        } else {
+            try fetchAssociatedValues(around: key)
+
+            // On the off chance that the fetch is synchronous, return the new hash value
+            let holder = associatedValues[key]
+            return holder?.value
+        }
+    }
+
+    @MainActor(unsafe)
+    func fetchAssociatedValues(
+        around key: AssociatedValueKey<FetchedObject>
+    ) throws {
+        assert(Thread.isMainThread)
+
+        guard let index = fetchedObjects.firstIndex(where: { $0.id == key.id }) else {
             throw FetchedResultsError.objectNotFound
         }
 
-        guard let association = definition.associationsByKeyPath[keyPath] else {
+        guard let association = definition.associationsByKeyPath[key.keyPath] else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -384,7 +445,7 @@ private extension FetchedResultsController {
         }
         let fetchableObjects = objects.filter {
             let objectID = $0.id
-            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+            let key = AssociatedValueKey(id: objectID, keyPath: key.keyPath)
             return associatedValues[key] == nil
         }
 
@@ -393,7 +454,7 @@ private extension FetchedResultsController {
         for object in fetchableObjects {
             // Mark fetchable objects as visited
             let objectID = object.id
-            let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+            let key = AssociatedValueKey(id: objectID, keyPath: key.keyPath)
             let reference = association.referenceGenerator(object)
 
             valueReferences[key] = reference
@@ -401,31 +462,22 @@ private extension FetchedResultsController {
         }
 
         association.request(fetchableObjects) { [weak self] values in
-            let assign: () -> Void = {
+            performOnMainThread {
                 self?.assignAssociatedValues(
                     values,
-                    with: keyPath,
+                    with: key.keyPath,
                     for: fetchableObjects,
                     references: valueReferences
                 )
             }
-
-            if !Thread.isMainThread {
-                DispatchQueue.main.async(execute: assign)
-            } else {
-                assign()
-            }
         }
-
-        // On the off chance that the fetch is synchronous, return the new hash value
-        let holder = associatedValues[key]
-        return holder?.value
     }
 }
 
 // MARK: Contents
 
 private extension FetchedResultsController {
+    @MainActor
     func assignAssociatedValues(
         _ values: [FetchedObject.ID: Any],
         with keyPath: PartialKeyPath<FetchedObject>,
@@ -463,7 +515,7 @@ private extension FetchedResultsController {
             reference?.observeChanges { [weak self, weak object] invalid in
                 assert(Thread.isMainThread)
 
-                guard let object = object else {
+                guard let object else {
                     return
                 }
 
@@ -476,11 +528,14 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func removeAssociatedValue(
         for object: FetchedObject,
         keyPath: PartialKeyPath<FetchedObject>,
         emitChanges: Bool = true
     ) {
+        assert(Thread.isMainThread)
+
         let objectID = object.id
         guard let indexPath = indexPath(for: object) else {
             return
@@ -494,30 +549,54 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func assign(
         fetchedObjects objects: [FetchedObject],
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping () -> Void
+        completion: @escaping @MainActor () -> Void
+    ) {
+        assert(Thread.isMainThread)
+
+        unsafeAssign(
+            fetchedObjects: objects,
+            updateFetchOrder: updateFetchOrder,
+            emitChanges: emitChanges,
+            dropObjectsToInsert: dropObjectsToInsert,
+            completion: completion
+        )
+    }
+
+    private func unsafeAssign(
+        fetchedObjects objects: [FetchedObject],
+        updateFetchOrder: Bool = true,
+        emitChanges: Bool = true,
+        dropObjectsToInsert: Bool = true,
+        completion: @escaping @MainActor () -> Void
     ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.assign(fetchedObjects: objects, emitChanges: emitChanges, completion: completion)
+            Task.detached(priority: .userInitiated) { [weak self] in
+                assert(!Thread.isMainThread)
+                guard let self else {
+                    performOnMainThread(handler: completion)
+                    return
+                }
+                self.unsafeAssign(
+                    fetchedObjects: objects,
+                    emitChanges: emitChanges,
+                    completion: completion
+                )
             }
             return
         }
 
         let fetchOrder = updateFetchOrder ? OrderedSet(objects.map(\.id)) : fetchedObjectIDs
-        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
-            fetchOrder.firstIndex(of: id)
-        }
+        let sortedObjects = sortedAssignableObjects(objects, fetchOrder: fetchOrder)
 
-        let sortedObjects = objects.sorted(by: sortDescriptors)
-
-        func performAssign() {
-            assign(
+        performOnMainThread {
+            self.assign(
                 sortedObjects: sortedObjects,
                 initialOrder: fetchOrder,
                 emitChanges: emitChanges,
@@ -525,14 +604,22 @@ private extension FetchedResultsController {
             )
             completion()
         }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: performAssign)
-        } else {
-            performAssign()
-        }
     }
 
+    private func sortedAssignableObjects<C: Collection>(
+        _ objects: C,
+        fetchOrder: OrderedSet<FetchedObject.ID>
+    ) -> [FetchedObject] where C.Element == FetchedObject {
+        let sortDescriptors = rawSortDescriptors.finalize(sectionNameKeyPath: sectionNameKeyPath) { id in
+            fetchOrder.firstIndex(of: id)
+        }
+
+        let sortedObjects = objects.sorted(by: sortDescriptors)
+
+        return sortedObjects
+    }
+
+    @MainActor
     func assign<C: BidirectionalCollection>(
         sortedObjects objects: C,
         initialOrder: OrderedSet<FetchedObject.ID>,
@@ -543,6 +630,11 @@ private extension FetchedResultsController {
 
         if dropObjectsToInsert {
             objectsToInsert.removeAll()
+        }
+
+        if objects.isEmpty, fetchedObjects.isEmpty, hasFetchedObjects {
+            // If our fetch is an empty no-op, just bail
+            return
         }
 
         performChanges(emitChanges: emitChanges) {
@@ -562,6 +654,7 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func delete(_ object: FetchedObject, emitChanges: Bool = true) throws {
         guard let indexPath = indexPath(for: object), let fetchIndex = fetchIndex(for: indexPath) else {
             throw FetchedResultsError.objectNotFound
@@ -573,26 +666,28 @@ private extension FetchedResultsController {
         }
     }
 
-    func insert<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
-        // This is snapshotted because we're about to be off the main thread
+    @MainActor
+    func insert<C: Collection>(
+        _ objects: C,
+        emitChanges: Bool = true,
+        completion: @escaping @MainActor () -> Void
+    ) where C.Element == FetchedObject {
+        // This is snapshotted because we're potentially about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
 
-        guard objects.count <= 100 || !Thread.isMainThread else {
-            // Bounce ourself off of the main queue
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
-            }
-            return
-        }
-
-        insert(objects, fetchedObjectIDs: fetchedObjectIDs, emitChanges: emitChanges)
+        unsafeInsert(
+            objects,
+            fetchedObjectIDs: fetchedObjectIDs,
+            emitChanges: emitChanges,
+            completion: completion
+        )
     }
 
-    private func insert<C: Collection>(
+    private func sortedInsertableObjects<C: Collection>(
         _ objects: C,
-        fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
-        emitChanges: Bool = true
-    ) where C.Iterator.Element == FetchedObject {
+        initialOrder: OrderedSet<FetchedObject.ID>,
+        fetchedObjectIDs: OrderedSet<FetchedObject.ID>
+    ) -> [FetchedObject] where C.Element == FetchedObject {
         let initialOrder = OrderedSet(objects.map(\.id))
 
         let fetchOrder = fetchedObjectIDs.union(initialOrder)
@@ -607,31 +702,61 @@ private extension FetchedResultsController {
             return !fetchedObjectIDs.contains(object.id)
         }.sorted(by: sortDescriptors)
 
-        guard !sortedObjects.isEmpty else {
+        return sortedObjects
+    }
+
+    private func unsafeInsert<C: Collection>(
+        _ objects: C,
+        fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
+        emitChanges: Bool = true,
+        completion: @escaping @MainActor () -> Void
+    ) where C.Element == FetchedObject {
+        guard objects.count <= 100 || !Thread.isMainThread else {
+            // Bounce ourself off of the main queue
+            Task.detached(priority: .userInitiated) { [weak self] in
+                assert(!Thread.isMainThread)
+                guard let self else {
+                    performOnMainThread(handler: completion)
+                    return
+                }
+                self.unsafeInsert(
+                    objects,
+                    fetchedObjectIDs: fetchedObjectIDs,
+                    emitChanges: emitChanges,
+                    completion: completion
+                )
+            }
             return
         }
 
-        func performInsert() {
-            insert(
+        let initialOrder = OrderedSet(objects.map(\.id))
+        let sortedObjects = sortedInsertableObjects(
+            objects,
+            initialOrder: initialOrder,
+            fetchedObjectIDs: fetchedObjectIDs
+        )
+
+        performOnMainThread {
+            self.insert(
                 sortedObjects: sortedObjects,
                 initialOrder: initialOrder,
                 emitChanges: emitChanges
             )
-        }
-
-        if !Thread.isMainThread {
-            DispatchQueue.main.async(execute: performInsert)
-        } else {
-            performInsert()
+            completion()
         }
     }
 
+    @MainActor
     private func insert<C: BidirectionalCollection>(
         sortedObjects objects: C,
         initialOrder: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true
     ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
+
+        guard !objects.isEmpty else {
+            return
+        }
 
         performChanges(emitChanges: emitChanges) {
             fetchedObjectIDs.formUnion(initialOrder)
@@ -655,7 +780,11 @@ private extension FetchedResultsController {
         CWLogVerbose("Inserted \(objects.count) objects")
     }
 
-    func reload<C: Collection>(_ objects: C, emitChanges: Bool = true) where C.Iterator.Element == FetchedObject {
+    @MainActor
+    func reload<C: Collection>(
+        _ objects: C,
+        emitChanges: Bool = true
+    ) where C.Element == FetchedObject {
         var objectPaths: [FetchedObject: IndexPath] = [:]
         for object in objects {
             guard let indexPath = indexPath(for: object) else {
@@ -678,6 +807,7 @@ private extension FetchedResultsController {
         CWLogVerbose("Reloaded \(objects.count) objects")
     }
 
+    @MainActor
     func move(_ object: FetchedObject, emitChanges: Bool = true) throws {
         guard let indexPath = indexPath(for: object) else {
             throw FetchedResultsError.objectNotFound
@@ -686,6 +816,7 @@ private extension FetchedResultsController {
         try move(object, from: indexPath, emitChanges: emitChanges)
     }
 
+    @MainActor
     func move(_ object: FetchedObject, fromSectionName sectionName: String, emitChanges: Bool = true) throws {
         guard !sections.isEmpty else {
             throw FetchedResultsError.objectNotFound
@@ -702,6 +833,7 @@ private extension FetchedResultsController {
         try move(object, from: indexPath, emitChanges: emitChanges)
     }
 
+    @MainActor
     func move(_ object: FetchedObject, from fromIndexPath: IndexPath, emitChanges: Bool = true) throws {
         guard let oldFetchIndex = fetchIndex(for: fromIndexPath), object == self.object(at: fromIndexPath) else {
             throw FetchedResultsError.objectNotFound
@@ -776,9 +908,10 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func removeAll(emitChanges: Bool = true) {
         performChanges(emitChanges: emitChanges, updateHasFetchedObjects: false) {
-            if let delegate = delegate, emitChanges {
+            if let delegate, emitChanges {
                 for (sectionIndex, section) in sections.enumerated().reversed() {
                     for (objectIndex, object) in section.objects.enumerated().reversed() {
                         let indexPath = IndexPath(item: objectIndex, section: sectionIndex)
@@ -797,6 +930,7 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     private func rawRemoveAll() {
         hasFetchedObjects = false
         fetchedObjects = []
@@ -805,6 +939,7 @@ private extension FetchedResultsController {
         associatedValues = [:]
     }
 
+    @MainActor
     func removeAllAssociatedValues(emitChanges: Bool = true) {
         performChanges(emitChanges: emitChanges) {
             for (sectionIndex, section) in sections.enumerated() {
@@ -818,6 +953,7 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func remove(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
         guard let indexPath = self.indexPath(forFetchIndex: index) else {
             return
@@ -836,6 +972,7 @@ private extension FetchedResultsController {
         }
     }
 
+    @MainActor
     func insert(_ object: FetchedObject, atIndex index: Int, emitChanges: Bool = true) {
         assert(fetchedObjectIDs.contains(object.id))
 
@@ -862,6 +999,7 @@ private extension FetchedResultsController {
         startObserving(object)
     }
 
+    @MainActor
     func startObserving(_ object: FetchedObject) {
         assert(Thread.isMainThread)
 
@@ -877,8 +1015,10 @@ private extension FetchedResultsController {
             observations.append(observer)
         }
 
-        let handleChange: (FetchedObject) -> Void = { [weak self] object in
-            guard let self = self else {
+        let handleChange: @MainActor (FetchedObject) -> Void = { [weak self] object in
+            assert(Thread.isMainThread)
+
+            guard let self else {
                 return
             }
             do {
@@ -893,14 +1033,14 @@ private extension FetchedResultsController {
         }
 
         let dataObserver = object.observeDataChanges { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return
             }
             handleChange(object)
         }
 
         let isDeletedObserver = object.observeIsDeletedChanges { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return
             }
             handleChange(object)
@@ -908,10 +1048,13 @@ private extension FetchedResultsController {
 
         observations += [dataObserver, isDeletedObserver]
 
-        let handleSort: (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
-            guard let self = self else {
+        let handleSort: @MainActor (FetchedObject, Bool, Any?, Any?) -> Void = { [weak self] object, isSection, old, new in
+            assert(Thread.isMainThread)
+
+            guard let self else {
                 return
             }
+
             if let old = old as? NSObject, let new = new as? NSObject {
                 guard old != new else {
                     return
@@ -956,6 +1099,7 @@ private extension FetchedResultsController {
         observationTokens[ObjectIdentifier(object)] = observations
     }
 
+    @MainActor
     func stopObserving(_ object: FetchedObject) {
         assert(Thread.isMainThread)
 
@@ -963,23 +1107,31 @@ private extension FetchedResultsController {
         observationTokens[ObjectIdentifier(object)] = nil
     }
 
+    @MainActor
     func startObservingNotificationsIfNeeded() {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.observeIfNeeded { [weak self] notification in
-            self?.removeAllAssociatedValues()
+            performOnMainThread {
+                self?.removeAllAssociatedValues()
+            }
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in
-            self?.observedObjectUpdate(data)
+            performOnMainThread {
+                self?.observedObjectUpdate(data)
+            }
         }
 
         for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
-                self?.handleDatabaseClear()
+                performOnMainThread {
+                    self?.handleDatabaseClear()
+                }
             }
         }
     }
 
+    @MainActor
     func stopObservingNotifications() {
         assert(Thread.isMainThread)
 
@@ -995,6 +1147,7 @@ private extension FetchedResultsController {
 // MARK: - Object Updates
 
 private extension FetchedResultsController {
+    @MainActor
     func observedObjectUpdate(_ data: FetchedObject.RawData) {
         guard let id = FetchedObject.entityID(from: data) else {
             return
@@ -1015,6 +1168,7 @@ private extension FetchedResultsController {
 // MARK: - Debouncing
 
 private extension FetchedResultsController {
+    @MainActor
     func enqueueReload(of object: FetchedObject, emitChanges: Bool = true) {
         assert(Thread.isMainThread)
 
@@ -1029,6 +1183,7 @@ private extension FetchedResultsController {
         perform(#selector(debouncedReload), with: nil, afterDelay: 0)
     }
 
+    @MainActor
     func enqueueInsert(of object: FetchedObject.RawData, emitChanges: Bool = true) {
         guard let insertedObject = FetchedObject(data: object) else {
             return
@@ -1036,6 +1191,7 @@ private extension FetchedResultsController {
         manuallyInsert(objects: [insertedObject], emitChanges: emitChanges)
     }
 
+    @MainActor
     func handleDatabaseClear() {
         assert(Thread.isMainThread)
 
@@ -1068,7 +1224,9 @@ extension FetchedResultsController: InternalFetchResultsControllerProtocol {
         objects.forEach { $0.listenForUpdates() }
 
         guard debounceInsertsAndReloads else {
-            insert(objects, emitChanges: emitChanges)
+            insert(objects, emitChanges: emitChanges) {
+                // Finished insert
+            }
             return
         }
 
@@ -1082,6 +1240,7 @@ extension FetchedResultsController: InternalFetchResultsControllerProtocol {
 // MARK: Delegate Change Events
 
 private extension FetchedResultsController {
+    @MainActor
     func performChanges(
         emitChanges: Bool = true,
         updateHasFetchedObjects: Bool = true,
@@ -1118,54 +1277,60 @@ private extension FetchedResultsController {
         return updatedIndexPaths
     }
 
+    @MainActor
     func notifyInserting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: object, for: .insert(location: indexPath))
     }
 
+    @MainActor
     func notifyMoving(_ object: FetchedObject, from fromIndexPath: IndexPath, to toIndexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: object, for: .move(from: fromIndexPath, to: toIndexPath))
     }
 
+    @MainActor
     func notifyUpdating(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: object, for: .update(location: indexPath))
     }
 
+    @MainActor
     func notifyDeleting(_ object: FetchedObject, at indexPath: IndexPath, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: object, for: .delete(location: indexPath))
     }
 
+    @MainActor
     func notifyInserting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
         delegate.controller(self, didChange: section, for: .insert(location: sectionIndex))
     }
 
+    @MainActor
     func notifyDeleting(_ section: Section, at sectionIndex: Int, emitChanges: Bool) {
         assert(Thread.isMainThread)
-        guard let delegate = delegate, emitChanges else {
+        guard let delegate, emitChanges else {
             return
         }
 
@@ -1209,7 +1374,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
             return weakContainer?.value
         }
         set {
-            if let newValue = newValue {
+            if let newValue {
                 objc_setAssociatedObject(self, &AssociatedKeys.context, Weak(newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             } else {
                 objc_setAssociatedObject(self, &AssociatedKeys.context, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -1218,7 +1383,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self>) throws -> Value? {
-        guard let context = context else {
+        guard let context else {
             throw FetchedResultsError.objectNotFound
         }
 
@@ -1373,7 +1538,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 }
 
-private extension Array where Element == NSSortDescriptor {
+private extension [NSSortDescriptor] {
     func finalize<FetchedObject: FetchableObject>(
         with controller: FetchedResultsController<FetchedObject>
     ) -> Self {
@@ -1389,7 +1554,7 @@ private extension Array where Element == NSSortDescriptor {
     ) -> Self {
         var sortDescriptors = self
 
-        if let sectionNameKeyPath = sectionNameKeyPath {
+        if let sectionNameKeyPath {
             assert(sectionNameKeyPath._kvcKeyPathString != nil, "\(sectionNameKeyPath) is not KVC compliant?")
 
             // Make sure we have our section name included if appropriate

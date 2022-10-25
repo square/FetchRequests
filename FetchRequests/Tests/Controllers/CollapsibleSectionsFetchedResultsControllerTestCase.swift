@@ -9,9 +9,9 @@
 import XCTest
 @testable import FetchRequests
 
-// swiftlint:disable force_try implicitly_unwrapped_optional
+// swiftlint:disable force_try implicitly_unwrapped_optional type_name
 
-// swiftlint:disable:next type_name
+@MainActor
 class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
     typealias FetchController = CollapsibleSectionsFetchedResultsController<TestObject>
 
@@ -39,8 +39,8 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
             self.associationRequest = associationRequest
         }
 
-        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] json in
-            return self.inclusionCheck?(json) ?? true
+        let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
+            return self.inclusionCheck?(rawData) ?? true
         }
 
         return FetchDefinition<TestObject>(
@@ -819,8 +819,8 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         // Broadcast tagID 0
 
-        inclusionCheck = { json in
-            TestObject.entityID(from: json) != "0"
+        inclusionCheck = { rawData in
+            TestObject.entityID(from: rawData) != "0"
         }
 
         let updateName = TestObject.objectWasCreated()
@@ -1255,8 +1255,8 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
         let newObject = TestObject(id: "d")
 
-        inclusionCheck = { json in
-            TestObject.entityID(from: json) != newObject.id
+        inclusionCheck = { rawData in
+            TestObject.entityID(from: rawData) != newObject.id
         }
 
         let update = newObject.data
@@ -1313,24 +1313,24 @@ private extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 extension CollapsibleSectionsFetchedResultsController where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.compactMap { $0.id }
+        return fetchedObjects.map(\.id)
     }
 
     var tags: [Int] {
-        return fetchedObjects.compactMap { $0.tag }
+        return fetchedObjects.map(\.tag)
     }
 }
 
 extension CollapsibleResultsSection where FetchedObject: TestObject {
     var allFetchedIDs: [String] {
-        return allObjects.compactMap { $0.id }
+        return allObjects.map(\.id)
     }
 
     var displayableFetchedIDs: [String] {
-        return displayableObjects.compactMap { $0.id }
+        return displayableObjects.map(\.id)
     }
 
     var allTags: [Int] {
-        return allObjects.compactMap { $0.tag }
+        return allObjects.map(\.tag)
     }
 }

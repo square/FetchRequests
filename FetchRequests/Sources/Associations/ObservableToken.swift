@@ -21,7 +21,7 @@ public protocol InvalidatableToken: AnyObject {
     func invalidate()
 }
 
-public protocol ObservableToken: InvalidatableToken {
+public protocol ObservableToken<Parameter>: InvalidatableToken {
     associatedtype Parameter
 
     func observe(handler: @escaping (Parameter) -> Void)
@@ -75,11 +75,26 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
 
     private var unsafeIsObserving = true
 
-    convenience init(object: Object, keyPath: AnyKeyPath, type: Value.Type, handler: @escaping Handler) {
-        self.init(object: object, keyPath: keyPath._kvcKeyPathString!, type: type, handler: handler)
+    convenience init(
+        object: Object,
+        keyPath: AnyKeyPath,
+        type: Value.Type,
+        handler: @escaping Handler
+    ) {
+        self.init(
+            object: object,
+            keyPath: keyPath._kvcKeyPathString!,
+            type: type,
+            handler: handler
+        )
     }
 
-    init(object: Object, keyPath: String, type: Value.Type, handler: @escaping Handler) {
+    init(
+        object: Object,
+        keyPath: String,
+        type: Value.Type,
+        handler: @escaping Handler
+    ) {
         self.object = object
         self.keyPath = keyPath
         self.handler = handler
@@ -107,9 +122,22 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
     }
 
     // swiftlint:disable:next block_based_kvo
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let typedObject = object as? Object, typedObject == self.object, keyPath == self.keyPath else {
-            return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey: Any]?,
+        context: UnsafeMutableRawPointer?
+    ) {
+        guard let typedObject = object as? Object,
+              typedObject == self.object,
+              keyPath == self.keyPath
+        else {
+            return super.observeValue(
+                forKeyPath: keyPath,
+                of: object,
+                change: change,
+                context: context
+            )
         }
 
         let oldValue = change?[.oldKey] as? Value
@@ -120,7 +148,9 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
 }
 
 internal class FetchRequestObservableToken<Parameter>: ObservableToken {
-    private let _observe: (_ handler: @escaping (Parameter) -> Void) -> Void
+    typealias Handler = (Parameter) -> Void
+
+    private let _observe: (_ handler: @escaping Handler) -> Void
     private let _invalidate: () -> Void
 
     var isObserving: Bool {
@@ -131,17 +161,20 @@ internal class FetchRequestObservableToken<Parameter>: ObservableToken {
 
     private var unsafeIsObserving = false
 
-    private init(observe: @escaping (_ handler: @escaping (Parameter) -> Void) -> Void, invalidate: @escaping () -> Void) {
+    private init(
+        observe: @escaping (_ handler: @escaping Handler) -> Void,
+        invalidate: @escaping () -> Void
+    ) {
         _observe = observe
         _invalidate = invalidate
     }
 
-    init<Token: ObservableToken>(token: Token) where Token.Parameter == Parameter {
+    init(token: some ObservableToken<Parameter>) {
         _observe = { token.observe(handler: $0) }
         _invalidate = { token.invalidate() }
     }
 
-    func observeIfNeeded(handler: @escaping (Parameter) -> Void) {
+    func observeIfNeeded(handler: @escaping Handler) {
         synchronized(self) {
             guard !unsafeIsObserving else {
                 return
@@ -154,7 +187,7 @@ internal class FetchRequestObservableToken<Parameter>: ObservableToken {
         }
     }
 
-    func observe(handler: @escaping (Parameter) -> Void) {
+    func observe(handler: @escaping Handler) {
         synchronized(self) {
             _observe(handler)
         }

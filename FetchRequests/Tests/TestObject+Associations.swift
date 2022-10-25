@@ -35,14 +35,14 @@ extension TestObject {
 
 extension TestObject {
     enum AssociationRequest {
-        case parents([TestObject], completion: ([String: String]) -> Void)
-        case tagIDs([String], completion: ([TestObject]) -> Void)
+        case parents([TestObject], completion: @MainActor ([String: String]) -> Void)
+        case tagIDs([String], completion: @MainActor ([TestObject]) -> Void)
 
         var parentIDs: [String]! {
             guard case let .parents(objects, _) = self else {
                 return nil
             }
-            return objects.map { $0.id }
+            return objects.map(\.id)
         }
 
         var tagIDs: [String]! {
@@ -52,14 +52,14 @@ extension TestObject {
             return objects
         }
 
-        var parentsCompletion: (([String: String]) -> Void)! {
+        var parentsCompletion: (@MainActor ([String: String]) -> Void)! {
             guard case let .parents(_, completion) = self else {
                 return nil
             }
             return completion
         }
 
-        var tagIDsCompletion: (([TestObject]) -> Void)! {
+        var tagIDsCompletion: (@MainActor ([TestObject]) -> Void)! {
             guard case let .tagIDs(_, completion) = self else {
                 return nil
             }
@@ -69,7 +69,7 @@ extension TestObject {
 
     static func fetchRequestAssociations(
         matching: [PartialKeyPath<TestObject>],
-        request: @escaping (AssociationRequest) -> Void
+        request: @escaping @MainActor (AssociationRequest) -> Void
     ) -> [FetchRequestAssociation<TestObject>] {
         let tagString = FetchRequestAssociation<TestObject>(
             keyPath: \.tag,
@@ -180,8 +180,8 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             creationTokenGenerator: { objectID in
                 return TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let includeID = AssociatedType.entityID(from: json) else {
+                    include: { rawData in
+                        guard let includeID = AssociatedType.entityID(from: rawData) else {
                             return false
                         }
                         return objectID == includeID
@@ -204,8 +204,8 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             creationTokenGenerator: { objectIDs in
                 return TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
-                    include: { json in
-                        guard let objectID = AssociatedType.entityID(from: json) else {
+                    include: { rawData in
+                        guard let objectID = AssociatedType.entityID(from: rawData) else {
                             return false
                         }
                         return objectIDs.contains(objectID)

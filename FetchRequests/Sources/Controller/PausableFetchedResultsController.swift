@@ -9,7 +9,8 @@
 import Foundation
 import Combine
 
-public protocol PausableFetchedResultsControllerDelegate: AnyObject {
+@MainActor
+public protocol PausableFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
     func controllerWillChangeContent(_ controller: PausableFetchedResultsController<FetchedObject>)
@@ -47,10 +48,11 @@ public extension PausableFetchedResultsControllerDelegate {
 }
 
 public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
-    private let controller: FetchedResultsController<FetchedObject>
-
+    public typealias Delegate = PausableFetchedResultsControllerDelegate<FetchedObject>
     public typealias Section = FetchedResultsSection<FetchedObject>
     public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+
+    private let controller: FetchedResultsController<FetchedObject>
 
     private var hasFetchedObjectsSnapshot: Bool?
     private var fetchedObjectsSnapshot: [FetchedObject]?
@@ -90,7 +92,7 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
     }
 
     // swiftlint:disable:next weak_delegate
-    private var delegate: PausableFetchResultsDelegate<FetchedObject>?
+    private var delegate: DelegateThunk<FetchedObject>?
 
     public init(
         definition: FetchDefinition<FetchedObject>,
@@ -105,19 +107,36 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
             debounceInsertsAndReloads: debounceInsertsAndReloads
         )
     }
+
+    // MARK: - Delegate
+
+    public func setDelegate(_ delegate: (some Delegate)?) {
+        self.delegate = delegate.flatMap {
+            DelegateThunk($0, pausableController: self)
+        }
+        controller.setDelegate(self.delegate)
+    }
+
+    public func clearDelegate() {
+        delegate = nil
+        controller.clearDelegate()
+    }
 }
 
 // MARK: - Wrapper Functions
 
 extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
-    public func performFetch(completion: @escaping () -> Void) {
+    @MainActor
+    public func performFetch(completion: @escaping @MainActor () -> Void) {
         controller.performFetch(completion: completion)
     }
 
-    public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping () -> Void) {
+    @MainActor
+    public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping @MainActor () -> Void) {
         controller.resort(using: newSortDescriptors, completion: completion)
     }
 
+    @MainActor
     public func reset() {
         controller.reset()
         isPaused = false
@@ -155,18 +174,6 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     public var sections: [Section] {
         return sectionsSnapshot ?? controller.sections
     }
-
-    public func setDelegate<Delegate: PausableFetchedResultsControllerDelegate>(_ delegate: Delegate?) where Delegate.FetchedObject == FetchedObject {
-        self.delegate = delegate.flatMap {
-            PausableFetchResultsDelegate($0, pausableController: self)
-        }
-        controller.setDelegate(self.delegate)
-    }
-
-    public func clearDelegate() {
-        self.delegate = nil
-        controller.clearDelegate()
-    }
 }
 
 // MARK: - InternalFetchResultsControllerProtocol
@@ -177,25 +184,25 @@ extension PausableFetchedResultsController: InternalFetchResultsControllerProtoc
     }
 }
 
-// MARK: - PausableFetchResultsDelegate
+// MARK: - DelegateThunk
 
-internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: FetchedResultsControllerDelegate {
+private class DelegateThunk<FetchedObject: FetchableObject> {
+    typealias Parent = PausableFetchedResultsControllerDelegate<FetchedObject>
     typealias ParentController = FetchedResultsController<FetchedObject>
     typealias PausableController = PausableFetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
 
+    private weak var parent: (any Parent)?
     private weak var pausableController: PausableController?
 
-    private let willChange: (_ controller: PausableController) -> Void
-    private let didChange: (_ controller: PausableController) -> Void
+    private let willChange: @MainActor (_ controller: PausableController) -> Void
+    private let didChange: @MainActor (_ controller: PausableController) -> Void
 
-    private let changeObject: (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+    private let changeObject: @MainActor (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: @MainActor (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
 
-    init<Parent: PausableFetchedResultsControllerDelegate>(
-        _ parent: Parent,
-        pausableController: PausableController
-    ) where Parent.FetchedObject == FetchedObject {
+    init(_ parent: some Parent, pausableController: PausableController) {
+        self.parent = parent
         self.pausableController = pausableController
 
         willChange = { [weak parent] controller in
@@ -212,20 +219,22 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
             parent?.controller(controller, didChange: section, for: change)
         }
     }
+}
 
+extension DelegateThunk: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: ParentController) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
         pausableController.objectWillChangeSubject.send()
-        self.willChange(pausableController)
+        self.controllerWillChangeContent(pausableController)
     }
 
     func controllerDidChangeContent(_ controller: ParentController) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.didChange(pausableController)
+        self.controllerDidChangeContent(pausableController)
         pausableController.objectDidChangeSubject.send()
     }
 
@@ -234,10 +243,10 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.changeObject(pausableController, object, change)
+        self.controller(pausableController, didChange: object, for: change)
     }
 
     func controller(
@@ -245,9 +254,35 @@ internal class PausableFetchResultsDelegate<FetchedObject: FetchableObject>: Fet
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
-        guard let pausableController = pausableController, !pausableController.isPaused else {
+        guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.changeSection(pausableController, section, change)
+        self.controller(pausableController, didChange: section, for: change)
+    }
+}
+
+extension DelegateThunk: PausableFetchedResultsControllerDelegate {
+    public func controllerWillChangeContent(_ controller: PausableController) {
+        self.willChange(controller)
+    }
+
+    public func controllerDidChangeContent(_ controller: PausableController) {
+        self.didChange(controller)
+    }
+
+    public func controller(
+        _ controller: PausableController,
+        didChange object: FetchedObject,
+        for change: FetchedResultsChange<IndexPath>
+    ) {
+        self.changeObject(controller, object, change)
+    }
+
+    public func controller(
+        _ controller: PausableController,
+        didChange section: FetchedResultsSection<FetchedObject>,
+        for change: FetchedResultsChange<Int>
+    ) {
+        self.changeSection(controller, section, change)
     }
 }
