@@ -342,7 +342,7 @@ public extension FetchedResultsController {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            guard let self = self else {
+            guard let self else {
                 completion()
                 return
             }
@@ -579,7 +579,7 @@ private extension FetchedResultsController {
             // Bounce ourself off of the main queue
             Task.detached(priority: .userInitiated) { [weak self] in
                 assert(!Thread.isMainThread)
-                guard let self = self else {
+                guard let self else {
                     performOnMainThread(handler: completion)
                     return
                 }
@@ -715,7 +715,7 @@ private extension FetchedResultsController {
             // Bounce ourself off of the main queue
             Task.detached(priority: .userInitiated) { [weak self] in
                 assert(!Thread.isMainThread)
-                guard let self = self else {
+                guard let self else {
                     performOnMainThread(handler: completion)
                     return
                 }
