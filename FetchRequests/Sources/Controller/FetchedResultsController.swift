@@ -595,10 +595,6 @@ private extension FetchedResultsController {
         let fetchOrder = updateFetchOrder ? OrderedSet(objects.map(\.id)) : fetchedObjectIDs
         let sortedObjects = sortedAssignableObjects(objects, fetchOrder: fetchOrder)
 
-        guard !sortedObjects.isEmpty else {
-            return
-        }
-
         performOnMainThread {
             self.assign(
                 sortedObjects: sortedObjects,
@@ -634,6 +630,10 @@ private extension FetchedResultsController {
 
         if dropObjectsToInsert {
             objectsToInsert.removeAll()
+        }
+
+        guard !objects.isEmpty else {
+            return
         }
 
         performChanges(emitChanges: emitChanges) {
@@ -735,10 +735,6 @@ private extension FetchedResultsController {
             fetchedObjectIDs: fetchedObjectIDs
         )
 
-        guard !sortedObjects.isEmpty else {
-            return
-        }
-
         performOnMainThread {
             self.insert(
                 sortedObjects: sortedObjects,
@@ -756,6 +752,10 @@ private extension FetchedResultsController {
         emitChanges: Bool = true
     ) where C.Element == FetchedObject {
         assert(Thread.isMainThread)
+
+        guard !objects.isEmpty else {
+            return
+        }
 
         performChanges(emitChanges: emitChanges) {
             fetchedObjectIDs.formUnion(initialOrder)
