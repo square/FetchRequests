@@ -342,7 +342,11 @@ public extension FetchedResultsController {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
-            self?.unsafeAssign(fetchedObjects: objects, completion: completion)
+            guard let self = self else {
+                completion()
+                return
+            }
+            self.unsafeAssign(fetchedObjects: objects, completion: completion)
         }
     }
 
@@ -575,7 +579,11 @@ private extension FetchedResultsController {
             // Bounce ourself off of the main queue
             Task.detached(priority: .userInitiated) { [weak self] in
                 assert(!Thread.isMainThread)
-                self?.unsafeAssign(
+                guard let self = self else {
+                    performOnMainThread(handler: completion)
+                    return
+                }
+                self.unsafeAssign(
                     fetchedObjects: objects,
                     emitChanges: emitChanges,
                     completion: completion
@@ -706,7 +714,11 @@ private extension FetchedResultsController {
             // Bounce ourself off of the main queue
             Task.detached(priority: .userInitiated) { [weak self] in
                 assert(!Thread.isMainThread)
-                self?.unsafeInsert(
+                guard let self = self else {
+                    performOnMainThread(handler: completion)
+                    return
+                }
+                self.unsafeInsert(
                     objects,
                     fetchedObjectIDs: fetchedObjectIDs,
                     emitChanges: emitChanges,
