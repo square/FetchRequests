@@ -116,7 +116,7 @@ Otherwise we will use a [less efficient OrderedSet](https://github.com/square/Fe
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 4.0'
+pod 'FetchRequests', '~> 5.0'
 ```
 
 ### Carthage
@@ -124,7 +124,7 @@ pod 'FetchRequests', '~> 4.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```
-github "square/FetchRequests" ~> 4.0
+github "square/FetchRequests" ~> 5.0
 ```
 
 ### Swift Package Manager
@@ -133,7 +133,7 @@ Install with [Swift Package Manager](https://swift.org/package-manager/) by addi
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/square/FetchRequests.git", from: "4.0.0")
+    .package(url: "https://github.com/square/FetchRequests.git", from: "5.0.0")
 ]
 ```
 
