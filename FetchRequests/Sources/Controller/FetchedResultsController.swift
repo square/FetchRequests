@@ -632,7 +632,8 @@ private extension FetchedResultsController {
             objectsToInsert.removeAll()
         }
 
-        guard !objects.isEmpty else {
+        if objects.isEmpty, fetchedObjects.isEmpty, hasFetchedObjects {
+            // If our fetch is an empty no-op, just bail
             return
         }
 
