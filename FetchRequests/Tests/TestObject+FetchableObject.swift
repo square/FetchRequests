@@ -13,27 +13,34 @@ import FetchRequests
 
 extension TestObject: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        return self.observe(\.data, options: [.old, .new]) { @MainActor(unsafe) object, change in
+        return self.observe(\.data, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }
 
-            handler()
+            unsafeHandler(for: handler)
         }
     }
 
     func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        return self.observe(\.isDeleted, options: [.old, .new]) { @MainActor(unsafe) object, change in
+        return self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }
-            handler()
+            unsafeHandler(for: handler)
         }
     }
 
     static func entityID(from data: RawData) -> ID? {
         return data.id?.string
     }
+}
+
+@MainActor(unsafe)
+private func unsafeHandler(for handler: @MainActor () -> Void) {
+    assert(Thread.isMainThread)
+    // This is a dumb wrapper, but I can't otherwise have a "clean" compile
+    handler()
 }
 
 // MARK: - Event Notifications
