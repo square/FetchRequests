@@ -94,39 +94,39 @@ extension JSON {
     }
 
     public var string: String? {
-        return object as? String
+        object as? String
     }
 
     public var number: NSNumber? {
-        return object as? NSNumber
+        object as? NSNumber
     }
 
     public var int: Int? {
-        return number?.intValue
+        number?.intValue
     }
 
     public var int64: Int64? {
-        return number?.int64Value
+        number?.int64Value
     }
 
     public var float: Float? {
-        return number?.floatValue
+        number?.floatValue
     }
 
     public var double: Double? {
-        return number?.doubleValue
+        number?.doubleValue
     }
 
     public var null: NSNull? {
-        return object as? NSNull
+        object as? NSNull
     }
 
     public var dictionary: [String: Any]? {
-        return object as? [String: Any]
+        object as? [String: Any]
     }
 
     public var array: [Any]? {
-        return object as? [Any]
+        object as? [Any]
     }
 
     public var bool: Bool? {
@@ -142,7 +142,7 @@ extension JSON {
 extension JSON {
     public subscript(dynamicMember member: String) -> JSON? {
         get {
-            return self[member]
+            self[member]
         }
         set {
             self[member] = newValue
@@ -430,7 +430,7 @@ public enum JSONError: Error {
 
 private extension [String: Any] {
     func encodableDictionary() throws -> [String: JSON] {
-        return try reduce(into: [:]) { memo, kvp in
+        try reduce(into: [:]) { memo, kvp in
             guard let value = JSON(kvp.value) else {
                 throw JSONError.invalidContent
             }
@@ -441,7 +441,7 @@ private extension [String: Any] {
 
 private extension [Any] {
     func encodableArray() throws -> [JSON] {
-        return try map { element in
+        try map { element in
             guard let value = JSON(element) else {
                 throw JSONError.invalidContent
             }
@@ -541,11 +541,11 @@ private let cfBool: CFBoolean = true as CFBoolean
 
 private extension NSNumber {
     var isBool: Bool {
-        return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
+        type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
     }
 
     var isFloatingPoint: Bool {
-        return CFNumberIsFloatType(self as CFNumber)
+        CFNumberIsFloatType(self as CFNumber)
     }
 
     var expectedType: NumberType {
@@ -573,19 +573,19 @@ public protocol JSONConvertible {
 
 extension JSON: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return self
+        self
     }
 }
 
 extension Array: JSONConvertible where Element: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .array(map { $0.jsonRepresentation().object })
+        .array(map { $0.jsonRepresentation().object })
     }
 }
 
 extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .dictionary(
+        .dictionary(
             reduce(into: [:]) { memo, kvp in
                 memo[kvp.key] = kvp.value.jsonRepresentation().object
             }
@@ -595,19 +595,19 @@ extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertibl
 
 extension String: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .string(self)
+        .string(self)
     }
 }
 
 extension NSString: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .string(self as String)
+        .string(self as String)
     }
 }
 
 extension NSNull: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .null
+        .null
     }
 }
 
@@ -623,78 +623,78 @@ extension NSNumber: JSONConvertible {
 
 extension Bool: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .bool(self)
+        .bool(self)
     }
 }
 
 extension Int64: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Int32: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Int16: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Int8: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Int: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension UInt64: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension UInt32: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension UInt16: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension UInt8: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension UInt: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Double: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }
 
 extension Float: JSONConvertible {
     public func jsonRepresentation() -> JSON {
-        return .number(NSNumber(value: self))
+        .number(NSNumber(value: self))
     }
 }

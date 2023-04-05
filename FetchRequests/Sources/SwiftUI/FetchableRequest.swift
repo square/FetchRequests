@@ -14,12 +14,12 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
     private var base: FetchableResults<FetchedObject>
 
     public var wrappedValue: SectionedFetchableResults<FetchedObject> {
-        return SectionedFetchableResults(contents: _base.fetchController.sections)
+        SectionedFetchableResults(contents: _base.fetchController.sections)
     }
 
     /// Has performFetch() completed?
     public var hasFetchedObjects: Bool {
-        return _base.hasFetchedObjects
+        _base.hasFetchedObjects
     }
 
     public init(
@@ -64,7 +64,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
 
     /// Has performFetch() completed?
     public var hasFetchedObjects: Bool {
-        return fetchController.hasFetchedObjects
+        fetchController.hasFetchedObjects
     }
 
     public init(
@@ -149,28 +149,28 @@ public struct SectionedFetchableResults<FetchedObject: FetchableObject> {
 
 extension FetchableResults: RandomAccessCollection {
     public var startIndex: Int {
-        return contents.startIndex
+        contents.startIndex
     }
 
     public var endIndex: Int {
-        return contents.endIndex
+        contents.endIndex
     }
 
     public subscript(position: Int) -> FetchedObject {
-        return contents[position]
+        contents[position]
     }
 }
 
 extension SectionedFetchableResults: RandomAccessCollection {
     public var startIndex: Int {
-        return contents.startIndex
+        contents.startIndex
     }
 
     public var endIndex: Int {
-        return contents.endIndex
+        contents.endIndex
     }
 
     public subscript(position: Int) -> FetchedResultsSection<FetchedObject> {
-        return contents[position]
+        contents[position]
     }
 }

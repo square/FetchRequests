@@ -19,7 +19,7 @@ struct Atomic<Value> {
 
     var wrappedValue: Value {
         get {
-            return queue.sync { storage }
+            queue.sync { storage }
         }
         set {
             queue.sync(flags: .barrier) { storage = newValue }
@@ -27,7 +27,7 @@ struct Atomic<Value> {
     }
 
     mutating func mutate(_ mutation: (inout Value) throws -> Void) rethrows {
-        return try queue.sync(flags: .barrier) {
+        try queue.sync(flags: .barrier) {
             try mutation(&storage)
         }
     }

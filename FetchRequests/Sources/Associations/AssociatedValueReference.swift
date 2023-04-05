@@ -82,7 +82,7 @@ class AssociatedValueReference: NSObject {
     fileprivate var changeHandler: ChangeHandler?
 
     var canObserveCreation: Bool {
-        return creationObserver != nil
+        creationObserver != nil
     }
 
     init(

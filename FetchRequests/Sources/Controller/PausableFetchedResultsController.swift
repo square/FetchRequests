@@ -143,20 +143,20 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     }
 
     public var definition: FetchDefinition<FetchedObject> {
-        return controller.definition
+        controller.definition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {
-        return controller.sortDescriptors
+        controller.sortDescriptors
     }
 
     public var sectionNameKeyPath: SectionNameKeyPath? {
-        return controller.sectionNameKeyPath
+        controller.sectionNameKeyPath
     }
 
     public var associatedFetchSize: Int {
         get {
-            return controller.associatedFetchSize
+            controller.associatedFetchSize
         }
         set {
             controller.associatedFetchSize = newValue
@@ -164,15 +164,15 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     }
 
     public var hasFetchedObjects: Bool {
-        return hasFetchedObjectsSnapshot ?? controller.hasFetchedObjects
+        hasFetchedObjectsSnapshot ?? controller.hasFetchedObjects
     }
 
     public var fetchedObjects: [FetchedObject] {
-        return fetchedObjectsSnapshot ?? controller.fetchedObjects
+        fetchedObjectsSnapshot ?? controller.fetchedObjects
     }
 
     public var sections: [Section] {
-        return sectionsSnapshot ?? controller.sections
+        sectionsSnapshot ?? controller.sections
     }
 }
 

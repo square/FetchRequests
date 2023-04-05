@@ -154,7 +154,7 @@ internal class FetchRequestObservableToken<Parameter>: ObservableToken {
     private let _invalidate: () -> Void
 
     var isObserving: Bool {
-        return synchronized(self) {
+        synchronized(self) {
             unsafeIsObserving
         }
     }

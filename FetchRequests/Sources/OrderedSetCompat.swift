@@ -267,7 +267,7 @@ extension OrderedSet {
     }
 
     private func index(of element: Element) -> Int? {
-        return indexed[element]
+        indexed[element]
     }
 
     public func firstIndex(of element: Element) -> Int? {

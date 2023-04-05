@@ -5,11 +5,16 @@ disabled_rules:
   - opening_brace
   - unused_closure_parameter
   - unused_optional_binding
+  # Nice to haves
   - cyclomatic_complexity
   - function_body_length
   - line_length
-opt_in_rules:
+analyzer_rules:
   - capture_variable
+  - unused_declaration
+  - unused_import
+opt_in_rules:
+  - balanced_xctest_lifecycle
   - closure_spacing
   - closure_end_indentation
   - collection_alignment
@@ -55,14 +60,15 @@ opt_in_rules:
   - redundant_nil_coalescing
   - redundant_objc_attribute
   - self_binding
+  - single_test_class
+  - shorthand_optional_binding
   - sorted_first_last
   - static_operator
   - strong_iboutlet
+  - test_case_accessibility
   - toggle_bool
   - trailing_closure
   - untyped_error_in_catch
-  - unused_import
-  - unused_declaration
   - vertical_parameter_alignment_on_call
   - vertical_whitespace_between_cases
   - vertical_whitespace_opening_braces
@@ -94,7 +100,7 @@ large_tuple:
   warning: 3
   error: 4
 deployment_target:
-  iOS_deployment_target: 13
-  tvOS_deployment_target: 13
-  watchOS_deployment_target: 6
-  macOS_deployment_target: 10.15
+  iOS_deployment_target: 14
+  tvOS_deployment_target: 14
+  watchOS_deployment_target: 7
+  macOS_deployment_target: 11

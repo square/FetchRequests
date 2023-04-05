@@ -131,7 +131,7 @@ extension JSONTestCase {
 
 extension JSONTestCase {
     private var complexJSON: JSON {
-        return [
+        [
             "id": 1,
             "integers": [0, 1, 2],
             "foo": [
@@ -330,13 +330,13 @@ extension JSONTestCase {
     }
 
     private var sourceJSON: [String: Any] {
-        return [
+        [
             "elements": [
                 1,
                 2.5,
                 "string",
                 true,
-            ],
+            ] as [Any],
             "nullable": NSNull(),
         ]
     }
