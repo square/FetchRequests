@@ -1,16 +1,16 @@
 Pod::Spec.new do |s|
   s.name = 'FetchRequests'
-  s.version = '5.0.0'
+  s.version = '6.0.0'
   s.license = 'MIT'
   s.summary = 'NSFetchedResultsController inspired eventing'
   s.homepage = 'https://github.com/square/FetchRequests'
   s.authors = 'Square'
   s.source = { :git => 'https://github.com/square/FetchRequests.git', :tag => s.version }
 
-  ios_deployment_target = '13.0'
-  tvos_deployment_target = '13.0'
-  watchos_deployment_target = '6.0'
-  macos_deployment_target = '10.15'
+  ios_deployment_target = '14.0'
+  tvos_deployment_target = '14.0'
+  watchos_deployment_target = '7.0'
+  macos_deployment_target = '11'
 
   s.ios.deployment_target = ios_deployment_target
   s.tvos.deployment_target = tvos_deployment_target
