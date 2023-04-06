@@ -10,15 +10,17 @@ import XCTest
 import Foundation
 @testable import FetchRequests
 
-// swiftlint:disable implicitly_unwrapped_optional
-
 @MainActor
 protocol FetchedResultsControllerTestHarness {
     associatedtype FetchController: FetchedResultsControllerProtocol where
         FetchController.FetchedObject == TestObject
 
+    // swiftlint:disable implicitly_unwrapped_optional
+
     var controller: FetchController! { get }
     var fetchCompletion: (([TestObject]) -> Void)! { get }
+
+    // swiftlint:enable implicitly_unwrapped_optional
 }
 
 extension FetchedResultsControllerTestHarness {
@@ -39,6 +41,7 @@ extension FetchedResultsControllerTestHarness {
         XCTAssertEqual(sortedObjects, controller.fetchedObjects, file: file, line: line)
     }
 
+    // swiftlint:disable:next implicitly_unwrapped_optional
     func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> TestObject! {
         let object = controller.fetchedObjects[index]
 
@@ -50,20 +53,20 @@ extension FetchedResultsControllerTestHarness {
 
 extension FetchedResultsController where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return fetchedObjects.map(\.id)
+        fetchedObjects.map(\.id)
     }
 
     var tags: [Int] {
-        return fetchedObjects.map(\.tag)
+        fetchedObjects.map(\.tag)
     }
 }
 
 extension FetchedResultsSection where FetchedObject: TestObject {
     var fetchedIDs: [String] {
-        return objects.map(\.id)
+        objects.map(\.id)
     }
 
     var tags: [Int] {
-        return objects.map(\.tag)
+        objects.map(\.tag)
     }
 }

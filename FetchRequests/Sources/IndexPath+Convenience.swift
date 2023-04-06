@@ -14,8 +14,8 @@ import UIKit
 import AppKit
 #else
 extension IndexPath {
-    var section: Int { return self[0] }
-    var item: Int { return self[1] }
+    var section: Int { self[0] }
+    var item: Int { self[1] }
 
     init(item: Int, section: Int) {
         self.init(indexes: [section, item])

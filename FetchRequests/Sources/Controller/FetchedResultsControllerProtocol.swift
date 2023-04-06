@@ -82,12 +82,12 @@ public extension FetchedResultsControllerProtocol {
 
         let comparator = sortDescriptors.comparator
         return array.binarySearch {
-            return comparator($0, object) == .orderedAscending
+            comparator($0, object) == .orderedAscending
         }
     }
 
     func object(at indexPath: IndexPath) -> FetchedObject {
-        return sections[indexPath.section].objects[indexPath.item]
+        sections[indexPath.section].objects[indexPath.item]
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {

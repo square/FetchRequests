@@ -48,7 +48,7 @@ class Observable<Value> {
 
 extension Observable where Value: Equatable {
     func observeChanges(handler: @escaping Handler) -> InvalidatableToken {
-        return observe { change in
+        observe { change in
             guard change.oldValue != change.newValue else {
                 return
             }

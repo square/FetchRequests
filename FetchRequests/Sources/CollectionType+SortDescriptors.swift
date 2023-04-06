@@ -10,7 +10,7 @@ import Foundation
 
 public extension Sequence where Element: NSSortDescriptor {
     var comparator: Comparator {
-        return { lhs, rhs in
+        { lhs, rhs in
             for sort in self {
                 let result = sort.compare(lhs, to: rhs)
                 guard result == .orderedSame else {
@@ -32,6 +32,6 @@ public extension Sequence where Element: NSObject {
     }
 
     private func sorted(by comparator: Comparator) -> [Element] {
-        return sorted { comparator($0, $1) == .orderedAscending }
+        sorted { comparator($0, $1) == .orderedAscending }
     }
 }

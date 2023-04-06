@@ -19,6 +19,7 @@ public struct SectionCollapseConfig: Equatable {
 }
 
 @MainActor
+// swiftlint:disable:next type_name
 public protocol CollapsibleSectionsFetchedResultsControllerDelegate<FetchedObject>: AnyObject {
     associatedtype FetchedObject: FetchableObject
 
@@ -45,19 +46,19 @@ public struct CollapsibleResultsSection<FetchedObject: FetchableObject>: Equatab
     let displayableObjects: [FetchedObject]
 
     public var allObjects: [FetchedObject] {
-        return section.objects
+        section.objects
     }
 
     public var id: String {
-        return section.id
+        section.id
     }
 
     public var name: String {
-        return section.name
+        section.name
     }
 
     public var numberOfDisplayableObjects: Int {
-        return displayableObjects.count
+        displayableObjects.count
     }
 
     init(
@@ -117,24 +118,24 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
 
     public var sections: [CollapsibleResultsSection<FetchedObject>] = []
     public var definition: FetchDefinition<FetchedObject> {
-        return fetchController.definition
+        fetchController.definition
     }
 
     public var sortDescriptors: [NSSortDescriptor] {
-        return fetchController.sortDescriptors
+        fetchController.sortDescriptors
     }
 
     public var fetchedObjects: [FetchedObject] {
-        return fetchController.fetchedObjects
+        fetchController.fetchedObjects
     }
 
     public var hasFetchedObjects: Bool {
-        return fetchController.hasFetchedObjects
+        fetchController.hasFetchedObjects
     }
 
     public var associatedFetchSize: Int {
         get {
-            return fetchController.associatedFetchSize
+            fetchController.associatedFetchSize
         }
         set {
             fetchController.associatedFetchSize = newValue
@@ -147,7 +148,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
         sectionNameKeyPath: SectionNameKeyPath? = nil,
         debounceInsertsAndReloads: Bool = true,
         initialSectionCollapseCheck: @escaping SectionCollapseCheck = { _ in false },
-        sectionConfigCheck: @escaping SectionCollapseConfigCheck = { _ in return nil }
+        sectionConfigCheck: @escaping SectionCollapseConfigCheck = { _ in nil }
     ) {
         fetchController = FetchedResultsController<FetchedObject>(
             definition: definition,
@@ -221,7 +222,7 @@ public extension CollapsibleSectionsFetchedResultsController {
     }
 
     func object(at indexPath: IndexPath) -> FetchedObject {
-        return sections[indexPath.section].displayableObjects[indexPath.item]
+        sections[indexPath.section].displayableObjects[indexPath.item]
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {
@@ -291,7 +292,7 @@ extension CollapsibleSectionsFetchedResultsController: FetchedResultsControllerD
 
     public func controllerDidChangeContent(_ controller: FetchedResultsController<FetchedObject>) {
         let sectionsToNotify = collapsedSectionsModifiedDuringContentChange.filter { section in
-            return !changedSectionsDuringContentChange.contains(section) && !deletedSectionsDuringContentChange.contains(section)
+            !changedSectionsDuringContentChange.contains(section) && !deletedSectionsDuringContentChange.contains(section)
         }
         for sectionName in sectionsToNotify {
             guard let section = previousSectionsDuringContentChange.first(where: { $0.name == sectionName }),

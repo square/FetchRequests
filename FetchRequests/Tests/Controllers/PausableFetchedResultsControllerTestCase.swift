@@ -9,14 +9,16 @@
 import XCTest
 @testable import FetchRequests
 
-// swiftlint:disable force_try implicitly_unwrapped_optional
-
 class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    // swiftlint:disable implicitly_unwrapped_optional test_case_accessibility
+
     private(set) var controller: PausableFetchedResultsController<TestObject>!
 
     private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
+
+    // swiftlint:enable implicitly_unwrapped_optional test_case_accessibility
 
     private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
@@ -36,7 +38,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         }
 
         let inclusionCheck: FetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
-            return self.inclusionCheck?(rawData) ?? true
+            self.inclusionCheck?(rawData) ?? true
         }
 
         return FetchDefinition<TestObject>(
@@ -59,7 +61,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         inclusionCheck = nil
     }
 
-    func testBasicFetch() {
+    func testBasicFetch() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -67,13 +69,13 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
     }
 
-    func testResort() {
+    func testResort() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -81,7 +83,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
 
@@ -89,7 +91,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
-    func testExpectInsertFromBroadcastNotification() {
+    func testExpectInsertFromBroadcastNotification() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -98,7 +100,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
-        try! performFetch(initialObjects)
+        try performFetch(initialObjects)
 
         fetchCompletion = nil
         changeEvents.removeAll()
@@ -126,7 +128,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssert(changeEvents.isEmpty)
     }
 
-    func testExpectPausedInsertFromBroadcastNotification() {
+    func testExpectPausedInsertFromBroadcastNotification() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -135,7 +137,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let initialObjects = ["a", "b", "c"].compactMap { TestObject(id: $0) }
 
-        try! performFetch(initialObjects)
+        try performFetch(initialObjects)
 
         fetchCompletion = nil
         changeEvents.removeAll()
@@ -172,7 +174,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertEqual(changeEvents.count, 0)
     }
 
-    func testResetClearsPaused() {
+    func testResetClearsPaused() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -180,7 +182,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         controller.isPaused = true
 
@@ -189,7 +191,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertFalse(controller.isPaused)
     }
 
-    func testWrappedProperties() {
+    func testWrappedProperties() throws {
         let fetchDefinition = createFetchDefinition()
 
         controller = PausableFetchedResultsController(
@@ -203,7 +205,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
             NSSelectorFromString("self"),
         ].map(\.description)
 
-        try! performFetch(["a", "b", "c"])
+        try performFetch(["a", "b", "c"])
 
         controller.associatedFetchSize = 20
 
@@ -218,7 +220,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 // MARK: - Paginating
 
 extension PausableFetchedResultsControllerTestCase {
-    func testCanCreatePausableVariation() {
+    func testCanCreatePausableVariation() throws {
         let baseDefinition = createFetchDefinition()
 
         var paginationRequests = 0
@@ -246,7 +248,7 @@ extension PausableFetchedResultsControllerTestCase {
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         controller.isPaused = true
         changeEvents.removeAll()

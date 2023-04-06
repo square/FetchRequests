@@ -17,9 +17,9 @@ public enum AssociationReplacement<T> {
 /// Map an associated value's key to object
 public class FetchRequestAssociation<FetchedObject: FetchableObject> {
     /// Fetch associated values given a list of parent objects
-    public typealias AssocationRequestByParent<AssociatedEntity> = @MainActor (_ objects: [FetchedObject], _ completion: @escaping ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
+    public typealias AssocationRequestByParent<AssociatedEntity> = @MainActor (_ objects: [FetchedObject], _ completion: @escaping @MainActor ([FetchedObject.ID: AssociatedEntity]) -> Void) -> Void
     /// Fetch associated values given a list of associated IDs
-    public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = @MainActor (_ objects: [AssociatedEntityID], _ completion: @escaping ([AssociatedEntity]) -> Void) -> Void
+    public typealias AssocationRequestByID<AssociatedEntityID: Hashable, AssociatedEntity> = @MainActor (_ objects: [AssociatedEntityID], _ completion: @escaping @MainActor ([AssociatedEntity]) -> Void) -> Void
     /// Event that represents the creation of an associated value object
     public typealias CreationObserved<Value, Comparison> = (Value?, Comparison) -> AssociationReplacement<Value>
     /// Start observing a source object
@@ -93,7 +93,7 @@ public extension FetchRequestAssociation {
             },
             referenceGenerator: { _ in AssociatedValueReference() },
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -117,7 +117,7 @@ public extension FetchRequestAssociation {
             },
             referenceGenerator: { _ in AssociatedValueReference() },
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -184,7 +184,7 @@ public extension FetchRequestAssociation {
             },
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -247,7 +247,7 @@ public extension FetchRequestAssociation {
             },
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -387,7 +387,7 @@ public extension FetchRequestAssociation {
             request: rawRequest,
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -479,7 +479,7 @@ public extension FetchRequestAssociation {
             request: rawRequest,
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -607,7 +607,7 @@ public extension FetchRequestAssociation {
             request: rawRequest,
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -731,7 +731,7 @@ public extension FetchRequestAssociation {
             request: rawRequest,
             referenceGenerator: referenceGenerator,
             observeKeyPath: { object, changeHandler in
-                return object.observe(keyPath, options: [.old, .new]) { object, change in
+                object.observe(keyPath, options: [.old, .new]) { object, change in
                     guard change.oldValue != change.newValue else {
                         return
                     }
@@ -898,7 +898,7 @@ public extension FetchRequestAssociation {
 
 private extension Sequence {
     func associated<Key: Hashable>(by keySelector: (Element) throws -> Key) rethrows -> [Key: Element] {
-        return try reduce(into: [:]) { memo, element in
+        try reduce(into: [:]) { memo, element in
             let key = try keySelector(element)
             memo[key] = element
         }
@@ -907,6 +907,6 @@ private extension Sequence {
 
 private extension Sequence where Element: FetchableObjectProtocol {
     func createLookupTable() -> [Element.ID: Element] {
-        return self.associated(by: \.id)
+        self.associated(by: \.id)
     }
 }

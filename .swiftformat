@@ -7,9 +7,13 @@
 
 --rules blankLineAfterImports
 --rules braces
+--rules conditionalAssignment
 --rules duplicateImports
 --rules elseOnSameLine
 --rules genericExtensions
+
+--rules hoistAwait
+--rules hoistTry
 
 --rules indent
   --indent 4
@@ -20,11 +24,14 @@
 --rules leadingDelimiters
 --rules linebreakAtEndOfFile
 
+--rules redundantClosure
 --rules redundantFileprivate
 --rules redundantGet
 --rules redundantInit
 --rules redundantOptionalBinding
 --rules redundantParens
+--rules redundantPattern
+--rules redundantReturn
 --rules redundantVoidReturnType
 --rules semicolons
 

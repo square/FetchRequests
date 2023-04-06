@@ -11,30 +11,24 @@ import XCTest
 
 @MainActor
 class FetchRequestAssociationTestCase: XCTestCase {
-    typealias Association = FetchRequestAssociation<TestObject>
+    private typealias Association = FetchRequestAssociation<TestObject>
 
-    private var objects: [TestObject] = []
+    private let objects: [TestObject] = [
+        TestObject(id: "a", tag: 0),
+        TestObject(id: "b", tag: 1),
+        TestObject(id: "c", tag: 2),
+    ]
 
     private var objectIDs: [String] {
-        return objects.map(\.id)
+        objects.map(\.id)
     }
 
     private var tags: [Int] {
-        return objects.map(\.tag)
+        objects.map(\.tag)
     }
 
     private var tagIDs: [String] {
-        return objects.map(\.nonOptionalTagID)
-    }
-
-    override func setUp() {
-        super.setUp()
-
-        objects = [
-            TestObject(id: "a", tag: 0),
-            TestObject(id: "b", tag: 1),
-            TestObject(id: "c", tag: 2),
-        ]
+        objects.map(\.nonOptionalTagID)
     }
 }
 
@@ -44,11 +38,11 @@ extension FetchRequestAssociationTestCase {
     func testBasicNonOptionalAssociation() {
         let expected: [String: Int] = ["a": 2]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByParent<Int> = { [unowned self] objects, completion in
             XCTAssertEqual(objects, self.objects)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let association = Association(keyPath: \.tag, request: request)
@@ -59,7 +53,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: Int], expected)
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can't observe creation
 
@@ -86,11 +80,11 @@ extension FetchRequestAssociationTestCase {
     func testBasicOptionalAssociation() {
         let expected: [String: Int] = ["a": 2]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByParent<Int> = { objects, completion in
             XCTAssertEqual(objects, self.objects)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let association = Association(keyPath: \.tagID, request: request)
@@ -101,7 +95,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: Int], expected)
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can't observe creation
 
@@ -132,11 +126,11 @@ extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalAssociation() {
         let expected: [String: TestObject] = ["a": objects[0]]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByParent<TestObject> = { [unowned self] objects, completion in
             XCTAssertEqual(objects, self.objects)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let token = TestObjectTestToken()
@@ -157,7 +151,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -195,11 +189,11 @@ extension FetchRequestAssociationTestCase {
     func testCreatableOptionalAssociation() {
         let expected: [String: TestObject] = ["a": objects[0]]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByParent<TestObject> = { [unowned self] objects, completion in
             XCTAssertEqual(objects, self.objects)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let token = TestObjectTestToken()
@@ -220,7 +214,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: TestObject], expected)
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -262,11 +256,12 @@ extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
-            calledRequest = true
             completion(expected)
+
+            expectation.fulfill()
         }
 
         let token = DataTestToken()
@@ -288,7 +283,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: TestObject], ["a": expected[0]])
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -326,11 +321,11 @@ extension FetchRequestAssociationTestCase {
     func testCreatableOptionalAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let token = DataTestToken()
@@ -352,7 +347,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: TestObject], ["a": expected[0]])
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -394,11 +389,11 @@ extension FetchRequestAssociationTestCase {
     func testCreatableNonOptionalArrayAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
-            calledRequest = true
             completion(expected)
+            expectation.fulfill()
         }
 
         let token = DataTestToken()
@@ -407,7 +402,7 @@ extension FetchRequestAssociationTestCase {
         }
 
         let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
-            return .invalid
+            .invalid
         }
 
         let association = Association(
@@ -424,7 +419,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: [TestObject]], ["a": expected])
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -462,11 +457,12 @@ extension FetchRequestAssociationTestCase {
     func testCreatableOptionalArrayAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         let request: Association.AssocationRequestByID<TestObject.ID, TestObject> = { [unowned self] objectIDs, completion in
             XCTAssertEqual(objectIDs, self.tagIDs)
-            calledRequest = true
             completion(expected)
+
+            expectation.fulfill()
         }
 
         let token = DataTestToken()
@@ -475,7 +471,7 @@ extension FetchRequestAssociationTestCase {
         }
 
         let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
-            return .invalid
+            .invalid
         }
 
         let association = Association(
@@ -492,7 +488,7 @@ extension FetchRequestAssociationTestCase {
             XCTAssertEqual(results as? [String: [TestObject]], ["a": expected])
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -549,13 +545,13 @@ extension FetchRequestAssociationTestCase {
             memo[element.id] = TestObject(id: element.nonOptionalTagID)
         }
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         association.request(objects) { results in
-            calledRequest = true
             XCTAssertEqual(results as? [String: TestObject], expected)
+            expectation.fulfill()
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -608,13 +604,13 @@ extension FetchRequestAssociationTestCase {
             memo[element.id] = TestObject(id: element.nonOptionalTagID)
         }
 
-        var calledRequest = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         association.request(objects) { results in
-            calledRequest = true
             XCTAssertEqual(results as? [String: TestObject], expected)
+            expectation.fulfill()
         }
 
-        XCTAssertTrue(calledRequest)
+        wait(for: [expectation], timeout: 5)
 
         // Verify we can observe creation
 
@@ -657,13 +653,13 @@ extension FetchRequestAssociationTestCase {
 
         XCTAssertEqual(TestFetchableEntityID.fetch(byID: id), object)
 
-        var called = false
+        let expectation = XCTestExpectation(description: "calledRequest")
         TestFetchableEntityID.fetch(byID: id) { result in
             XCTAssertEqual(result, object)
-            called = true
+            expectation.fulfill()
         }
 
-        XCTAssertTrue(called)
+        wait(for: [expectation], timeout: 5)
     }
 
     func testFaultByEntityID() {
@@ -694,50 +690,50 @@ extension FetchRequestAssociationTestCase {
 private extension TestObject {
     @objc
     dynamic var nonOptionalTagID: String {
-        return String(tag)
+        String(tag)
     }
 
     @objc
     dynamic var nonOptionalTagIDs: [String] {
-        return [nonOptionalTagID]
+        [nonOptionalTagID]
     }
 
     @objc
     dynamic var nonOptionalTagEntityID: TestFetchableEntityID {
-        return TestFetchableEntityID(id: nonOptionalTagID)
+        TestFetchableEntityID(id: nonOptionalTagID)
     }
 
     @objc
     dynamic var tagEntityID: TestFetchableEntityID? {
-        return tagID.map { TestFetchableEntityID(id: $0) }
+        tagID.map { TestFetchableEntityID(id: $0) }
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagIDs() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingTagEntityID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagEntityID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     var nonOptionalTagArrayEntityID: [TestFetchableEntityID] {
-        return [TestFetchableEntityID(id: nonOptionalTagID)]
+        [TestFetchableEntityID(id: nonOptionalTagID)]
     }
 
     var tagArrayEntityID: [TestFetchableEntityID]? {
-        return nonOptionalTagArrayEntityID
+        nonOptionalTagArrayEntityID
     }
 }
 
@@ -767,11 +763,13 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
-        return TestObject.fetch(byIDs: objectIDs.map(\.id))
+        TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping ([TestObject]) -> Void) {
-        completion(self.fetch(byIDs: objectIDs))
+    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping @MainActor ([TestObject]) -> Void) {
+        Task {
+            await completion(self.fetch(byIDs: objectIDs))
+        }
     }
 }
 

@@ -21,19 +21,19 @@ private let decoder = JSONDecoder()
 
 extension Model {
     func rawObjectEventUpdated() -> Notification.Name {
-        return Notification.Name("\(NSStringFromClass(type(of: self))).rawObjectEventUpdated.\(id)")
+        Notification.Name("\(NSStringFromClass(type(of: self))).rawObjectEventUpdated.\(id)")
     }
 
     class func objectWasCreated() -> Notification.Name {
-        return Notification.Name("\(NSStringFromClass(self)).objectWasCreated")
+        Notification.Name("\(NSStringFromClass(self)).objectWasCreated")
     }
 
     class func objectWasDeleted() -> Notification.Name {
-        return Notification.Name("\(NSStringFromClass(self)).objectWasDeleted")
+        Notification.Name("\(NSStringFromClass(self)).objectWasDeleted")
     }
 
     class func dataWasCleared() -> Notification.Name {
-        return Notification.Name("\(NSStringFromClass(self)).dataWasCleared")
+        Notification.Name("\(NSStringFromClass(self)).dataWasCleared")
     }
 }
 
@@ -125,7 +125,7 @@ extension Model {
 
 extension NSObjectProtocol where Self: Model {
     static func fetchAll() -> [Self] {
-        return storage.values.lazy.compactMap { value in
+        storage.values.lazy.compactMap { value in
             value as? Data
         }.compactMap { data in
             try? decoder.decode(Model.RawData.self, from: data)
@@ -135,7 +135,7 @@ extension NSObjectProtocol where Self: Model {
     }
 
     static func fetch(byID id: Model.ID) -> Self? {
-        return storage[id].flatMap { value in
+        storage[id].flatMap { value in
             value as? Data
         }.flatMap { data in
             try? decoder.decode(Model.RawData.self, from: data)
