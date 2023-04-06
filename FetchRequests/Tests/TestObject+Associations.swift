@@ -9,23 +9,21 @@
 import Foundation
 @testable import FetchRequests
 
-// swiftlint:disable implicitly_unwrapped_optional
-
 extension TestObject {
     func tagString() -> String? {
-        return performFault(on: \.tag) { tag in
+        performFault(on: \.tag) { tag in
             fatalError("Cannot perform fallback fault")
         }
     }
 
     func tagObject() -> TestObject? {
-        return performFault(on: \.tagID) { (tagID: String) -> TestObject? in
+        performFault(on: \.tagID) { (tagID: String) -> TestObject? in
             fatalError("Cannot perform fallback fault")
         }
     }
 
     func tagObjectArray() -> [TestObject]? {
-        return performFault(on: \.tagIDs) { (tagIDs: [String]) -> [TestObject]? in
+        performFault(on: \.tagIDs) { (tagIDs: [String]) -> [TestObject]? in
             fatalError("Cannot perform fallback fault")
         }
     }
@@ -37,6 +35,8 @@ extension TestObject {
     enum AssociationRequest {
         case parents([TestObject], completion: @MainActor ([String: String]) -> Void)
         case tagIDs([String], completion: @MainActor ([TestObject]) -> Void)
+
+        // swiftlint:disable implicitly_unwrapped_optional
 
         var parentIDs: [String]! {
             guard case let .parents(objects, _) = self else {
@@ -65,6 +65,8 @@ extension TestObject {
             }
             return completion
         }
+
+        // swiftlint:enable implicitly_unwrapped_optional
     }
 
     static func fetchRequestAssociations(
@@ -163,7 +165,7 @@ class VoidNotificationObservableToken: WrappedObservableToken<Void> {
 
 extension TestObject {
     static func fetch(byIDs ids: [TestObject.ID]) -> [TestObject] {
-        return ids.map { TestObject(id: $0) }
+        ids.map { TestObject(id: $0) }
     }
 }
 
@@ -178,7 +180,7 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             keyPath: keyPath,
             request: request,
             creationTokenGenerator: { objectID in
-                return TestEntityObservableToken(
+                TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
                     include: { rawData in
                         guard let includeID = AssociatedType.entityID(from: rawData) else {
@@ -202,7 +204,7 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
             keyPath: keyPath,
             request: request,
             creationTokenGenerator: { objectIDs in
-                return TestEntityObservableToken(
+                TestEntityObservableToken(
                     name: AssociatedType.objectWasCreated(),
                     include: { rawData in
                         guard let objectID = AssociatedType.entityID(from: rawData) else {

@@ -90,7 +90,7 @@ class Model: NSObject {
 
 extension Model: Identifiable {
     var id: ID {
-        return data.id
+        data.id
     }
 }
 
@@ -110,13 +110,13 @@ extension Model {
 
 extension Model: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        return _data.observeChanges { change in
+        _data.observeChanges { change in
             handler()
         }
     }
 
     func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        return self.observe(\.isDeleted, options: [.old, .new]) { @MainActor(unsafe) object, change in
+        self.observe(\.isDeleted, options: [.old, .new]) { @MainActor(unsafe) object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }
@@ -125,7 +125,7 @@ extension Model: FetchableObjectProtocol {
     }
 
     static func entityID(from data: RawData) -> Model.ID? {
-        return data.id
+        data.id
     }
 
     func listenForUpdates() {

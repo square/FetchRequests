@@ -13,7 +13,7 @@ public class BoxedJSON: NSObject, NSSecureCoding {
     internal let json: JSON
 
     public static var supportsSecureCoding: Bool {
-        return true
+        true
     }
 
     public init(_ json: JSON) {
@@ -40,17 +40,17 @@ public class BoxedJSON: NSObject, NSSecureCoding {
 
     @objc
     public var object: Any {
-        return json.object
+        json.object
     }
 
     @objc
     public subscript(key: String) -> BoxedJSON? {
-        return json[key] as BoxedJSON?
+        json[key] as BoxedJSON?
     }
 
     @objc
     public subscript(offset: Int) -> BoxedJSON? {
-        return json[offset] as BoxedJSON?
+        json[offset] as BoxedJSON?
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
@@ -72,7 +72,7 @@ public class BoxedJSON: NSObject, NSSecureCoding {
 
 extension JSON: _ObjectiveCBridgeable {
     public func _bridgeToObjectiveC() -> BoxedJSON {
-        return BoxedJSON(self)
+        BoxedJSON(self)
     }
 
     public static func _forceBridgeFromObjectiveC(
@@ -98,3 +98,5 @@ extension JSON: _ObjectiveCBridgeable {
         return result!
     }
 }
+
+// swiftlint:enable identifier_name

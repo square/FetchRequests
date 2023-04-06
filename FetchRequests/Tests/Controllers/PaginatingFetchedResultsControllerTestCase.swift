@@ -9,9 +9,9 @@
 import XCTest
 @testable import FetchRequests
 
-// swiftlint:disable force_try implicitly_unwrapped_optional
-
 class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+    // swiftlint:disable implicitly_unwrapped_optional test_case_accessibility
+
     private(set) var controller: PaginatingFetchedResultsController<TestObject>!
 
     private(set) var fetchCompletion: (([TestObject]) -> Void)!
@@ -20,6 +20,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     private var paginationCompletion: (([TestObject]?) -> Void)!
 
     private var associationRequest: TestObject.AssociationRequest!
+
+    // swiftlint:enable implicitly_unwrapped_optional test_case_accessibility
 
     private var inclusionCheck: ((TestObject.RawData) -> Bool)?
 
@@ -43,7 +45,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         }
 
         let inclusionCheck: PaginatingFetchDefinition<TestObject>.CreationInclusionCheck = { [unowned self] rawData in
-            return self.inclusionCheck?(rawData) ?? true
+            self.inclusionCheck?(rawData) ?? true
         }
 
         return PaginatingFetchDefinition<TestObject>(
@@ -71,7 +73,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         changeEvents = []
     }
 
-    func testBasicFetch() {
+    func testBasicFetch() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -79,13 +81,13 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
     }
 
-    func testResort() {
+    func testResort() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -93,7 +95,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         controller.resort(using: [NSSortDescriptor(keyPath: \TestObject.id, ascending: false)])
 
@@ -101,7 +103,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
-    func testPaginationTriggersLoad() {
+    func testPaginationTriggersLoad() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
             debounceInsertsAndReloads: false
@@ -112,7 +114,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         fetchCompletion = nil
         paginationCurrentResults = nil
@@ -135,7 +137,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(changeEvents[1].object.id, "f")
     }
 
-    func testPaginationDoesNotDisableInserts() {
+    func testPaginationDoesNotDisableInserts() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
             sortDescriptors: [
@@ -149,7 +151,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         let objectIDs = ["a", "b", "c"]
 
-        try! performFetch(objectIDs)
+        try performFetch(objectIDs)
 
         fetchCompletion = nil
         paginationCurrentResults = nil

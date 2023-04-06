@@ -11,30 +11,24 @@ import XCTest
 
 @MainActor
 class FetchRequestAssociationTestCase: XCTestCase {
-    typealias Association = FetchRequestAssociation<TestObject>
+    private typealias Association = FetchRequestAssociation<TestObject>
 
-    private var objects: [TestObject] = []
+    private let objects: [TestObject] = [
+        TestObject(id: "a", tag: 0),
+        TestObject(id: "b", tag: 1),
+        TestObject(id: "c", tag: 2),
+    ]
 
     private var objectIDs: [String] {
-        return objects.map(\.id)
+        objects.map(\.id)
     }
 
     private var tags: [Int] {
-        return objects.map(\.tag)
+        objects.map(\.tag)
     }
 
     private var tagIDs: [String] {
-        return objects.map(\.nonOptionalTagID)
-    }
-
-    override func setUp() {
-        super.setUp()
-
-        objects = [
-            TestObject(id: "a", tag: 0),
-            TestObject(id: "b", tag: 1),
-            TestObject(id: "c", tag: 2),
-        ]
+        objects.map(\.nonOptionalTagID)
     }
 }
 
@@ -408,7 +402,7 @@ extension FetchRequestAssociationTestCase {
         }
 
         let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
-            return .invalid
+            .invalid
         }
 
         let association = Association(
@@ -477,7 +471,7 @@ extension FetchRequestAssociationTestCase {
         }
 
         let creationObserved: Association.CreationObserved<[TestObject], TestObject.RawData> = { lhs, rhs in
-            return .invalid
+            .invalid
         }
 
         let association = Association(
@@ -696,50 +690,50 @@ extension FetchRequestAssociationTestCase {
 private extension TestObject {
     @objc
     dynamic var nonOptionalTagID: String {
-        return String(tag)
+        String(tag)
     }
 
     @objc
     dynamic var nonOptionalTagIDs: [String] {
-        return [nonOptionalTagID]
+        [nonOptionalTagID]
     }
 
     @objc
     dynamic var nonOptionalTagEntityID: TestFetchableEntityID {
-        return TestFetchableEntityID(id: nonOptionalTagID)
+        TestFetchableEntityID(id: nonOptionalTagID)
     }
 
     @objc
     dynamic var tagEntityID: TestFetchableEntityID? {
-        return tagID.map { TestFetchableEntityID(id: $0) }
+        tagID.map { TestFetchableEntityID(id: $0) }
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagIDs() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingTagEntityID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingNonOptionalTagEntityID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     var nonOptionalTagArrayEntityID: [TestFetchableEntityID] {
-        return [TestFetchableEntityID(id: nonOptionalTagID)]
+        [TestFetchableEntityID(id: nonOptionalTagID)]
     }
 
     var tagArrayEntityID: [TestFetchableEntityID]? {
-        return nonOptionalTagArrayEntityID
+        nonOptionalTagArrayEntityID
     }
 }
 
@@ -769,7 +763,7 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
-        return TestObject.fetch(byIDs: objectIDs.map(\.id))
+        TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
     class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping @MainActor ([TestObject]) -> Void) {

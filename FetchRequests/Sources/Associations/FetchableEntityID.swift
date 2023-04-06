@@ -22,13 +22,13 @@ public protocol FetchableEntityID<FetchableEntity>: Hashable {
     )
     static func fetch(
         byIDs objectIDs: [Self],
-        completion: @escaping @MainActor ([FetchableEntity]
-    ) -> Void)
+        completion: @escaping @MainActor ([FetchableEntity]) -> Void
+    )
 }
 
 extension FetchableEntityID {
     static func fetch(byID objectID: Self) -> FetchableEntity? {
-        return self.fetch(byIDs: [objectID]).first
+        self.fetch(byIDs: [objectID]).first
     }
 
     static func fetch(

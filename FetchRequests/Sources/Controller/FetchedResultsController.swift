@@ -156,11 +156,11 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
     public fileprivate(set) var objects: [FetchedObject]
 
     public var id: String {
-        return name
+        name
     }
 
     public var numberOfObjects: Int {
-        return objects.count
+        objects.count
     }
 
     public init(name: String, objects: [FetchedObject] = []) {
@@ -253,15 +253,13 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    private lazy var context: Context<FetchedObject> = {
-        return Context { [weak self] keyPath, objectID in
-            guard let self else {
-                throw FetchedResultsError.objectNotFound
-            }
-
-            return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
+    private lazy var context: Context<FetchedObject> = Context { [weak self] keyPath, objectID in
+        guard let self else {
+            throw FetchedResultsError.objectNotFound
         }
-    }()
+
+        return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
+    }
 
     public init(
         definition: FetchDefinition<FetchedObject>,
@@ -373,7 +371,7 @@ public extension FetchedResultsController {
     }
 
     func indexPath(for object: FetchedObject) -> IndexPath? {
-        return indexPathsTable[object]
+        indexPathsTable[object]
     }
 
     @MainActor
@@ -1207,7 +1205,7 @@ private extension FetchedResultsController {
 
 internal extension FetchedResultsController {
     var listeningForInserts: Bool {
-        return definition.objectCreationToken.isObserving
+        definition.objectCreationToken.isObserving
     }
 }
 
@@ -1346,7 +1344,7 @@ private class Context<FetchedObject: FetchableObject>: NSObject {
     let wrapped: Wrapped
 
     func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
-        return try wrapped(keyPath, objectID)
+        try wrapped(keyPath, objectID)
     }
 
     init(wrapped: @escaping Wrapped) {
@@ -1542,7 +1540,7 @@ private extension [NSSortDescriptor] {
     func finalize<FetchedObject: FetchableObject>(
         with controller: FetchedResultsController<FetchedObject>
     ) -> Self {
-        return finalize(sectionNameKeyPath: controller.sectionNameKeyPath) { [weak controller] id in
+        finalize(sectionNameKeyPath: controller.sectionNameKeyPath) { [weak controller] id in
             // Note: OrderedSet.firstIndex(of:) is *not* O(n)
             controller?.fetchedObjectIDs.firstIndex(of: id)
         }

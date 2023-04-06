@@ -74,21 +74,21 @@ final class TestObject: NSObject {
 extension TestObject {
     @objc
     dynamic var tagID: String? {
-        return String(tag)
+        String(tag)
     }
 
     @objc
     dynamic var tagIDs: [String]? {
-        return tagID.map { [$0] }
+        tagID.map { [$0] }
     }
 
     @objc
     class func keyPathsForValuesAffectingTagID() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 
     @objc
     class func keyPathsForValuesAffectingTagIDs() -> Set<String> {
-        return [#keyPath(tag)]
+        [#keyPath(tag)]
     }
 }

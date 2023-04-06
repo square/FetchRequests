@@ -30,7 +30,7 @@ class ViewController: UITableViewController {
         }
 
         class var reuseIdentifier: String {
-            return NSStringFromClass(self)
+            NSStringFromClass(self)
         }
     }
 }
@@ -69,11 +69,11 @@ extension ViewController {
 
 extension ViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return controller.sections.count
+        controller.sections.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return controller.sections[section].numberOfObjects
+        controller.sections[section].numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
