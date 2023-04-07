@@ -8,7 +8,6 @@ disabled_rules:
   # Nice to haves
   - cyclomatic_complexity
   - function_body_length
-  - line_length
 analyzer_rules:
   - capture_variable
   - unused_declaration
@@ -99,6 +98,9 @@ trailing_closure:
 large_tuple:
   warning: 3
   error: 4
+line_length:
+  warning: 200
+
 deployment_target:
   iOS_deployment_target: 14
   tvOS_deployment_target: 14
