@@ -21,51 +21,73 @@ struct SwiftUIView: View {
         ],
         animation: Animation.easeIn(duration: 1.0)
     )
-    private var models: FetchableResults<Model>
     
+    private var models: FetchableResults<Model>
+
     var body: some View {
-        if #available(iOS 14.0, *) {
-            NavigationView {
-                List(models) { model in
-                    VStack(alignment: .leading) {
-                        Text(model.id)
-                            .font(Font.system(.body))
-                            .scaledToFit()
-                            .minimumScaleFactor(0.5)
-                            .lineLimit(1)
-                        Text(model.createdAt.description)
-                            .font(Font.system(.footnote))
-                            .lineLimit(1)
-                    }
-                    .padding(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
-                }
-                .listStyle(PlainListStyle())
-                .transition(.slide)
-                .navigationTitle("SwiftUI Example")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            try? Model().save()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            Model.reset()
-                        } label: {
-                            Image(systemName: "trash")
-                        }
-                    }
-                }
+        NavigationView {
+            List(models) { model in
+                row(for: model)
             }
-        } else {
-            Text("Example requires iOS 14.")
+            .listStyle(PlainListStyle())
+            .transition(.slide)
+            .navigationBarTitle("SwiftUI Example", displayMode: .inline)
+            .navigationBarItems(
+                leading:
+                    Button {
+                        Model.reset()
+                    } label: {
+                        Image(systemName: "trash")
+                    },
+                trailing:
+                    Button {
+                        try? Model().save()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+            )
         }
     }
     
     static var viewController: UIHostingController<SwiftUIView> {
         return UIHostingController(rootView: SwiftUIView())
+    }
+}
+
+// Mark: List Row
+extension SwiftUIView {
+    @ViewBuilder
+    func row(for model: Model) -> some View {
+        if #available(iOS 15.0, *) {
+            VStack(alignment: .leading) {
+                Text(model.id)
+                    .font(Font.system(.body))
+                    .scaledToFit()
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                Text(model.createdAt.description)
+                    .font(Font.system(.footnote))
+                    .lineLimit(1)
+            }
+            .swipeActions {
+                Button("Delete") {
+                    try? model.delete()
+                }
+                .tint(.red)
+            }
+            .padding(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+        } else {
+            VStack(alignment: .leading) {
+                Text(model.id)
+                    .font(Font.system(.body))
+                    .scaledToFit()
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                Text(model.createdAt.description)
+                    .font(Font.system(.footnote))
+                    .lineLimit(1)
+            }
+            .padding(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+        }
     }
 }

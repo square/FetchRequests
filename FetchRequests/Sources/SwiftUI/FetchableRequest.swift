@@ -117,19 +117,21 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
             }
             withAnimation(animation) {
                 let newVersion = binding.wrappedValue.version + 1
-                if initialLoad.wrappedValue == true {
-                    initialLoad.wrappedValue = false
-                    DispatchQueue.main.async {
-                        binding.wrappedValue = FetchableResults(
-                            contents: controller.fetchedObjects,
-                            version: newVersion
-                        )
-                    }
-                } else {
+                let setBinding = {
                     binding.wrappedValue = FetchableResults(
                         contents: controller.fetchedObjects,
                         version: newVersion
                     )
+                }
+                
+                guard initialLoad.wrappedValue else {
+                    setBinding()
+                    return
+                }
+                    
+                DispatchQueue.main.async {
+                    initialLoad.wrappedValue = false
+                    setBinding()
                 }
             }
         }
