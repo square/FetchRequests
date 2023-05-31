@@ -17,6 +17,7 @@
 		47ACD19522CBE39600B3F1FE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47ACD19422CBE39600B3F1FE /* ViewController.swift */; };
 		47ACD19A22CBE39700B3F1FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 47ACD19922CBE39700B3F1FE /* Assets.xcassets */; };
 		47ACD19D22CBE39700B3F1FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47ACD19B22CBE39700B3F1FE /* LaunchScreen.storyboard */; };
+		D958902C2A27A3300060A0CF /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D958902B2A27A3300060A0CF /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		47ACD19C22CBE39700B3F1FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		47ACD19E22CBE39700B3F1FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		47ACD1A422CBE3E200B3F1FE /* FetchRequests.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FetchRequests.xcodeproj; path = ../FetchRequests.xcodeproj; sourceTree = "<group>"; };
+		D958902B2A27A3300060A0CF /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +144,7 @@
 			children = (
 				47ACD19222CBE39600B3F1FE /* AppDelegate.swift */,
 				47ACD19422CBE39600B3F1FE /* ViewController.swift */,
+				D958902B2A27A3300060A0CF /* SwiftUIView.swift */,
 				4736ABC722CBE82A00253EB6 /* Model.swift */,
 				4736ABCF22CBE9C600253EB6 /* Model+Fetchable.swift */,
 				4736ABD122CBEBDD00253EB6 /* Model+Persistence.swift */,
@@ -307,6 +310,7 @@
 			files = (
 				4736ABC822CBE82A00253EB6 /* Model.swift in Sources */,
 				4736ABD222CBEBDD00253EB6 /* Model+Persistence.swift in Sources */,
+				D958902C2A27A3300060A0CF /* SwiftUIView.swift in Sources */,
 				47ACD19522CBE39600B3F1FE /* ViewController.swift in Sources */,
 				4736ABD022CBE9C600253EB6 /* Model+Fetchable.swift in Sources */,
 				472E8F6F23388380005045D2 /* Observable.swift in Sources */,
