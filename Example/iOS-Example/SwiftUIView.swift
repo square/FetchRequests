@@ -28,7 +28,7 @@ struct SwiftUIView: View {
             List(models) { model in
                 row(for: model)
             }
-			.listStyle(.plain)
+            .listStyle(.plain)
             .transition(.slide)
             .navigationBarTitle("SwiftUI Example", displayMode: .inline)
             .navigationBarItems(
