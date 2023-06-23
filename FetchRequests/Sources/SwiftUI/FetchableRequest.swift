@@ -59,9 +59,6 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
 
     @State
     private var subscription: Opaque<Cancellable> = Opaque()
-    
-    @State
-    private var initialLoad: Bool = true
 
     private let animation: Animation?
 
@@ -110,29 +107,17 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         let controller = fetchController
         let binding = $wrappedValue
         let animation = self.animation
-        let initialLoad = $initialLoad
+
         subscription.value = fetchController.objectDidChange.sink { [weak controller] in
             guard let controller else {
                 return
             }
             withAnimation(animation) {
                 let newVersion = binding.wrappedValue.version + 1
-                let setBinding = {
-                    binding.wrappedValue = FetchableResults(
-                        contents: controller.fetchedObjects,
-                        version: newVersion
-                    )
-                }
-                
-                guard initialLoad.wrappedValue else {
-                    setBinding()
-                    return
-                }
-                    
-                DispatchQueue.main.async {
-                    initialLoad.wrappedValue = false
-                    setBinding()
-                }
+                binding.wrappedValue = FetchableResults(
+                    contents: controller.fetchedObjects,
+                    version: newVersion
+                )
             }
         }
     }
