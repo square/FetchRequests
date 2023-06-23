@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 import FetchRequests
 
@@ -54,6 +55,8 @@ extension ViewController {
             target: self,
             action: #selector(addItem)
         )
+        toolbarItems = [UIBarButtonItem(title: "Swift UI", style: .plain, target: self, action: #selector(showSwiftUI))]
+        navigationController?.setToolbarHidden(false, animated: false)
 
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
     }
@@ -127,6 +130,11 @@ private extension ViewController {
     @objc
     func addItem(_ sender: Any) {
         try? Model().save()
+    }
+    
+    @objc
+    func showSwiftUI(_ sender: Any) {
+        present(UIHostingController(rootView: SwiftUIView()), animated: true)
     }
 }
 
