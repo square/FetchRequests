@@ -14,10 +14,10 @@ class FetchableObjectProtocolTestCase: XCTestCase {
         let data: TestObject.RawData = ["id": "1", "test": 2]
         var newData: TestObject.RawData = ["id": "1", "test": 3]
 
-        XCTAssertFalse(data == newData)
+        XCTAssertNotEqual(data, newData)
 
         newData.test = 2
 
-        XCTAssertTrue(data == newData)
+        XCTAssertEqual(data, newData)
     }
 }
