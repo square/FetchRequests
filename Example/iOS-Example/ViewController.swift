@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import SwiftUI
 
 import FetchRequests
-import SwiftUI
 
 class ViewController: UITableViewController {
     private(set) lazy var controller: FetchedResultsController<Model> = {
