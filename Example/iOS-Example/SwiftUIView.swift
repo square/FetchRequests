@@ -33,24 +33,22 @@ struct SwiftUIView: View {
             .transition(.slide)
             .navigationBarTitle("SwiftUI Example", displayMode: .inline)
             .navigationBarItems(
-                leading:
-                    Button {
-                        Model.reset()
-                    } label: {
-                        Image(systemName: "trash")
-                    },
-                trailing:
-                    Button {
-                        try? Model().save()
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+                leading: Button {
+                    Model.reset()
+                } label: {
+                    Image(systemName: "trash")
+                },
+                trailing: Button {
+                    try? Model().save()
+                } label: {
+                    Image(systemName: "plus")
+                }
             )
         }
     }
 }
 
-// Mark: List Row
+// MARK: List Row
 extension SwiftUIView {
     @ViewBuilder
     func row(for model: Model) -> some View {
