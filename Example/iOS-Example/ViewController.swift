@@ -133,7 +133,7 @@ private extension ViewController {
     
     @objc
     func showSwiftUI(_ sender: Any) {
-        present(SwiftUIView.viewController, animated: true)
+        present(UIHostingController(rootView: SwiftUIView()), animated: true)
     }
 }
 

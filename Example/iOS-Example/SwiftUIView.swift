@@ -21,7 +21,6 @@ struct SwiftUIView: View {
         ],
         animation: Animation.easeIn(duration: 1.0)
     )
-    
     private var models: FetchableResults<Model>
 
     var body: some View {
@@ -29,7 +28,7 @@ struct SwiftUIView: View {
             List(models) { model in
                 row(for: model)
             }
-            .listStyle(PlainListStyle())
+			.listStyle(.plain)
             .transition(.slide)
             .navigationBarTitle("SwiftUI Example", displayMode: .inline)
             .navigationBarItems(
@@ -47,10 +46,6 @@ struct SwiftUIView: View {
                     }
             )
         }
-    }
-    
-    static var viewController: UIHostingController<SwiftUIView> {
-        return UIHostingController(rootView: SwiftUIView())
     }
 }
 
