@@ -100,8 +100,11 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
             return
         }
 
+        var isSynchronous = true
+
         defer {
             fetchController.performFetch()
+            isSynchronous = false
         }
 
         let controller = fetchController
@@ -112,12 +115,22 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
             guard let controller else {
                 return
             }
-            withAnimation(animation) {
-                let newVersion = binding.wrappedValue.version + 1
-                binding.wrappedValue = FetchableResults(
-                    contents: controller.fetchedObjects,
-                    version: newVersion
-                )
+            let change: () -> Void = {
+                withAnimation(animation) {
+                    let newVersion = binding.wrappedValue.version + 1
+                    binding.wrappedValue = FetchableResults(
+                        contents: controller.fetchedObjects,
+                        version: newVersion
+                    )
+                }
+            }
+
+            if isSynchronous {
+                DispatchQueue.main.async {
+                    change()
+                }
+            } else {
+                change()
             }
         }
     }
