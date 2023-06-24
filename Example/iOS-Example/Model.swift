@@ -116,11 +116,11 @@ extension Model: FetchableObjectProtocol {
     }
 
     func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
-        self.observe(\.isDeleted, options: [.old, .new]) { @MainActor(unsafe) object, change in
+        self.observe(\.isDeleted, options: [.old, .new]) { object, change in
             guard let old = change.oldValue, let new = change.newValue, old != new else {
                 return
             }
-            handler()
+            unsafeHandler(for: handler)
         }
     }
 
@@ -131,6 +131,13 @@ extension Model: FetchableObjectProtocol {
     func listenForUpdates() {
         observingUpdates = true
     }
+}
+
+@MainActor(unsafe)
+private func unsafeHandler(for handler: @MainActor () -> Void) {
+    assert(Thread.isMainThread)
+    // This is a dumb wrapper, but I can't otherwise have a "clean" compile
+    handler()
 }
 
 // MARK: - Private Helpers

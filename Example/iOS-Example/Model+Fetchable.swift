@@ -20,9 +20,7 @@ extension FetchableObjectProtocol where Self: Model {
 
         return FetchDefinition<Self>(
             request: { completion in
-                DispatchQueue.main.async {
-                    completion(fetchAll())
-                }
+                completion(fetchAll())
             },
             objectCreationToken: ModelCreationToken<Self>(),
             dataResetTokens: dataResetTokens

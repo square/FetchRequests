@@ -145,11 +145,11 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
         let originalObjects = createTestObjects(count: 20, inSectionsOfLength: 10)
         try performFetch(originalObjects)
 
-        XCTAssert(controller.sections[0].allObjects.count == 10)
+        XCTAssertEqual(controller.sections[0].allObjects.count, 10)
         XCTAssertEqual(controller.sections[0].displayableObjects.count, maxNumberOfItems)
 
-        XCTAssert(controller.sections[1].allObjects.count == 10)
-        XCTAssert(controller.sections[1].displayableObjects.count == controller.sections[1].allObjects.count)
+        XCTAssertEqual(controller.sections[1].allObjects.count, 10)
+        XCTAssertEqual(controller.sections[1].displayableObjects.count, controller.sections[1].allObjects.count)
 
         controller.update(section: controller.sections[0], maximumNumberOfItemsToDisplay: 6)
         XCTAssertEqual(controller.sections[0].displayableObjects.count, 6)

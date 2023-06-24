@@ -418,7 +418,7 @@ extension JSONTestCase {
     func testNonJsonNSObjectForBoxedJSON() {
         let set = NSSet(objects: "1", "2")
         let boxed = BoxedJSON(__object: set)
-        XCTAssertTrue(boxed == nil)
+        XCTAssertNil(boxed)
     }
 
     func testJsonNSObjectForBoxedJSON() {
