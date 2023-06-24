@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
-## [6.0](https://github.com/square/FetchRequests/releases/tag/5.0.0)
+## [6.0.1](https://github.com/square/FetchRequests/releases/tag/6.0.1)
+Released on 2023-06-23
+
+* The demo now includes a SwiftUI example
+* Fix for SwiftUI when a FetchDefinition request is synchronous
+
+## [6.0](https://github.com/square/FetchRequests/releases/tag/6.0.0)
 Released on 2023-04-05
 
 * Requires Swift 5.8
