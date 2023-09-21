@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [6.0.2](https://github.com/square/FetchRequests/releases/tag/6.0.2)
+Released on 2023-09-21
+
+* Cleanup warnings in Xcode 15
+
 ## [6.0.1](https://github.com/square/FetchRequests/releases/tag/6.0.1)
 Released on 2023-06-23
 
