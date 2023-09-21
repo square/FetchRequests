@@ -172,17 +172,18 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 // MARK: - FetchedResultsController
 
 func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () -> Void) {
+    @MainActor(unsafe)
+    func unsafeHandler() {
+        handler()
+    }
+
     if !Thread.isMainThread {
         if async {
             DispatchQueue.main.async(execute: handler)
         } else {
-            DispatchQueue.main.sync(execute: handler)
+            DispatchQueue.main.sync(execute: unsafeHandler)
         }
     } else {
-        @MainActor(unsafe)
-        func unsafeHandler() {
-            handler()
-        }
         unsafeHandler()
     }
 }
@@ -1361,7 +1362,7 @@ private class Weak<Element: AnyObject>: NSObject {
 }
 
 private struct AssociatedKeys {
-    static var context = "context"
+    static var context = 0
 }
 
 private extension FetchableObjectProtocol where Self: NSObject {
