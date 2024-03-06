@@ -69,22 +69,22 @@ extension JSON {
         get {
             switch self {
             case let .string(value):
-                return value
+                value
 
             case let .number(value):
-                return value
+                value
 
             case let .dictionary(value):
-                return value
+                value
 
             case let .array(value):
-                return value
+                value
 
             case let .bool(value):
-                return value
+                value
 
             case .null:
-                return NSNull()
+                NSNull()
             }
         }
         set {
@@ -192,25 +192,25 @@ extension JSON: Equatable {
     public static func == (lhs: JSON, rhs: JSON) -> Bool {
         switch (lhs, rhs) {
         case let (.string(lhs), .string(rhs)):
-            return lhs == rhs
+            lhs == rhs
 
         case let (.dictionary(lhs), .dictionary(rhs)):
-            return (lhs as NSDictionary) == (rhs as NSDictionary)
+            (lhs as NSDictionary) == (rhs as NSDictionary)
 
         case let (.array(lhs), .array(rhs)):
-            return (lhs as NSArray) == (rhs as NSArray)
+            (lhs as NSArray) == (rhs as NSArray)
 
         case let (.number(lhs), .number(rhs)):
-            return lhs == rhs
+            lhs == rhs
 
         case let (.bool(lhs), .bool(rhs)):
-            return lhs == rhs
+            lhs == rhs
 
         case (.null, .null):
-            return true
+            true
 
         case (.string, _), (.dictionary, _), (.array, _), (.number, _), (.bool, _), (.null, _):
-            return false
+            false
         }
     }
 }
@@ -246,13 +246,13 @@ extension JSON: Collection {
         public static func < (lhs: Index, rhs: Index) -> Bool {
             switch (lhs, rhs) {
             case let (.array(lhs), .array(rhs)):
-                return lhs < rhs
+                lhs < rhs
 
             case let (.dictionary(lhs), .dictionary(rhs)):
-                return lhs < rhs
+                lhs < rhs
 
             case (.array, _), (.dictionary, _), (.value, _):
-                return false
+                false
             }
         }
 
@@ -264,65 +264,65 @@ extension JSON: Collection {
     public var count: Int {
         switch self {
         case let .array(array):
-            return array.count
+            array.count
 
         case let .dictionary(dictionary):
-            return dictionary.count
+            dictionary.count
 
         case .string, .number, .bool, .null:
-            return 1
+            1
         }
     }
 
     public var startIndex: Index {
         switch self {
         case let .array(array):
-            return .array(array.startIndex)
+            .array(array.startIndex)
 
         case let .dictionary(dictionary):
-            return .dictionary(dictionary.startIndex)
+            .dictionary(dictionary.startIndex)
 
         case .string, .number, .bool, .null:
-            return .value(isStart: true)
+            .value(isStart: true)
         }
     }
 
     public var endIndex: Index {
         switch self {
         case let .array(array):
-            return .array(array.endIndex)
+            .array(array.endIndex)
 
         case let .dictionary(dictionary):
-            return .dictionary(dictionary.endIndex)
+            .dictionary(dictionary.endIndex)
 
         case .string, .number, .bool, .null:
-            return .value(isStart: false)
+            .value(isStart: false)
         }
     }
 
     public func index(after index: Index) -> Index {
         switch index {
         case let .array(index):
-            return .array(array!.index(after: index))
+            .array(array!.index(after: index))
 
         case let .dictionary(index):
-            return .dictionary(dictionary!.index(after: index))
+            .dictionary(dictionary!.index(after: index))
 
         case .value:
-            return .value(isStart: false)
+            .value(isStart: false)
         }
     }
 
     private func key(for index: Index) -> Index.Key {
         switch index {
         case let .array(index):
-            return .offset(index)
+            .offset(index)
 
         case let .dictionary(index):
-            return .key(dictionary![index].key)
+            .key(dictionary![index].key)
 
         case let .value(isStart):
-            return .value(isStart: isStart)
+            .value(isStart: isStart)
         }
     }
 
@@ -550,11 +550,11 @@ private extension NSNumber {
 
     var expectedType: NumberType {
         if isBool {
-            return .boolean
+            .boolean
         } else if isFloatingPoint {
-            return .floatingPoint
+            .floatingPoint
         } else {
-            return .integer
+            .integer
         }
     }
 
@@ -614,9 +614,9 @@ extension NSNull: JSONConvertible {
 extension NSNumber: JSONConvertible {
     public func jsonRepresentation() -> JSON {
         if self.isBool {
-            return .bool(boolValue)
+            .bool(boolValue)
         } else {
-            return .number(self)
+            .number(self)
         }
     }
 }

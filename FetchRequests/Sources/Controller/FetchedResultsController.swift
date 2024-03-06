@@ -28,19 +28,19 @@ public enum FetchedResultsChange<Location: Equatable>: Equatable {
     public static func == (lhs: FetchedResultsChange<Location>, rhs: FetchedResultsChange<Location>) -> Bool {
         switch (lhs, rhs) {
         case let (.insert(left), .insert(right)):
-            return left == right
+            left == right
 
         case let (.delete(left), .delete(right)):
-            return left == right
+            left == right
 
         case let (.update(left), .update(right)):
-            return left == right
+            left == right
 
         case let (.move(leftFrom, leftTo), .move(rightFrom, rightTo)):
-            return leftFrom == rightFrom && leftTo == rightTo
+            leftFrom == rightFrom && leftTo == rightTo
 
         case (.insert, _), (.update, _), (.delete, _), (.move, _):
-            return false
+            false
         }
     }
 }
@@ -1075,11 +1075,10 @@ private extension FetchedResultsController {
             guard let keyPath = sort.key, keyPath != "self" else {
                 continue
             }
-            let isSectionNameKeyPath: Bool
-            if sectionNameKeyPath != nil, index == 0 {
-                isSectionNameKeyPath = true
+            let isSectionNameKeyPath: Bool = if sectionNameKeyPath != nil, index == 0 {
+                true
             } else {
-                isSectionNameKeyPath = false
+                false
             }
 
             let observation = LegacyKeyValueObserving(

@@ -24,13 +24,12 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
     }
 
     fileprivate override func startObservingValue() {
-        let entities: [Entity]
-        if let value = value as? Entity {
-            entities = [value]
+        let entities: [Entity] = if let value = value as? Entity {
+            [value]
         } else if let value = value as? [Entity] {
-            entities = value
+            value
         } else {
-            entities = []
+            []
         }
 
         for entity in entities {

@@ -68,9 +68,9 @@ public extension FetchedResultsControllerProtocol {
 
         return sections.binarySearch {
             if descriptor.ascending {
-                return $0.name < name
+                $0.name < name
             } else {
-                return $0.name > name
+                $0.name > name
             }
         }
     }

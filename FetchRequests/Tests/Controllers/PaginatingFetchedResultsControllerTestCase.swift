@@ -58,11 +58,17 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
     override func setUp() {
         super.setUp()
+
+        cleanup()
     }
 
     override func tearDown() {
         super.tearDown()
 
+        cleanup()
+    }
+
+    private func cleanup() {
         controller = nil
         fetchCompletion = nil
         paginationCurrentResults = nil

@@ -55,12 +55,17 @@ class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
 
     override func setUp() {
         super.setUp()
+
+        cleanup()
     }
 
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
 
+        cleanup()
+    }
+
+    private func cleanup() {
         controller = nil
         fetchCompletion = nil
         associationRequest = nil
@@ -135,9 +140,9 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
             },
             sectionConfigCheck: { section in
                 if section.name == "0" {
-                    return SectionCollapseConfig(maxNumberOfItemsToDisplay: maxNumberOfItems)
+                    SectionCollapseConfig(maxNumberOfItemsToDisplay: maxNumberOfItems)
                 } else {
-                    return nil
+                    nil
                 }
             }
         )
@@ -166,9 +171,9 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
             },
             sectionConfigCheck: { section in
                 if section.name == "0" {
-                    return SectionCollapseConfig(maxNumberOfItemsToDisplay: maxNumberOfItems)
+                    SectionCollapseConfig(maxNumberOfItemsToDisplay: maxNumberOfItems)
                 } else {
-                    return nil
+                    nil
                 }
             }
         )
@@ -280,9 +285,9 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
             },
             sectionConfigCheck: { section in
                 if section.name == "0" {
-                    return SectionCollapseConfig(maxNumberOfItemsToDisplay: 3)
+                    SectionCollapseConfig(maxNumberOfItemsToDisplay: 3)
                 } else {
-                    return nil
+                    nil
                 }
             }
         )
