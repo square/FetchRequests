@@ -19,7 +19,7 @@ jobs:
           - tvOS
           - watchOS
           - macOS
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
         #uses: codecov/codecov-action@v2
         run: bash <(curl -s https://codecov.io/bash);
   validate:
-    runs-on: macos-12
+    runs-on: macos-14
     needs: build
     steps:
       - name: Checkout
