@@ -11,11 +11,13 @@ Pod::Spec.new do |s|
   tvos_deployment_target = '14.0'
   watchos_deployment_target = '7.0'
   macos_deployment_target = '11'
+  visionos_deployment_target = '1'
 
   s.ios.deployment_target = ios_deployment_target
   s.tvos.deployment_target = tvos_deployment_target
   s.watchos.deployment_target = watchos_deployment_target
   s.macos.deployment_target = macos_deployment_target
+  s.visionos.deployment_target = visionos_deployment_target
 
   s.swift_version = '5.0'
 
@@ -31,6 +33,7 @@ Pod::Spec.new do |s|
     test_spec.tvos.deployment_target = tvos_deployment_target
     test_spec.watchos.deployment_target = watchos_deployment_target
     test_spec.macos.deployment_target = macos_deployment_target
+    test_spec.visionos.deployment_target = visionos_deployment_target
   end
 
 end

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Speramus Inc. All rights reserved.
 //
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 
 //! Project version number for FetchRequests.
 FOUNDATION_EXPORT double FetchRequestsVersionNumber;

@@ -19,6 +19,7 @@ jobs:
           - tvOS
           - watchOS
           - macOS
+          #- visionOS
     runs-on: macos-14
     steps:
       - name: Checkout
@@ -28,6 +29,7 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
+          xcode: 15.2
           action: test
           code-coverage: true
       - name: Code Coverage
@@ -54,6 +56,7 @@ jobs:
         with:
           platform: iOS
           scheme: iOS Example
+          xcode: 15.2
           action: build
           warnings-as-errors: true
           working-directory: Example
