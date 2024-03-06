@@ -9,7 +9,6 @@
 import XCTest
 @testable import FetchRequests
 
-@MainActor
 class FetchRequestAssociationTestCase: XCTestCase {
     private typealias Association = FetchRequestAssociation<TestObject>
 
@@ -35,6 +34,7 @@ class FetchRequestAssociationTestCase: XCTestCase {
 // MARK: - Basic Associations
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testBasicNonOptionalAssociation() {
         let expected: [String: Int] = ["a": 2]
 
@@ -77,6 +77,7 @@ extension FetchRequestAssociationTestCase {
         observer.invalidate()
     }
 
+    @MainActor
     func testBasicOptionalAssociation() {
         let expected: [String: Int] = ["a": 2]
 
@@ -123,6 +124,7 @@ extension FetchRequestAssociationTestCase {
 // MARK: - Observed Creation Associations
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testCreatableNonOptionalAssociation() {
         let expected: [String: TestObject] = ["a": objects[0]]
 
@@ -186,6 +188,7 @@ extension FetchRequestAssociationTestCase {
         observer.invalidate()
     }
 
+    @MainActor
     func testCreatableOptionalAssociation() {
         let expected: [String: TestObject] = ["a": objects[0]]
 
@@ -253,6 +256,7 @@ extension FetchRequestAssociationTestCase {
 // MARK: - Observed Creation by RawData Associations
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testCreatableNonOptionalAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
@@ -318,6 +322,7 @@ extension FetchRequestAssociationTestCase {
         observer.invalidate()
     }
 
+    @MainActor
     func testCreatableOptionalAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
@@ -386,6 +391,7 @@ extension FetchRequestAssociationTestCase {
 // MARK: - Observed Creation Array Associations
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testCreatableNonOptionalArrayAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
@@ -454,6 +460,7 @@ extension FetchRequestAssociationTestCase {
         observer.invalidate()
     }
 
+    @MainActor
     func testCreatableOptionalArrayAssociationByRawData() {
         let expected: [TestObject] = [TestObject(id: "0")]
 
@@ -527,6 +534,7 @@ extension FetchRequestAssociationTestCase {
 // MARK: - FetchableEntityID Associations
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testNonOptionalFetchableEntityID() {
         let token = DataTestToken()
         let tokenGenerator: Association.TokenGenerator<TestFetchableEntityID, DataTestToken> = { object in
@@ -586,6 +594,7 @@ extension FetchRequestAssociationTestCase {
         observer.invalidate()
     }
 
+    @MainActor
     func testOptionalFetchableEntityID() {
         let token = DataTestToken()
         let tokenGenerator: Association.TokenGenerator<TestFetchableEntityID, DataTestToken> = { object in
@@ -647,6 +656,7 @@ extension FetchRequestAssociationTestCase {
 }
 
 extension FetchRequestAssociationTestCase {
+    @MainActor
     func testEntityFetchByID() {
         let id = TestFetchableEntityID(id: "a")
         let object = TestObject(id: "a")
@@ -662,6 +672,7 @@ extension FetchRequestAssociationTestCase {
         wait(for: [expectation], timeout: 5)
     }
 
+    @MainActor
     func testFaultByEntityID() {
         let object = TestObject(id: "a")
         let expected = TestObject(id: "0")
@@ -673,6 +684,7 @@ extension FetchRequestAssociationTestCase {
         XCTAssertEqual(nonOptionalResult, expected)
     }
 
+    @MainActor
     func testFaultByEntityIDArray() {
         let object = TestObject(id: "a")
         let expected = [TestObject(id: "0")]

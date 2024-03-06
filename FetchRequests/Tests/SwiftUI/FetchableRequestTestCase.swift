@@ -10,7 +10,6 @@ import XCTest
 
 @testable import FetchRequests
 
-@MainActor
 class FetchableRequestTestCase: XCTestCase {
 }
 
@@ -23,6 +22,7 @@ extension FetchableRequestTestCase {
         return FetchDefinition(request: request)
     }
 
+    @MainActor
     func testCreation() {
         var instance = FetchableRequest(
             definition: createFetchDefinition(),
@@ -40,6 +40,7 @@ extension FetchableRequestTestCase {
         XCTAssertTrue(instance.hasFetchedObjects)
     }
 
+    @MainActor
     func testSectionedCreation() {
         var instance = SectionedFetchableRequest(
             definition: createFetchDefinition(),
