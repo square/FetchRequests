@@ -22,14 +22,13 @@ class Observable<Value> {
     fileprivate var observers: Atomic<[UUID: Handler]> = Atomic(wrappedValue: [:])
 
     var wrappedValue: Value {
-        @MainActor(unsafe)
         didSet {
-            assert(Thread.isMainThread)
+            unsafeHandler {
+                let change = Change(oldValue: oldValue, newValue: wrappedValue)
+                let observers = self.observers.wrappedValue
 
-            let change = Change(oldValue: oldValue, newValue: wrappedValue)
-            let observers = self.observers.wrappedValue
-
-            observers.values.forEach { $0(change) }
+                observers.values.forEach { $0(change) }
+            }
         }
     }
 
@@ -44,6 +43,13 @@ class Observable<Value> {
         }
         return token
     }
+}
+
+@MainActor(unsafe)
+private func unsafeHandler(for handler: @MainActor () -> Void) {
+    assert(Thread.isMainThread)
+    // This is a dumb wrapper, but I can't otherwise have a "clean" compile
+    handler()
 }
 
 extension Observable where Value: Equatable {
