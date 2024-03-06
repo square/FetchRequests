@@ -22,9 +22,9 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build
-        uses: mxcl/xcodebuild@v1
+        uses: mxcl/xcodebuild@v2
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
@@ -38,15 +38,19 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Swift Lint
-        run: swiftlint --strict
+        run: |
+          command -v swiftlint || brew install --quiet swiftlint
+          swiftlint --reporter github-actions-logging --strict
       - name: Swift Format
-        run: swiftformat --lint .
+        run: |
+          command -v swiftformat || brew install --quiet swiftformat
+          swiftformat --reporter github-actions-log --lint .
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
-        uses: mxcl/xcodebuild@v1
+        uses: mxcl/xcodebuild@v2
         with:
           platform: iOS
           scheme: iOS Example
