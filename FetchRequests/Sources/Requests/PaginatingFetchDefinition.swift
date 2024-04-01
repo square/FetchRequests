@@ -41,15 +41,22 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
 private extension InternalFetchResultsControllerProtocol {
     @MainActor
     func performPagination(
-        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
+        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest,
+        completion: @escaping (_ hasPageResults: Bool) -> Void
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
             guard let pageResults else {
+                completion(false)
                 return
             }
+
             performOnMainThread {
                 self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            }
+
+            DispatchQueue.main.async {
+                completion(!pageResults.isEmpty)
             }
         }
     }
@@ -77,8 +84,17 @@ public class PaginatingFetchedResultsController<
     }
 
     @MainActor
-    public func performPagination() {
-        performPagination(with: paginatingDefinition.paginationRequest)
+    public func performPagination(completion: @escaping (_ hasPageResults: Bool) -> Void = { _ in }) {
+        performPagination(with: paginatingDefinition.paginationRequest, completion: completion)
+    }
+
+    @MainActor
+    public func performPagination() async -> Bool {
+        await withCheckedContinuation { continuation in
+            performPagination { hasPageResults in
+                continuation.resume(returning: hasPageResults)
+            }
+        }
     }
 }
 
@@ -105,6 +121,6 @@ public class PausablePaginatingFetchedResultsController<
 
     @MainActor
     public func performPagination() {
-        performPagination(with: paginatingDefinition.paginationRequest)
+        performPagination(with: paginatingDefinition.paginationRequest, completion: { _ in })
     }
 }
