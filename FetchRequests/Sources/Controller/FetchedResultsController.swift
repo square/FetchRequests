@@ -238,7 +238,8 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         return new
     }
 
-    private let debounceInsertsAndReloads: Bool
+    internal let debounceInsertsAndReloads: Bool
+
     private var objectsToReload: Set<FetchedObject> = []
     private var objectsToInsert: OrderedSet<FetchedObject> = []
 

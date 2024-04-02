@@ -174,6 +174,10 @@ extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     public var sections: [Section] {
         sectionsSnapshot ?? controller.sections
     }
+
+    internal var debounceInsertsAndReloads: Bool {
+        controller.debounceInsertsAndReloads
+    }
 }
 
 // MARK: - InternalFetchResultsControllerProtocol

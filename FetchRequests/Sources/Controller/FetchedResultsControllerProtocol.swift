@@ -45,12 +45,29 @@ public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservabl
     @MainActor
     func reset()
 
-    @MainActor
-    func performFetch() async
-    @MainActor
-    func resort(using newSortDescriptors: [NSSortDescriptor]) async
-
     func indexPath(for object: FetchedObject) -> IndexPath?
+}
+
+// MARK: - Async
+
+public extension FetchedResultsControllerProtocol {
+    @MainActor
+    func performFetch() async {
+        await withCheckedContinuation { continuation in
+            performFetch {
+                continuation.resume()
+            }
+        }
+    }
+
+    @MainActor
+    func resort(using newSortDescriptors: [NSSortDescriptor]) async {
+        await withCheckedContinuation { continuation in
+            resort(using: sortDescriptors) {
+                continuation.resume()
+            }
+        }
+    }
 }
 
 // MARK: - Index Paths
@@ -62,26 +79,8 @@ public extension FetchedResultsControllerProtocol {
     }
 
     @MainActor
-    func performFetch() async {
-        await withCheckedContinuation { continuation in
-            performFetch {
-                continuation.resume()
-            }
-        }
-    }
-
-    @MainActor
     func resort(using newSortDescriptors: [NSSortDescriptor]) {
         resort(using: newSortDescriptors, completion: {})
-    }
-
-    @MainActor
-    func resort(using newSortDescriptors: [NSSortDescriptor]) async {
-        await withCheckedContinuation { continuation in
-            resort(using: sortDescriptors) {
-                continuation.resume()
-            }
-        }
     }
 
     internal func idealSectionIndex(forSectionName name: String) -> Int {
