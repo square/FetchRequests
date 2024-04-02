@@ -17,7 +17,9 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
     private(set) var fetchCompletion: (([TestObject]) -> Void)!
 
     private var paginationCurrentResults: [TestObject]!
-    private var paginationCompletion: (([TestObject]?) -> Void)!
+    private var paginationRequestCompletion: (([TestObject]?) -> Void)!
+
+    private var performPaginationCompletionResult: Bool!
 
     private var associationRequest: TestObject.AssociationRequest!
 
@@ -35,7 +37,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         }
         let paginationRequest: PaginatingFetchDefinition<TestObject>.PaginationRequest = { [unowned self] currentResults, completion in
             self.paginationCurrentResults = currentResults
-            self.paginationCompletion = completion
+            self.paginationRequestCompletion = completion
         }
 
         let desiredAssociations = TestObject.fetchRequestAssociations(
@@ -72,7 +74,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         controller = nil
         fetchCompletion = nil
         paginationCurrentResults = nil
-        paginationCompletion = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
         associationRequest = nil
         inclusionCheck = nil
 
@@ -124,7 +127,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         fetchCompletion = nil
         paginationCurrentResults = nil
-        paginationCompletion = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
         changeEvents.removeAll()
 
         // Trigger pagination
@@ -132,6 +136,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         let paginationObjectIDs = ["d", "f"]
 
         performPagination(paginationObjectIDs)
+
+        XCTAssertTrue(performPaginationCompletionResult)
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs + paginationObjectIDs)
@@ -161,7 +167,8 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         fetchCompletion = nil
         paginationCurrentResults = nil
-        paginationCompletion = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
         changeEvents.removeAll()
 
         // Trigger pagination
@@ -170,9 +177,12 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         performPagination(paginationObjectIDs)
 
+        XCTAssertTrue(performPaginationCompletionResult)
+
         fetchCompletion = nil
         paginationCurrentResults = nil
-        paginationCompletion = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
         changeEvents.removeAll()
 
         // Trigger insert
@@ -184,7 +194,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
 
         XCTAssertNil(fetchCompletion)
         XCTAssertNil(paginationCurrentResults)
-        XCTAssertNil(paginationCompletion)
+        XCTAssertNil(paginationRequestCompletion)
 
         XCTAssertEqual(controller.sections.count, 1)
         XCTAssertEqual(controller.sections[0].fetchedIDs, ["a", "b", "c", "d", "e", "f"])
@@ -192,6 +202,71 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(changeEvents.count, 1)
         XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
         XCTAssertEqual(changeEvents[0].object.id, "e")
+    }
+
+    func testPaginationHasObjects() async throws {
+        controller = PaginatingFetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        // Fetch some objects
+
+        let objectIDs = ["a", "b", "c"]
+
+        try performFetch(objectIDs)
+
+        fetchCompletion = nil
+        paginationCurrentResults = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
+        changeEvents.removeAll()
+
+        // Trigger pagination
+
+        let paginationObjectIDs = ["d", "f"]
+
+        performPagination(paginationObjectIDs)
+
+        XCTAssertTrue(performPaginationCompletionResult)
+
+        XCTAssertEqual(controller.sections.count, 1)
+        XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs + paginationObjectIDs)
+
+        XCTAssertEqual(changeEvents.count, 2)
+        XCTAssertEqual(changeEvents[0].change, FetchedResultsChange.insert(location: IndexPath(item: 3, section: 0)))
+        XCTAssertEqual(changeEvents[0].object.id, "d")
+        XCTAssertEqual(changeEvents[1].change, FetchedResultsChange.insert(location: IndexPath(item: 4, section: 0)))
+        XCTAssertEqual(changeEvents[1].object.id, "f")
+    }
+
+    func testPaginationDoesNotHaveObjects() async throws {
+        controller = PaginatingFetchedResultsController(
+            definition: createFetchDefinition(),
+            debounceInsertsAndReloads: false
+        )
+        controller.setDelegate(self)
+
+        // Fetch some objects
+
+        let objectIDs = ["a", "b", "c"]
+
+        try performFetch(objectIDs)
+
+        fetchCompletion = nil
+        paginationCurrentResults = nil
+        paginationRequestCompletion = nil
+        performPaginationCompletionResult = nil
+        changeEvents.removeAll()
+
+        // Trigger pagination
+
+        let paginationObjectIDs: [String] = []
+
+        performPagination(paginationObjectIDs)
+
+        XCTAssertFalse(performPaginationCompletionResult)
     }
 }
 
@@ -217,9 +292,11 @@ private extension PaginatingFetchedResultsControllerTestCase {
     }
 
     func performPagination(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) {
-        controller.performPagination()
+        controller.performPagination { hasPageResults in
+            self.performPaginationCompletionResult = hasPageResults
+        }
 
-        self.paginationCompletion(objects)
+        self.paginationRequestCompletion(objects)
 
         let hasAllObjects = objects.allSatisfy { controller.fetchedObjects.contains($0) }
         XCTAssertTrue(hasAllObjects, file: file, line: line)
