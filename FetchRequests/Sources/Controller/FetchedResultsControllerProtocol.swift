@@ -48,6 +48,28 @@ public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservabl
     func indexPath(for object: FetchedObject) -> IndexPath?
 }
 
+// MARK: - Async
+
+public extension FetchedResultsControllerProtocol {
+    @MainActor
+    func performFetch() async {
+        await withCheckedContinuation { continuation in
+            performFetch {
+                continuation.resume()
+            }
+        }
+    }
+
+    @MainActor
+    func resort(using newSortDescriptors: [NSSortDescriptor]) async {
+        await withCheckedContinuation { continuation in
+            resort(using: sortDescriptors) {
+                continuation.resume()
+            }
+        }
+    }
+}
+
 // MARK: - Index Paths
 
 public extension FetchedResultsControllerProtocol {

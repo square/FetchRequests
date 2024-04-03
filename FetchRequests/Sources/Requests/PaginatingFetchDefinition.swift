@@ -41,15 +41,28 @@ public class PaginatingFetchDefinition<FetchedObject: FetchableObject>: FetchDef
 private extension InternalFetchResultsControllerProtocol {
     @MainActor
     func performPagination(
-        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest
+        with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest,
+        willDebounceInsertsAndReloads: Bool,
+        completion: @escaping @MainActor (_ hasPageResults: Bool) -> Void
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
             guard let pageResults else {
+                completion(false)
                 return
             }
+
             performOnMainThread {
                 self?.manuallyInsert(objects: pageResults, emitChanges: true)
+            }
+
+            if willDebounceInsertsAndReloads {
+                // force this to run on the _next_ run loop, at which point any debounced insertions should have happened
+                DispatchQueue.main.async {
+                    completion(!pageResults.isEmpty)
+                }
+            } else {
+                completion(!pageResults.isEmpty)
             }
         }
     }
@@ -77,8 +90,21 @@ public class PaginatingFetchedResultsController<
     }
 
     @MainActor
-    public func performPagination() {
-        performPagination(with: paginatingDefinition.paginationRequest)
+    public func performPagination(completion: @escaping @MainActor (_ hasPageResults: Bool) -> Void = { _ in }) {
+        performPagination(
+            with: paginatingDefinition.paginationRequest,
+            willDebounceInsertsAndReloads: debounceInsertsAndReloads,
+            completion: completion
+        )
+    }
+
+    @MainActor
+    public func performPagination() async -> Bool {
+        await withCheckedContinuation { continuation in
+            performPagination { hasPageResults in
+                continuation.resume(returning: hasPageResults)
+            }
+        }
     }
 }
 
@@ -105,6 +131,10 @@ public class PausablePaginatingFetchedResultsController<
 
     @MainActor
     public func performPagination() {
-        performPagination(with: paginatingDefinition.paginationRequest)
+        performPagination(
+            with: paginatingDefinition.paginationRequest,
+            willDebounceInsertsAndReloads: debounceInsertsAndReloads,
+            completion: { _ in }
+        )
     }
 }
