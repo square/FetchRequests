@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
-## 6.0.4
+## 6.1.0
 Release TBD
 
 * Adds async operations for fetch and resort

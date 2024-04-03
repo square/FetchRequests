@@ -43,7 +43,7 @@ private extension InternalFetchResultsControllerProtocol {
     func performPagination(
         with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest,
         willDebounceInsertsAndReloads: Bool,
-        completion: @MainActor @escaping (_ hasPageResults: Bool) -> Void
+        completion: @escaping @MainActor (_ hasPageResults: Bool) -> Void
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
@@ -90,7 +90,7 @@ public class PaginatingFetchedResultsController<
     }
 
     @MainActor
-    public func performPagination(completion: @MainActor @escaping (_ hasPageResults: Bool) -> Void = { _ in }) {
+    public func performPagination(completion: @escaping @MainActor (_ hasPageResults: Bool) -> Void = { _ in }) {
         performPagination(
             with: paginatingDefinition.paginationRequest,
             willDebounceInsertsAndReloads: debounceInsertsAndReloads,
