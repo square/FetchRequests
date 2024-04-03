@@ -2,11 +2,12 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
-## 6.1.0
-Release TBD
+## [6.1](https://github.com/square/FetchRequests/releases/tag/6.1.0)
+Release 2024-04-03
 
-* Adds async operations for fetch and resort
-* Adds completion closure to performPagination, with a boolean value indicating if values were returned or not  
+* Add async overloads for `performFetch() and `resort(using:)`
+* Add completion closure to `performPagination()`, with a boolean value indicating if values were returned or not
+* Add async overload to `performPagination()`
 
 ## [6.0.3](https://github.com/square/FetchRequests/releases/tag/6.0.3)
 Released on 2024-03-06
@@ -23,7 +24,7 @@ Released on 2023-06-23
 
 * The demo now includes a SwiftUI example
 * Fix for SwiftUI when a FetchDefinition request is synchronous
-    
+
 ## [6.0](https://github.com/square/FetchRequests/releases/tag/6.0.0)
 Released on 2023-04-05
 
