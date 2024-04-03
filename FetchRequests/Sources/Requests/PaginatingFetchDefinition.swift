@@ -42,8 +42,8 @@ private extension InternalFetchResultsControllerProtocol {
     @MainActor
     func performPagination(
         with paginationRequest: PaginatingFetchDefinition<FetchedObject>.PaginationRequest,
-        debounceInsertsAndReloads: Bool,
-        completion: @escaping (_ hasPageResults: Bool) -> Void
+        willDebounceInsertsAndReloads: Bool,
+        completion: @MainActor @escaping (_ hasPageResults: Bool) -> Void
     ) {
         let currentResults = self.fetchedObjects
         paginationRequest(currentResults) { [weak self] pageResults in
@@ -56,7 +56,7 @@ private extension InternalFetchResultsControllerProtocol {
                 self?.manuallyInsert(objects: pageResults, emitChanges: true)
             }
 
-            if debounceInsertsAndReloads {
+            if willDebounceInsertsAndReloads {
                 // force this to run on the _next_ run loop, at which point any debounced insertions should have happened
                 DispatchQueue.main.async {
                     completion(!pageResults.isEmpty)
@@ -90,10 +90,10 @@ public class PaginatingFetchedResultsController<
     }
 
     @MainActor
-    public func performPagination(completion: @escaping (_ hasPageResults: Bool) -> Void = { _ in }) {
+    public func performPagination(completion: @MainActor @escaping (_ hasPageResults: Bool) -> Void = { _ in }) {
         performPagination(
             with: paginatingDefinition.paginationRequest,
-            debounceInsertsAndReloads: debounceInsertsAndReloads,
+            willDebounceInsertsAndReloads: debounceInsertsAndReloads,
             completion: completion
         )
     }
@@ -133,7 +133,7 @@ public class PausablePaginatingFetchedResultsController<
     public func performPagination() {
         performPagination(
             with: paginatingDefinition.paginationRequest,
-            debounceInsertsAndReloads: debounceInsertsAndReloads,
+            willDebounceInsertsAndReloads: debounceInsertsAndReloads,
             completion: { _ in }
         )
     }
