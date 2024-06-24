@@ -18,7 +18,7 @@ import WatchKit
 
 // MARK: - Delegate
 
-public enum FetchedResultsChange<Location: Equatable>: Equatable {
+public enum FetchedResultsChange<Location: Equatable & Sendable>: Equatable, Sendable {
     case insert(location: Location)
     case delete(location: Location)
     case update(location: Location)
@@ -151,7 +151,7 @@ public enum FetchedResultsError: Error {
 
 // MARK: - Sections
 
-public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable {
+public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable, Sendable {
     public let name: String
     public fileprivate(set) var objects: [FetchedObject]
 
@@ -171,7 +171,10 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 
 // MARK: - FetchedResultsController
 
-func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () -> Void) {
+func performOnMainThread(
+    async: Bool = true,
+    handler: @escaping @MainActor @Sendable () -> Void
+) {
     @MainActor(unsafe)
     func unsafeHandler() {
         handler()
@@ -188,7 +191,7 @@ func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () ->
     }
 }
 
-public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
+public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol, @unchecked Sendable {
     public typealias Delegate = FetchedResultsControllerDelegate<FetchedObject>
 
     public typealias Section = FetchedResultsSection<FetchedObject>
@@ -338,7 +341,9 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
 public extension FetchedResultsController {
     @MainActor
-    func performFetch(completion: @escaping @MainActor () -> Void) {
+    func performFetch(
+        completion: @escaping @MainActor @Sendable () -> Void
+    ) {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
@@ -353,7 +358,7 @@ public extension FetchedResultsController {
     @MainActor
     func resort(
         using newSortDescriptors: [NSSortDescriptor],
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         assert(Thread.isMainThread)
 
@@ -555,7 +560,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         assert(Thread.isMainThread)
 
@@ -573,7 +578,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
@@ -667,10 +672,10 @@ private extension FetchedResultsController {
     }
 
     @MainActor
-    func insert<C: Collection>(
+    func insert<C: Collection & Sendable>(
         _ objects: C,
         emitChanges: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) where C.Element == FetchedObject {
         // This is snapshotted because we're potentially about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
@@ -705,11 +710,11 @@ private extension FetchedResultsController {
         return sortedObjects
     }
 
-    private func unsafeInsert<C: Collection>(
+    private func unsafeInsert<C: Collection & Sendable>(
         _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) where C.Element == FetchedObject {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue

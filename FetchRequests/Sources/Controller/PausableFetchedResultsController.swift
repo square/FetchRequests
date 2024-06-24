@@ -127,12 +127,17 @@ public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
 
 extension PausableFetchedResultsController: FetchedResultsControllerProtocol {
     @MainActor
-    public func performFetch(completion: @escaping @MainActor () -> Void) {
+    public func performFetch(
+        completion: @escaping @MainActor @Sendable () -> Void
+    ) {
         controller.performFetch(completion: completion)
     }
 
     @MainActor
-    public func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping @MainActor () -> Void) {
+    public func resort(
+        using newSortDescriptors: [NSSortDescriptor],
+        completion: @escaping @MainActor @Sendable () -> Void
+    ) {
         controller.resort(using: newSortDescriptors, completion: completion)
     }
 

@@ -23,7 +23,7 @@ public protocol RawDataRepresentable<RawData> {
 }
 
 /// A class of types that should be fetchable via FetchRequests
-public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawDataRepresentable {
+public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawDataRepresentable, Sendable where ID: Sendable {
     /// Has this object been marked as deleted?
     var isDeleted: Bool { get }
 
