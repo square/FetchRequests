@@ -39,9 +39,14 @@ public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservabl
     var sortDescriptors: [NSSortDescriptor] { get }
 
     @MainActor
-    func performFetch(completion: @escaping @MainActor () -> Void)
+    func performFetch(
+        completion: @escaping @MainActor @Sendable () -> Void
+    )
     @MainActor
-    func resort(using newSortDescriptors: [NSSortDescriptor], completion: @escaping @MainActor () -> Void)
+    func resort(
+        using newSortDescriptors: [NSSortDescriptor],
+        completion: @escaping @MainActor @Sendable () -> Void
+    )
     @MainActor
     func reset()
 

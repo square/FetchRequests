@@ -15,7 +15,7 @@ struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
     var keyPath: PartialKeyPath<FetchedObject>
 }
 
-class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference {
+class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference, @unchecked Sendable {
     private var observations: [Entity: [InvalidatableToken]] = [:]
 
     fileprivate override func stopObservingValue() {
