@@ -1340,7 +1340,7 @@ private class Weak<Element: AnyObject>: NSObject {
 }
 
 private struct AssociatedKeys {
-    static var context = 0
+    nonisolated(unsafe) static var context = 0
 }
 
 private extension FetchableObjectProtocol where Self: NSObject {
