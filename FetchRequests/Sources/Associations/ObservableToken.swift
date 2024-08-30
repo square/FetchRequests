@@ -27,6 +27,11 @@ public protocol ObservableToken<Parameter>: InvalidatableToken {
     func observe(handler: @escaping @Sendable @MainActor (Parameter) -> Void)
 }
 
+/// This is a hack and should not be necessary
+private struct UnsafeSendableWrapper<Value>: @unchecked Sendable {
+    let value: Value
+}
+
 public class ObservableNotificationCenterToken: ObservableToken {
     private let name: Notification.Name
     private unowned let notificationCenter: NotificationCenter
@@ -46,8 +51,9 @@ public class ObservableNotificationCenterToken: ObservableToken {
             object: nil,
             queue: .main
         ) { notification in
+            let wrapper = UnsafeSendableWrapper(value: notification)
             MainActor.assumeIsolated {
-                handler(notification)
+                handler(wrapper.value)
             }
         }
     }
