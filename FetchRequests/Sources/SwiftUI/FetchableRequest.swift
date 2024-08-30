@@ -9,7 +9,7 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
-public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: DynamicProperty {
+public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: @preconcurrency DynamicProperty {
     @FetchableRequest
     private var base: FetchableResults<FetchedObject>
 
@@ -39,7 +39,7 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: Dynamic
         _base = FetchableRequest(controller: controller, animation: animation)
     }
 
-    @MainActor(unsafe)
+    @MainActor
     public mutating func update() {
         _base.update()
     }
@@ -50,7 +50,7 @@ private class Opaque<T> {
 }
 
 @propertyWrapper
-public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty {
+public struct FetchableRequest<FetchedObject: FetchableObject>: @preconcurrency DynamicProperty {
     @State
     public private(set) var wrappedValue = FetchableResults<FetchedObject>()
 
@@ -91,7 +91,7 @@ public struct FetchableRequest<FetchedObject: FetchableObject>: DynamicProperty 
         self.animation = animation
     }
 
-    @MainActor(unsafe)
+    @MainActor
     public mutating func update() {
         _wrappedValue.update()
         _fetchController.update()
