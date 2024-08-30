@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness, @unchecked Sendable {
     // swiftlint:disable implicitly_unwrapped_optional test_case_accessibility
 
     private(set) var controller: PaginatingFetchedResultsController<TestObject>!

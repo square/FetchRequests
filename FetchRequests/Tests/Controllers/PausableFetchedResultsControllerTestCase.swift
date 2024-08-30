@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness, @unchecked Sendable {
     // swiftlint:disable implicitly_unwrapped_optional test_case_accessibility
 
     private(set) var controller: PausableFetchedResultsController<TestObject>!
