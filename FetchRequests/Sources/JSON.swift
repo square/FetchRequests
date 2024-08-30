@@ -536,12 +536,12 @@ extension JSON: Decodable {
 
 // MARK: - NSNumber Helpers
 
-private let nsBool: NSNumber = true as NSNumber
-private let cfBool: CFBoolean = true as CFBoolean
-
 private extension NSNumber {
     var isBool: Bool {
-        type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
+        let nsBool: NSNumber = true as NSNumber
+        let cfBool: CFBoolean = true as CFBoolean
+
+        return type(of: self) == type(of: nsBool) || type(of: self) == type(of: cfBool)
     }
 
     var isFloatingPoint: Bool {
