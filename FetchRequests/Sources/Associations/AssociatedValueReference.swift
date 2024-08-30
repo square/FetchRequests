@@ -118,9 +118,7 @@ extension AssociatedValueReference {
         startObservingValue()
 
         creationObserver?.observeIfNeeded { [weak self] entity in
-            performOnMainThread { [weak self] in
-                self?.observedCreationEvent(with: entity)
-            }
+            self?.observedCreationEvent(with: entity)
         }
     }
 

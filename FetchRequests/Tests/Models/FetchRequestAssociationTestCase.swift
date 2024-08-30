@@ -786,9 +786,9 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
 }
 
 private class TestToken<Parameter>: ObservableToken {
-    var handler: ((Parameter) -> Void)?
+    var handler: (@Sendable @MainActor (Parameter) -> Void)?
 
-    func observe(handler: @escaping (Parameter) -> Void) {
+    func observe(handler: @escaping @Sendable @MainActor (Parameter) -> Void) {
         self.handler = handler
     }
 

@@ -1095,21 +1095,15 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.observeIfNeeded { [weak self] notification in
-            performOnMainThread { [weak self] in
-                self?.removeAllAssociatedValues()
-            }
+            self?.removeAllAssociatedValues()
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in
-            performOnMainThread { [weak self] in
-                self?.observedObjectUpdate(data)
-            }
+            self?.observedObjectUpdate(data)
         }
 
         for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
-                performOnMainThread { [weak self] in
-                    self?.handleDatabaseClear()
-                }
+                self?.handleDatabaseClear()
             }
         }
     }
