@@ -18,11 +18,11 @@ public protocol FetchableEntityID<FetchableEntity>: Hashable, Sendable {
 
     static func fetch(
         byID objectID: Self,
-        completion: @escaping @MainActor (FetchableEntity?) -> Void
+        completion: @escaping @Sendable @MainActor (FetchableEntity?) -> Void
     )
     static func fetch(
         byIDs objectIDs: [Self],
-        completion: @escaping @MainActor ([FetchableEntity]) -> Void
+        completion: @escaping @Sendable @MainActor ([FetchableEntity]) -> Void
     )
 }
 
@@ -33,7 +33,7 @@ extension FetchableEntityID {
 
     static func fetch(
         byID objectID: Self,
-        completion: @escaping @MainActor (FetchableEntity?) -> Void
+        completion: @escaping @Sendable @MainActor (FetchableEntity?) -> Void
     ) {
         self.fetch(byIDs: [objectID]) { objects in
             completion(objects.first)

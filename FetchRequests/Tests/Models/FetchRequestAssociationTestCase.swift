@@ -778,7 +778,10 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
         TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping @MainActor ([TestObject]) -> Void) {
+    class func fetch(
+        byIDs objectIDs: [TestFetchableEntityID],
+        completion: @escaping @Sendable @MainActor ([TestObject]) -> Void
+    ) {
         Task {
             await completion(self.fetch(byIDs: objectIDs))
         }
