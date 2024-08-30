@@ -28,7 +28,7 @@ public protocol ObservableToken<Parameter>: InvalidatableToken {
 }
 
 /// This is a hack and should not be necessary
-private struct UnsafeSendableWrapper<Value>: @unchecked Sendable {
+struct UnsafeSendableWrapper<Value>: @unchecked Sendable {
     let value: Value
 }
 

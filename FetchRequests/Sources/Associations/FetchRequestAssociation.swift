@@ -103,7 +103,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
@@ -127,7 +131,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
@@ -194,7 +202,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
@@ -257,7 +269,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
@@ -397,7 +413,9 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.oldValue, change.newValue)
+                    }
                 }
             }
         )
@@ -489,7 +507,9 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.oldValue, change.newValue)
+                    }
                 }
             }
         )
@@ -617,7 +637,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
@@ -741,7 +765,11 @@ public extension FetchRequestAssociation {
                     guard change.oldValue != change.newValue else {
                         return
                     }
-                    changeHandler(object, change.oldValue, change.newValue)
+
+                    let change = UnsafeSendableWrapper(value: change)
+                    MainActor.assumeIsolated {
+                        changeHandler(object, change.value.oldValue, change.value.newValue)
+                    }
                 }
             }
         )
