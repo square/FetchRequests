@@ -873,7 +873,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     @MainActor
-    private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) throws {
+    private func setupControllerForKVO(_ file: StaticString = #filePath, line: UInt = #line) throws {
         controller = FetchController(
             definition: createFetchDefinition(),
             sortDescriptors: [
@@ -1323,14 +1323,14 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 private extension CollapsibleSectionsFetchedResultsControllerTestCase {
     @MainActor
-    func performFetch(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) throws {
+    func performFetch(_ objectIDs: [String], file: StaticString = #filePath, line: UInt = #line) throws {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         try performFetch(objects, file: file, line: line)
     }
 
     @MainActor
-    func performFetch(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) throws {
+    func performFetch(_ objects: [TestObject], file: StaticString = #filePath, line: UInt = #line) throws {
         controller.performFetch()
 
         self.fetchCompletion(objects)
@@ -1340,7 +1340,7 @@ private extension CollapsibleSectionsFetchedResultsControllerTestCase {
     }
 
     // swiftlint:disable:next implicitly_unwrapped_optional
-    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> TestObject! {
+    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #filePath, line: UInt = #line) -> TestObject! {
         let object = controller.fetchedObjects[index]
 
         XCTAssertEqual(object.id, objectID, file: file, line: line)

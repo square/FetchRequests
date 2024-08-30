@@ -549,7 +549,7 @@ extension FetchedResultsControllerTestCase {
 
 extension FetchedResultsControllerTestCase {
     @MainActor
-    private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) throws {
+    private func setupControllerForKVO(_ file: StaticString = #filePath, line: UInt = #line) throws {
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
             sortDescriptors: [

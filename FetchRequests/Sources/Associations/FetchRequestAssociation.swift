@@ -27,7 +27,7 @@ public class FetchRequestAssociation<FetchedObject: FetchableObject> {
         _ completion: @escaping @MainActor ([AssociatedEntity]) -> Void
     ) -> Void
     /// Event that represents the creation of an associated value object
-    public typealias CreationObserved<Value, Comparison> = (Value?, Comparison) -> AssociationReplacement<Value>
+    public typealias CreationObserved<Value, Comparison> = @MainActor (Value?, Comparison) -> AssociationReplacement<Value>
     /// Start observing a source object
     public typealias TokenGenerator<Source, Token: ObservableToken> = (Source) -> Token?
 
