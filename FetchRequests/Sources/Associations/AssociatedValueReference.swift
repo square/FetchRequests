@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable, @unchecked Sendable {
     var id: FetchedObject.ID
     var keyPath: PartialKeyPath<FetchedObject>
 }
@@ -70,7 +70,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
     }
 }
 
-class AssociatedValueReference: NSObject {
+class AssociatedValueReference: NSObject, @unchecked Sendable {
     typealias CreationObserved = @MainActor (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
     typealias ChangeHandler = @MainActor (_ invalidate: Bool) -> Void
 
@@ -118,7 +118,7 @@ extension AssociatedValueReference {
         startObservingValue()
 
         creationObserver?.observeIfNeeded { [weak self] entity in
-            performOnMainThread {
+            performOnMainThread { [weak self] in
                 self?.observedCreationEvent(with: entity)
             }
         }

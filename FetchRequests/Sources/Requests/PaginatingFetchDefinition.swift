@@ -70,7 +70,7 @@ private extension InternalFetchResultsControllerProtocol {
 
 public class PaginatingFetchedResultsController<
     FetchedObject: FetchableObject
->: FetchedResultsController<FetchedObject> {
+>: FetchedResultsController<FetchedObject>, @unchecked Sendable {
     private unowned let paginatingDefinition: PaginatingFetchDefinition<FetchedObject>
 
     public init(

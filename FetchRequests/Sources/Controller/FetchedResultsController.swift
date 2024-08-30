@@ -85,45 +85,25 @@ public extension FetchedResultsControllerDelegate {
 
 // MARK: - DelegateThunk
 
-private class DelegateThunk<FetchedObject: FetchableObject> {
+private class DelegateThunk<FetchedObject: FetchableObject>: @unchecked Sendable {
     typealias Parent = FetchedResultsControllerDelegate<FetchedObject>
     typealias Controller = FetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
 
     private weak var parent: (any Parent)?
 
-    private let willChange: @MainActor (_ controller: Controller) -> Void
-    private let didChange: @MainActor (_ controller: Controller) -> Void
-
-    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
-
     init(_ parent: some Parent) {
         self.parent = parent
-
-        willChange = { [weak parent] controller in
-            parent?.controllerWillChangeContent(controller)
-        }
-        didChange = { [weak parent] controller in
-            parent?.controllerDidChangeContent(controller)
-        }
-
-        changeObject = { [weak parent] controller, object, change in
-            parent?.controller(controller, didChange: object, for: change)
-        }
-        changeSection = { [weak parent] controller, section, change in
-            parent?.controller(controller, didChange: section, for: change)
-        }
     }
 }
 
 extension DelegateThunk: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
-        self.willChange(controller)
+        self.parent?.controllerWillChangeContent(controller)
     }
 
     func controllerDidChangeContent(_ controller: Controller) {
-        self.didChange(controller)
+        self.parent?.controllerDidChangeContent(controller)
     }
 
     func controller(
@@ -131,7 +111,7 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        self.changeObject(controller, object, change)
+        self.parent?.controller(controller, didChange: object, for: change)
     }
 
     func controller(
@@ -139,7 +119,7 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
-        self.changeSection(controller, section, change)
+        self.parent?.controller(controller, didChange: section, for: change)
     }
 }
 
@@ -175,19 +155,16 @@ func performOnMainThread(
     async: Bool = true,
     handler: @escaping @MainActor @Sendable () -> Void
 ) {
-    @MainActor(unsafe)
-    func unsafeHandler() {
-        handler()
-    }
-
     if !Thread.isMainThread {
         if async {
             DispatchQueue.main.async(execute: handler)
         } else {
-            DispatchQueue.main.sync(execute: unsafeHandler)
+            DispatchQueue.main.sync(execute: handler)
         }
     } else {
-        unsafeHandler()
+        MainActor.assumeIsolated {
+            handler()
+        }
     }
 }
 
@@ -416,7 +393,9 @@ private extension FetchedResultsController {
             }
             return nil
         } else {
-            try fetchAssociatedValues(around: key)
+            try MainActor.assumeIsolated {
+                try fetchAssociatedValues(around: key)
+            }
 
             // On the off chance that the fetch is synchronous, return the new hash value
             let holder = associatedValues[key]
@@ -424,7 +403,7 @@ private extension FetchedResultsController {
         }
     }
 
-    @MainActor(unsafe)
+    @MainActor
     func fetchAssociatedValues(
         around key: AssociatedValueKey<FetchedObject>
     ) throws {
@@ -1116,19 +1095,19 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.observeIfNeeded { [weak self] notification in
-            performOnMainThread {
+            performOnMainThread { [weak self] in
                 self?.removeAllAssociatedValues()
             }
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in
-            performOnMainThread {
+            performOnMainThread { [weak self] in
                 self?.observedObjectUpdate(data)
             }
         }
 
         for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
-                performOnMainThread {
+                performOnMainThread { [weak self] in
                     self?.handleDatabaseClear()
                 }
             }

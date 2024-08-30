@@ -24,7 +24,7 @@ public protocol InvalidatableToken: AnyObject {
 public protocol ObservableToken<Parameter>: InvalidatableToken {
     associatedtype Parameter
 
-    func observe(handler: @escaping (Parameter) -> Void)
+    func observe(handler: @escaping @Sendable (Parameter) -> Void)
 }
 
 public class ObservableNotificationCenterToken: ObservableToken {
@@ -40,7 +40,7 @@ public class ObservableNotificationCenterToken: ObservableToken {
         self.notificationCenter = notificationCenter
     }
 
-    public func observe(handler: @escaping (Notification) -> Void) {
+    public func observe(handler: @escaping @Sendable (Notification) -> Void) {
         centerToken = notificationCenter.addObserver(
             forName: name,
             object: nil,
@@ -148,7 +148,7 @@ internal class LegacyKeyValueObserving<Object: NSObject, Value: Any>: NSObject, 
 }
 
 internal class FetchRequestObservableToken<Parameter>: ObservableToken {
-    typealias Handler = (Parameter) -> Void
+    typealias Handler = @Sendable (Parameter) -> Void
 
     private let _observe: (_ handler: @escaping Handler) -> Void
     private let _invalidate: () -> Void

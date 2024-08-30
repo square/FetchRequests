@@ -418,38 +418,18 @@ private class DelegateThunk<FetchedObject: FetchableObject> {
 
     private weak var parent: (any Parent)?
 
-    private let willChange: @MainActor (_ controller: Controller) -> Void
-    private let didChange: @MainActor (_ controller: Controller) -> Void
-
-    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
-
     init(_ parent: some Parent) {
         self.parent = parent
-
-        willChange = { [weak parent] controller in
-            parent?.controllerWillChangeContent(controller)
-        }
-        didChange = { [weak parent] controller in
-            parent?.controllerDidChangeContent(controller)
-        }
-
-        changeObject = { [weak parent] controller, object, change in
-            parent?.controller(controller, didChange: object, for: change)
-        }
-        changeSection = { [weak parent] controller, section, change in
-            parent?.controller(controller, didChange: section, for: change)
-        }
     }
 }
 
 extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
-        self.willChange(controller)
+        self.parent?.controllerWillChangeContent(controller)
     }
 
     func controllerDidChangeContent(_ controller: Controller) {
-        self.didChange(controller)
+        self.parent?.controllerDidChangeContent(controller)
     }
 
     func controller(
@@ -457,7 +437,7 @@ extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        self.changeObject(controller, object, change)
+        self.parent?.controller(controller, didChange: object, for: change)
     }
 
     func controller(
@@ -465,6 +445,6 @@ extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
-        self.changeSection(controller, section, change)
+        self.parent?.controller(controller, didChange: section, for: change)
     }
 }

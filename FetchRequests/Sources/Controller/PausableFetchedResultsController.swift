@@ -204,29 +204,9 @@ private class DelegateThunk<FetchedObject: FetchableObject> {
     private weak var parent: (any Parent)?
     private weak var pausableController: PausableController?
 
-    private let willChange: @MainActor (_ controller: PausableController) -> Void
-    private let didChange: @MainActor (_ controller: PausableController) -> Void
-
-    private let changeObject: @MainActor (_ controller: PausableController, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: @MainActor (_ controller: PausableController, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
-
     init(_ parent: some Parent, pausableController: PausableController) {
         self.parent = parent
         self.pausableController = pausableController
-
-        willChange = { [weak parent] controller in
-            parent?.controllerWillChangeContent(controller)
-        }
-        didChange = { [weak parent] controller in
-            parent?.controllerDidChangeContent(controller)
-        }
-
-        changeObject = { [weak parent] controller, object, change in
-            parent?.controller(controller, didChange: object, for: change)
-        }
-        changeSection = { [weak parent] controller, section, change in
-            parent?.controller(controller, didChange: section, for: change)
-        }
     }
 }
 
@@ -236,14 +216,14 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
             return
         }
         pausableController.objectWillChangeSubject.send()
-        self.controllerWillChangeContent(pausableController)
+        self.parent?.controllerWillChangeContent(pausableController)
     }
 
     func controllerDidChangeContent(_ controller: ParentController) {
         guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.controllerDidChangeContent(pausableController)
+        self.parent?.controllerDidChangeContent(pausableController)
         pausableController.objectDidChangeSubject.send()
     }
 
@@ -255,7 +235,7 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.controller(pausableController, didChange: object, for: change)
+        self.parent?.controller(pausableController, didChange: object, for: change)
     }
 
     func controller(
@@ -266,17 +246,17 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         guard let pausableController, !pausableController.isPaused else {
             return
         }
-        self.controller(pausableController, didChange: section, for: change)
+        self.parent?.controller(pausableController, didChange: section, for: change)
     }
 }
 
 extension DelegateThunk: PausableFetchedResultsControllerDelegate {
     public func controllerWillChangeContent(_ controller: PausableController) {
-        self.willChange(controller)
+        self.parent?.controllerWillChangeContent(controller)
     }
 
     public func controllerDidChangeContent(_ controller: PausableController) {
-        self.didChange(controller)
+        self.parent?.controllerDidChangeContent(controller)
     }
 
     public func controller(
@@ -284,7 +264,7 @@ extension DelegateThunk: PausableFetchedResultsControllerDelegate {
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        self.changeObject(controller, object, change)
+        self.parent?.controller(controller, didChange: object, for: change)
     }
 
     public func controller(
@@ -292,6 +272,6 @@ extension DelegateThunk: PausableFetchedResultsControllerDelegate {
         didChange section: FetchedResultsSection<FetchedObject>,
         for change: FetchedResultsChange<Int>
     ) {
-        self.changeSection(controller, section, change)
+        self.parent?.controller(controller, didChange: section, for: change)
     }
 }
