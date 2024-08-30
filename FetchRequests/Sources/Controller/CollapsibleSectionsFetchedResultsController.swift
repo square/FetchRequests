@@ -96,7 +96,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     public typealias Section = CollapsibleResultsSection<FetchedObject>
     public typealias SectionCollapseCheck = (_ section: BackingFetchController.Section) -> Bool
     public typealias SectionCollapseConfigCheck = (_ section: BackingFetchController.Section) -> SectionCollapseConfig?
-    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
 
     private var changedSectionsDuringContentChange: Set<String> = []
     private var deletedSectionsDuringContentChange: Set<String> = []

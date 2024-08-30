@@ -172,7 +172,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     public typealias Delegate = FetchedResultsControllerDelegate<FetchedObject>
 
     public typealias Section = FetchedResultsSection<FetchedObject>
-    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
 
     public let definition: FetchDefinition<FetchedObject>
     public let sectionNameKeyPath: SectionNameKeyPath?
@@ -235,12 +235,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    private lazy var context: Context<FetchedObject> = Context { [weak self] keyPath, objectID in
+    private lazy var context: Context<FetchedObject> = Context { [weak self] key in
         guard let self else {
             throw FetchedResultsError.objectNotFound
         }
 
-        return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
+        return try self.unsafeAssociatedValue(with: key)
     }
 
     public init(
@@ -374,11 +374,8 @@ public extension FetchedResultsController {
 
 private extension FetchedResultsController {
     func unsafeAssociatedValue(
-        with keyPath: PartialKeyPath<FetchedObject>,
-        forObjectID objectID: FetchedObject.ID
+        with key: AssociatedValueKey<FetchedObject>
     ) throws -> Any? {
-        let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
-
         if let holder = associatedValues[key] {
             return holder.value
         }
@@ -464,7 +461,7 @@ private extension FetchedResultsController {
     @MainActor
     func assignAssociatedValues(
         _ values: [FetchedObject.ID: Any],
-        with keyPath: PartialKeyPath<FetchedObject>,
+        with keyPath: PartialKeyPath<FetchedObject> & Sendable,
         for objects: [FetchedObject],
         references: [AssociatedValueKey<FetchedObject>: AssociatedValueReference],
         emitChanges: Bool = true
@@ -515,7 +512,7 @@ private extension FetchedResultsController {
     @MainActor
     func removeAssociatedValue(
         for object: FetchedObject,
-        keyPath: PartialKeyPath<FetchedObject>,
+        keyPath: PartialKeyPath<FetchedObject> & Sendable,
         emitChanges: Bool = true
     ) {
         assert(Thread.isMainThread)
@@ -1318,12 +1315,16 @@ private extension FetchedResultsController {
 // MARK: - Associated Values Extensions
 
 private class Context<FetchedObject: FetchableObject>: NSObject {
-    typealias Wrapped = (_ keyPath: PartialKeyPath<FetchedObject>, _ objectID: FetchedObject.ID) throws -> Any?
+    typealias Wrapped = (AssociatedValueKey<FetchedObject>) throws -> Any?
 
     let wrapped: Wrapped
 
-    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
-        try wrapped(keyPath, objectID)
+    func associatedValue(
+        with keyPath: PartialKeyPath<FetchedObject> & Sendable,
+        forObjectID objectID: FetchedObject.ID
+    ) throws -> Any? {
+        let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+        return try wrapped(key)
     }
 
     init(wrapped: @escaping Wrapped) {
@@ -1359,7 +1360,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
         }
     }
 
-    func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self>) throws -> Value? {
+    func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self> & Sendable) throws -> Value? {
         guard let context else {
             throw FetchedResultsError.objectNotFound
         }
@@ -1376,7 +1377,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, EntityID>,
+        on keyPath: KeyPath<Self, EntityID> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
         let fallback: (EntityID) -> EntityID.FetchableEntity? = { entityID in
@@ -1390,7 +1391,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, EntityID?>,
+        on keyPath: KeyPath<Self, EntityID?> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
         let fallback: (EntityID) -> EntityID.FetchableEntity? = { entityID in
@@ -1408,7 +1409,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, [EntityID]>,
+        on keyPath: KeyPath<Self, [EntityID]> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
         let fallback: ([EntityID]) -> [EntityID.FetchableEntity]? = { entityIDs in
@@ -1422,7 +1423,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, [EntityID]?>,
+        on keyPath: KeyPath<Self, [EntityID]?> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
         let fallback: ([EntityID]) -> [EntityID.FetchableEntity]? = { entityIDs in
@@ -1440,7 +1441,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, EntityID>,
+        on keyPath: KeyPath<Self, EntityID> & Sendable,
         fallback: (EntityID) -> Entity?
     ) -> Entity? {
         let entityID = self[keyPath: keyPath]
@@ -1455,7 +1456,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, EntityID?>,
+        on keyPath: KeyPath<Self, EntityID?> & Sendable,
         fallback: (EntityID) -> Entity?
     ) -> Entity? {
         guard let entityID = self[keyPath: keyPath] else {
@@ -1476,7 +1477,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, [EntityID]>,
+        on keyPath: KeyPath<Self, [EntityID]> & Sendable,
         fallback: ([EntityID]) -> [Entity]?
     ) -> [Entity]? {
         let entityID = self[keyPath: keyPath]
@@ -1494,7 +1495,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, [EntityID]?>,
+        on keyPath: KeyPath<Self, [EntityID]?> & Sendable,
         fallback: ([EntityID]) -> [Entity]?
     ) -> [Entity]? {
         guard let entityID = self[keyPath: keyPath] else {

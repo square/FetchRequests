@@ -10,9 +10,9 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable, @unchecked Sendable {
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable, Sendable {
     var id: FetchedObject.ID
-    var keyPath: PartialKeyPath<FetchedObject>
+    var keyPath: PartialKeyPath<FetchedObject> & Sendable
 }
 
 class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference, @unchecked Sendable {

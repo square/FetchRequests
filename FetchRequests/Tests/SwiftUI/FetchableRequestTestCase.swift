@@ -44,7 +44,7 @@ extension FetchableRequestTestCase {
     func testSectionedCreation() {
         var instance = SectionedFetchableRequest(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
         instance.update()

@@ -235,7 +235,7 @@ extension FetchedResultsControllerTestCase {
     func testFetchingIntoSections() throws {
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -283,7 +283,7 @@ extension FetchedResultsControllerTestCase {
     func testFetchingIntoSectionsAvoidsReplacingInstances() throws {
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -334,7 +334,7 @@ extension FetchedResultsControllerTestCase {
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -548,13 +548,14 @@ extension FetchedResultsControllerTestCase {
 // MARK: - Observed Events
 
 extension FetchedResultsControllerTestCase {
+    @MainActor
     private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) throws {
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -773,7 +774,7 @@ extension FetchedResultsControllerTestCase {
         // We need a custom controller so that sort descriptors is "empty"
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -1025,10 +1026,11 @@ extension FetchedResultsControllerTestCase {
 // MARK: - IndexPath Math
 
 extension FetchedResultsControllerTestCase {
+    @MainActor
     private func setupController() throws {
         controller = FetchedResultsController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 

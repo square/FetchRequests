@@ -24,7 +24,7 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: @precon
 
     public init(
         definition: FetchDefinition<FetchedObject>,
-        sectionNameKeyPath: KeyPath<FetchedObject, String>,
+        sectionNameKeyPath: KeyPath<FetchedObject, String> & Sendable,
         sortDescriptors: [NSSortDescriptor] = [],
         debounceInsertsAndReloads: Bool = true,
         animation: Animation? = nil

@@ -50,7 +50,7 @@ public extension PausableFetchedResultsControllerDelegate {
 public class PausableFetchedResultsController<FetchedObject: FetchableObject> {
     public typealias Delegate = PausableFetchedResultsControllerDelegate<FetchedObject>
     public typealias Section = FetchedResultsSection<FetchedObject>
-    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
 
     private let controller: FetchedResultsController<FetchedObject>
 

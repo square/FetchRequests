@@ -10,7 +10,6 @@ import XCTest
 import Foundation
 @testable import FetchRequests
 
-@MainActor
 protocol FetchedResultsControllerTestHarness {
     associatedtype FetchController: FetchedResultsControllerProtocol where
         FetchController.FetchedObject == TestObject

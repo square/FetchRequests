@@ -67,6 +67,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         inclusionCheck = nil
     }
 
+    @MainActor
     func testBasicFetch() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
@@ -81,6 +82,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
     }
 
+    @MainActor
     func testResort() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
@@ -97,6 +99,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
+    @MainActor
     func testExpectInsertFromBroadcastNotification() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
@@ -134,6 +137,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssert(changeEvents.isEmpty)
     }
 
+    @MainActor
     func testExpectPausedInsertFromBroadcastNotification() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
@@ -180,6 +184,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertEqual(changeEvents.count, 0)
     }
 
+    @MainActor
     func testResetClearsPaused() throws {
         controller = PausableFetchedResultsController(
             definition: createFetchDefinition(),
@@ -197,12 +202,13 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
         XCTAssertFalse(controller.isPaused)
     }
 
+    @MainActor
     func testWrappedProperties() throws {
         let fetchDefinition = createFetchDefinition()
 
         controller = PausableFetchedResultsController(
             definition: fetchDefinition,
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -226,6 +232,7 @@ class PausableFetchedResultsControllerTestCase: XCTestCase, FetchedResultsContro
 // MARK: - Paginating
 
 extension PausableFetchedResultsControllerTestCase {
+    @MainActor
     func testCanCreatePausableVariation() throws {
         let baseDefinition = createFetchDefinition()
 
@@ -246,7 +253,7 @@ extension PausableFetchedResultsControllerTestCase {
 
         let controller = PausablePaginatingFetchedResultsController(
             definition: fetchDefinition,
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
         self.controller = controller
