@@ -2,7 +2,6 @@ disabled_rules:
   - file_length
   - function_parameter_count
   - nesting
-  - non_optional_string_data_conversion
   - opening_brace
   - unused_closure_parameter
   - unused_optional_binding
@@ -110,4 +109,4 @@ deployment_target:
   tvOS_deployment_target: 14
   watchOS_deployment_target: 7
   macOS_deployment_target: 11
-  visionOS_deployment_target: 1
+  # visionOS_deployment_target: 1

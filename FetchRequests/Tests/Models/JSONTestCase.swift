@@ -6,6 +6,7 @@
 //  Copyright © 2019 Speramus Inc. All rights reserved.
 //
 
+import Foundation
 import XCTest
 
 @testable import FetchRequests
@@ -253,9 +254,7 @@ extension JSONTestCase {
         let data = try JSONSerialization.data(withJSONObject: dict)
         let jsonFromData = JSON(data)
 
-        guard let jsonString = String(data: data, encoding: .utf8) else {
-            throw URLError(.cannotDecodeRawData)
-        }
+        let jsonString = String(decoding: data, as: UTF8.self)
         let jsonFromString = JSON(parsing: jsonString)
 
         XCTAssertNotNil(jsonFromData)
