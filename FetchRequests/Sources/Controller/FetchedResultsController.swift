@@ -152,7 +152,7 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 // MARK: - FetchedResultsController
 
 func performOnMainThread(
-    async: Bool = true,
+    asynchronous async: Bool = true,
     handler: @escaping @MainActor @Sendable () -> Void
 ) {
     if !Thread.isMainThread {
@@ -161,6 +161,18 @@ func performOnMainThread(
         } else {
             DispatchQueue.main.sync(execute: handler)
         }
+    } else {
+        MainActor.assumeIsolated {
+            handler()
+        }
+    }
+}
+
+func performNonescapingSynchronouslyOnMainThread(
+    handler: @MainActor @Sendable () -> Void
+) {
+    if !Thread.isMainThread {
+        DispatchQueue.main.sync(execute: handler)
     } else {
         MainActor.assumeIsolated {
             handler()
@@ -260,7 +272,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     deinit {
-        performOnMainThread(async: false) {
+        performNonescapingSynchronouslyOnMainThread {
             self.reset(emitChanges: false)
         }
     }
