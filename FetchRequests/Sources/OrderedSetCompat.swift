@@ -22,6 +22,7 @@ struct OrderedSet<Element: Hashable> {
             reindex()
         }
     }
+
     private(set) var unordered: Set<Element>
     private var indexed: [Element: Int]
 

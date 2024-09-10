@@ -193,6 +193,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
             sortDescriptors = rawSortDescriptors.finalize(with: self)
         }
     }
+
     public private(set) var sortDescriptors: [NSSortDescriptor] = []
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
