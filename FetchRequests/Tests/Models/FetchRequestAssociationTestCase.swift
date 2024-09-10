@@ -774,11 +774,11 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
         self.init(id: entity.id)
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
+    static func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
         TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
-    class func fetch(
+    static func fetch(
         byIDs objectIDs: [TestFetchableEntityID],
         completion: @escaping @Sendable @MainActor ([TestObject]) -> Void
     ) {
