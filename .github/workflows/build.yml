@@ -20,9 +20,6 @@ jobs:
           - watchOS
           - macOS
           - visionOS
-        swift:
-          #- ~5.4
-          - ~6.0
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -32,7 +29,7 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
-          swift: ${{ matrix.swift }}
+          swift: ~6.0
           action: test
           code-coverage: true
       - name: Code Coverage
