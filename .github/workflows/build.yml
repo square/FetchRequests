@@ -19,24 +19,27 @@ jobs:
           - tvOS
           - watchOS
           - macOS
-          #- visionOS
-    runs-on: macos-14
+          - visionOS
+        swift:
+          #- ~5.4
+          - ~6.0
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
-        uses: mxcl/xcodebuild@v2
+        uses: mxcl/xcodebuild@v3
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
-          xcode: 15.2
+          swift: ${{ matrix.swift }}
           action: test
           code-coverage: true
       - name: Code Coverage
         #uses: codecov/codecov-action@v2
         run: bash <(curl -s https://codecov.io/bash);
   validate:
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: build
     steps:
       - name: Checkout
@@ -52,11 +55,11 @@ jobs:
       - name: Pod Lint
         run: pod lib lint --quick --fail-fast --verbose --skip-tests
       - name: Example Project
-        uses: mxcl/xcodebuild@v2
+        uses: mxcl/xcodebuild@v3
         with:
           platform: iOS
           scheme: iOS Example
-          xcode: 15.2
+          swift: ~6.0
           action: build
           warnings-as-errors: true
           working-directory: Example
