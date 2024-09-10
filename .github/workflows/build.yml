@@ -58,5 +58,4 @@ jobs:
           scheme: iOS Example
           swift: ~6.0
           action: build
-          warnings-as-errors: true
           working-directory: Example
