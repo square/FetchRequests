@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 `FetchRequests` adheres to [Semantic Versioning](https://semver.org/).
 
+## [7.0](https://github.com/square/FetchRequests/releases/tag/7.0.0)
+Release 2024-09-XX
+
+* Compiles cleanly in the Swift 6 language mode
+* Requires the Swift 6 compiler
+
 ## [6.1](https://github.com/square/FetchRequests/releases/tag/6.1.0)
 Release 2024-04-03
 
