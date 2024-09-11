@@ -14,7 +14,13 @@ import FetchRequests
 extension TestObject: FetchableObjectProtocol {
     func observeDataChanges(_ handler: @escaping @Sendable @MainActor () -> Void) -> InvalidatableToken {
         self.observe(\.data, options: [.old, .new]) { object, change in
-            guard let old = change.oldValue, let new = change.newValue, old != new else {
+            guard let old = change.oldValue, let new = change.newValue else {
+                return
+            }
+            let oldDict = old as NSDictionary
+            let newDict = new as NSDictionary
+
+            guard oldDict != newDict else {
                 return
             }
 
@@ -36,7 +42,7 @@ extension TestObject: FetchableObjectProtocol {
     }
 
     static func entityID(from data: RawData) -> ID? {
-        data.id?.string
+        data["id"] as? String
     }
 }
 
