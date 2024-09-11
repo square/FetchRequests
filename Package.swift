@@ -36,5 +36,5 @@ let package = Package(
             path: "FetchRequests/Tests"
         ),
     ],
-    swiftLanguageVersions: [.v6]
+    swiftLanguageModes: [.v6]
 )
