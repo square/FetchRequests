@@ -41,7 +41,7 @@ class ModelCreationToken<T: Model>: ObservableToken {
         notificationToken.invalidate()
     }
 
-    func observe(handler: @escaping (T.RawData) -> Void) {
+    func observe(handler: @escaping @Sendable @MainActor (T.RawData) -> Void) {
         let include = self.include
         notificationToken.observe { notification in
             guard let object = notification.object as? T else {
@@ -66,7 +66,7 @@ class ModelClearedToken<T: Model>: ObservableToken {
         notificationToken.invalidate()
     }
 
-    func observe(handler: @escaping (()) -> Void) {
+    func observe(handler: @escaping @Sendable @MainActor (()) -> Void) {
         notificationToken.observe { notification in
             handler(())
         }
