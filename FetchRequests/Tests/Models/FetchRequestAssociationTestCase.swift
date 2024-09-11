@@ -774,11 +774,14 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
         self.init(id: entity.id)
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
+    static func fetch(byIDs objectIDs: [TestFetchableEntityID]) -> [TestObject] {
         TestObject.fetch(byIDs: objectIDs.map(\.id))
     }
 
-    class func fetch(byIDs objectIDs: [TestFetchableEntityID], completion: @escaping @MainActor ([TestObject]) -> Void) {
+    static func fetch(
+        byIDs objectIDs: [TestFetchableEntityID],
+        completion: @escaping @Sendable @MainActor ([TestObject]) -> Void
+    ) {
         Task {
             await completion(self.fetch(byIDs: objectIDs))
         }
@@ -786,9 +789,9 @@ private final class TestFetchableEntityID: NSObject, FetchableEntityID {
 }
 
 private class TestToken<Parameter>: ObservableToken {
-    var handler: ((Parameter) -> Void)?
+    var handler: (@Sendable @MainActor (Parameter) -> Void)?
 
-    func observe(handler: @escaping (Parameter) -> Void) {
+    func observe(handler: @escaping @Sendable @MainActor (Parameter) -> Void) {
         self.handler = handler
     }
 

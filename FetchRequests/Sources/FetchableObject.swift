@@ -23,7 +23,7 @@ public protocol RawDataRepresentable<RawData> {
 }
 
 /// A class of types that should be fetchable via FetchRequests
-public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawDataRepresentable {
+public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawDataRepresentable, Sendable where ID: Sendable {
     /// Has this object been marked as deleted?
     var isDeleted: Bool { get }
 
@@ -34,10 +34,10 @@ public protocol FetchableObjectProtocol: NSObjectProtocol, Identifiable, RawData
     static func entityID(from data: RawData) -> ID?
 
     /// Listen for changes to the underlying data of `self`
-    func observeDataChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken
+    func observeDataChanges(_ handler: @escaping @Sendable @MainActor () -> Void) -> InvalidatableToken
 
     /// Listen for changes to whether `self` is deleted
-    func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken
+    func observeIsDeletedChanges(_ handler: @escaping @Sendable @MainActor () -> Void) -> InvalidatableToken
 
     /// Enforce listening for changes to the underlying data of `self`
     func listenForUpdates()

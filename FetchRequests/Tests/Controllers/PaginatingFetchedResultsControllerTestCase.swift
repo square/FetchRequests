@@ -9,7 +9,7 @@
 import XCTest
 @testable import FetchRequests
 
-class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness {
+class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsControllerTestHarness, @unchecked Sendable {
     // swiftlint:disable implicitly_unwrapped_optional test_case_accessibility
 
     private(set) var controller: PaginatingFetchedResultsController<TestObject>!
@@ -82,6 +82,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         changeEvents = []
     }
 
+    @MainActor
     func testBasicFetch() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -96,6 +97,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs)
     }
 
+    @MainActor
     func testResort() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -112,6 +114,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(controller.sections[0].fetchedIDs, objectIDs.reversed())
     }
 
+    @MainActor
     func testPaginationTriggersLoad() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -149,6 +152,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(changeEvents[1].object.id, "f")
     }
 
+    @MainActor
     func testPaginationDoesNotDisableInserts() throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -204,6 +208,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(changeEvents[0].object.id, "e")
     }
 
+    @MainActor
     func testPaginationHasObjects() async throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -241,6 +246,7 @@ class PaginatingFetchedResultsControllerTestCase: XCTestCase, FetchedResultsCont
         XCTAssertEqual(changeEvents[1].object.id, "f")
     }
 
+    @MainActor
     func testPaginationDoesNotHaveObjects() async throws {
         controller = PaginatingFetchedResultsController(
             definition: createFetchDefinition(),
@@ -285,13 +291,15 @@ extension PaginatingFetchedResultsControllerTestCase: FetchedResultsControllerDe
 // MARK: - Helper Functions
 
 private extension PaginatingFetchedResultsControllerTestCase {
-    func performPagination(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) {
+    @MainActor
+    func performPagination(_ objectIDs: [String], file: StaticString = #filePath, line: UInt = #line) {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         performPagination(objects, file: file, line: line)
     }
 
-    func performPagination(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) {
+    @MainActor
+    func performPagination(_ objects: [TestObject], file: StaticString = #filePath, line: UInt = #line) {
         controller.performPagination { hasPageResults in
             self.performPaginationCompletionResult = hasPageResults
         }

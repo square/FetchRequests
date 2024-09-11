@@ -18,7 +18,7 @@ import WatchKit
 
 // MARK: - Delegate
 
-public enum FetchedResultsChange<Location: Equatable>: Equatable {
+public enum FetchedResultsChange<Location: Equatable & Sendable>: Equatable, Sendable {
     case insert(location: Location)
     case delete(location: Location)
     case update(location: Location)
@@ -85,45 +85,25 @@ public extension FetchedResultsControllerDelegate {
 
 // MARK: - DelegateThunk
 
-private class DelegateThunk<FetchedObject: FetchableObject> {
+private class DelegateThunk<FetchedObject: FetchableObject>: @unchecked Sendable {
     typealias Parent = FetchedResultsControllerDelegate<FetchedObject>
     typealias Controller = FetchedResultsController<FetchedObject>
     typealias Section = FetchedResultsSection<FetchedObject>
 
     private weak var parent: (any Parent)?
 
-    private let willChange: @MainActor (_ controller: Controller) -> Void
-    private let didChange: @MainActor (_ controller: Controller) -> Void
-
-    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
-    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
-
     init(_ parent: some Parent) {
         self.parent = parent
-
-        willChange = { [weak parent] controller in
-            parent?.controllerWillChangeContent(controller)
-        }
-        didChange = { [weak parent] controller in
-            parent?.controllerDidChangeContent(controller)
-        }
-
-        changeObject = { [weak parent] controller, object, change in
-            parent?.controller(controller, didChange: object, for: change)
-        }
-        changeSection = { [weak parent] controller, section, change in
-            parent?.controller(controller, didChange: section, for: change)
-        }
     }
 }
 
 extension DelegateThunk: FetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
-        self.willChange(controller)
+        self.parent?.controllerWillChangeContent(controller)
     }
 
     func controllerDidChangeContent(_ controller: Controller) {
-        self.didChange(controller)
+        self.parent?.controllerDidChangeContent(controller)
     }
 
     func controller(
@@ -131,7 +111,7 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
-        self.changeObject(controller, object, change)
+        self.parent?.controller(controller, didChange: object, for: change)
     }
 
     func controller(
@@ -139,7 +119,7 @@ extension DelegateThunk: FetchedResultsControllerDelegate {
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
-        self.changeSection(controller, section, change)
+        self.parent?.controller(controller, didChange: section, for: change)
     }
 }
 
@@ -151,7 +131,7 @@ public enum FetchedResultsError: Error {
 
 // MARK: - Sections
 
-public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable {
+public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, Identifiable, Sendable {
     public let name: String
     public fileprivate(set) var objects: [FetchedObject]
 
@@ -171,28 +151,40 @@ public struct FetchedResultsSection<FetchedObject: FetchableObject>: Equatable, 
 
 // MARK: - FetchedResultsController
 
-func performOnMainThread(async: Bool = true, handler: @escaping @MainActor () -> Void) {
-    @MainActor(unsafe)
-    func unsafeHandler() {
-        handler()
-    }
-
+func performOnMainThread(
+    asynchronous async: Bool = true,
+    handler: @escaping @MainActor @Sendable () -> Void
+) {
     if !Thread.isMainThread {
         if async {
             DispatchQueue.main.async(execute: handler)
         } else {
-            DispatchQueue.main.sync(execute: unsafeHandler)
+            DispatchQueue.main.sync(execute: handler)
         }
     } else {
-        unsafeHandler()
+        MainActor.assumeIsolated {
+            handler()
+        }
     }
 }
 
-public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol {
+func performNonescapingSynchronouslyOnMainThread(
+    handler: @MainActor @Sendable () -> Void
+) {
+    if !Thread.isMainThread {
+        DispatchQueue.main.sync(execute: handler)
+    } else {
+        MainActor.assumeIsolated {
+            handler()
+        }
+    }
+}
+
+public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject, FetchedResultsControllerProtocol, @unchecked Sendable {
     public typealias Delegate = FetchedResultsControllerDelegate<FetchedObject>
 
     public typealias Section = FetchedResultsSection<FetchedObject>
-    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String>
+    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
 
     public let definition: FetchDefinition<FetchedObject>
     public let sectionNameKeyPath: SectionNameKeyPath?
@@ -201,6 +193,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
             sortDescriptors = rawSortDescriptors.finalize(with: self)
         }
     }
+
     public private(set) var sortDescriptors: [NSSortDescriptor] = []
 
     private var observationTokens: [ObjectIdentifier: [InvalidatableToken]] = [:]
@@ -255,12 +248,12 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
         }
     }
 
-    private lazy var context: Context<FetchedObject> = Context { [weak self] keyPath, objectID in
+    private lazy var context: Context<FetchedObject> = Context { [weak self] key in
         guard let self else {
             throw FetchedResultsError.objectNotFound
         }
 
-        return try self.unsafeAssociatedValue(with: keyPath, forObjectID: objectID)
+        return try self.unsafeAssociatedValue(with: key)
     }
 
     public init(
@@ -280,7 +273,7 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
     }
 
     deinit {
-        performOnMainThread(async: false) {
+        performNonescapingSynchronouslyOnMainThread {
             self.reset(emitChanges: false)
         }
     }
@@ -338,7 +331,9 @@ public class FetchedResultsController<FetchedObject: FetchableObject>: NSObject,
 
 public extension FetchedResultsController {
     @MainActor
-    func performFetch(completion: @escaping @MainActor () -> Void) {
+    func performFetch(
+        completion: @escaping @MainActor @Sendable () -> Void
+    ) {
         startObservingNotificationsIfNeeded()
 
         definition.request { [weak self] objects in
@@ -353,7 +348,7 @@ public extension FetchedResultsController {
     @MainActor
     func resort(
         using newSortDescriptors: [NSSortDescriptor],
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         assert(Thread.isMainThread)
 
@@ -392,11 +387,8 @@ public extension FetchedResultsController {
 
 private extension FetchedResultsController {
     func unsafeAssociatedValue(
-        with keyPath: PartialKeyPath<FetchedObject>,
-        forObjectID objectID: FetchedObject.ID
+        with key: AssociatedValueKey<FetchedObject>
     ) throws -> Any? {
-        let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
-
         if let holder = associatedValues[key] {
             return holder.value
         }
@@ -411,7 +403,9 @@ private extension FetchedResultsController {
             }
             return nil
         } else {
-            try fetchAssociatedValues(around: key)
+            try MainActor.assumeIsolated {
+                try fetchAssociatedValues(around: key)
+            }
 
             // On the off chance that the fetch is synchronous, return the new hash value
             let holder = associatedValues[key]
@@ -419,7 +413,7 @@ private extension FetchedResultsController {
         }
     }
 
-    @MainActor(unsafe)
+    @MainActor
     func fetchAssociatedValues(
         around key: AssociatedValueKey<FetchedObject>
     ) throws {
@@ -480,7 +474,7 @@ private extension FetchedResultsController {
     @MainActor
     func assignAssociatedValues(
         _ values: [FetchedObject.ID: Any],
-        with keyPath: PartialKeyPath<FetchedObject>,
+        with keyPath: PartialKeyPath<FetchedObject> & Sendable,
         for objects: [FetchedObject],
         references: [AssociatedValueKey<FetchedObject>: AssociatedValueReference],
         emitChanges: Bool = true
@@ -531,7 +525,7 @@ private extension FetchedResultsController {
     @MainActor
     func removeAssociatedValue(
         for object: FetchedObject,
-        keyPath: PartialKeyPath<FetchedObject>,
+        keyPath: PartialKeyPath<FetchedObject> & Sendable,
         emitChanges: Bool = true
     ) {
         assert(Thread.isMainThread)
@@ -555,7 +549,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         assert(Thread.isMainThread)
 
@@ -573,7 +567,7 @@ private extension FetchedResultsController {
         updateFetchOrder: Bool = true,
         emitChanges: Bool = true,
         dropObjectsToInsert: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
@@ -667,10 +661,10 @@ private extension FetchedResultsController {
     }
 
     @MainActor
-    func insert<C: Collection>(
+    func insert<C: Collection & Sendable>(
         _ objects: C,
         emitChanges: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) where C.Element == FetchedObject {
         // This is snapshotted because we're potentially about to be off the main thread
         let fetchedObjectIDs = self.fetchedObjectIDs
@@ -705,11 +699,11 @@ private extension FetchedResultsController {
         return sortedObjects
     }
 
-    private func unsafeInsert<C: Collection>(
+    private func unsafeInsert<C: Collection & Sendable>(
         _ objects: C,
         fetchedObjectIDs: OrderedSet<FetchedObject.ID>,
         emitChanges: Bool = true,
-        completion: @escaping @MainActor () -> Void
+        completion: @escaping @MainActor @Sendable () -> Void
     ) where C.Element == FetchedObject {
         guard objects.count <= 100 || !Thread.isMainThread else {
             // Bounce ourself off of the main queue
@@ -1111,21 +1105,15 @@ private extension FetchedResultsController {
         assert(Thread.isMainThread)
 
         memoryPressureToken?.observeIfNeeded { [weak self] notification in
-            performOnMainThread {
-                self?.removeAllAssociatedValues()
-            }
+            self?.removeAllAssociatedValues()
         }
         definition.objectCreationToken.observeIfNeeded { [weak self] data in
-            performOnMainThread {
-                self?.observedObjectUpdate(data)
-            }
+            self?.observedObjectUpdate(data)
         }
 
         for dataResetToken in definition.dataResetTokens {
             dataResetToken.observeIfNeeded { [weak self] _ in
-                performOnMainThread {
-                    self?.handleDatabaseClear()
-                }
+                self?.handleDatabaseClear()
             }
         }
     }
@@ -1340,12 +1328,16 @@ private extension FetchedResultsController {
 // MARK: - Associated Values Extensions
 
 private class Context<FetchedObject: FetchableObject>: NSObject {
-    typealias Wrapped = (_ keyPath: PartialKeyPath<FetchedObject>, _ objectID: FetchedObject.ID) throws -> Any?
+    typealias Wrapped = (AssociatedValueKey<FetchedObject>) throws -> Any?
 
     let wrapped: Wrapped
 
-    func associatedValue(with keyPath: PartialKeyPath<FetchedObject>, forObjectID objectID: FetchedObject.ID) throws -> Any? {
-        try wrapped(keyPath, objectID)
+    func associatedValue(
+        with keyPath: PartialKeyPath<FetchedObject> & Sendable,
+        forObjectID objectID: FetchedObject.ID
+    ) throws -> Any? {
+        let key = AssociatedValueKey(id: objectID, keyPath: keyPath)
+        return try wrapped(key)
     }
 
     init(wrapped: @escaping Wrapped) {
@@ -1362,7 +1354,7 @@ private class Weak<Element: AnyObject>: NSObject {
 }
 
 private struct AssociatedKeys {
-    static var context = 0
+    nonisolated(unsafe) static var context = 0
 }
 
 private extension FetchableObjectProtocol where Self: NSObject {
@@ -1381,7 +1373,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
         }
     }
 
-    func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self>) throws -> Value? {
+    func getAssociatedValue<Value>(with keyPath: PartialKeyPath<Self> & Sendable) throws -> Value? {
         guard let context else {
             throw FetchedResultsError.objectNotFound
         }
@@ -1398,7 +1390,7 @@ private extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, EntityID>,
+        on keyPath: KeyPath<Self, EntityID> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
         let fallback: (EntityID) -> EntityID.FetchableEntity? = { entityID in
@@ -1412,7 +1404,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, EntityID?>,
+        on keyPath: KeyPath<Self, EntityID?> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> EntityID.FetchableEntity? {
         let fallback: (EntityID) -> EntityID.FetchableEntity? = { entityID in
@@ -1430,7 +1422,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, [EntityID]>,
+        on keyPath: KeyPath<Self, [EntityID]> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
         let fallback: ([EntityID]) -> [EntityID.FetchableEntity]? = { entityIDs in
@@ -1444,7 +1436,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: FetchableEntityID>(
-        on keyPath: KeyPath<Self, [EntityID]?>,
+        on keyPath: KeyPath<Self, [EntityID]?> & Sendable,
         performFetchIfNeeded: Bool = true
     ) -> [EntityID.FetchableEntity]? {
         let fallback: ([EntityID]) -> [EntityID.FetchableEntity]? = { entityIDs in
@@ -1462,7 +1454,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, EntityID>,
+        on keyPath: KeyPath<Self, EntityID> & Sendable,
         fallback: (EntityID) -> Entity?
     ) -> Entity? {
         let entityID = self[keyPath: keyPath]
@@ -1477,7 +1469,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, EntityID?>,
+        on keyPath: KeyPath<Self, EntityID?> & Sendable,
         fallback: (EntityID) -> Entity?
     ) -> Entity? {
         guard let entityID = self[keyPath: keyPath] else {
@@ -1498,7 +1490,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
 
 public extension FetchableObjectProtocol where Self: NSObject {
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, [EntityID]>,
+        on keyPath: KeyPath<Self, [EntityID]> & Sendable,
         fallback: ([EntityID]) -> [Entity]?
     ) -> [Entity]? {
         let entityID = self[keyPath: keyPath]
@@ -1516,7 +1508,7 @@ public extension FetchableObjectProtocol where Self: NSObject {
     }
 
     func performFault<EntityID: Equatable, Entity>(
-        on keyPath: KeyPath<Self, [EntityID]?>,
+        on keyPath: KeyPath<Self, [EntityID]?> & Sendable,
         fallback: ([EntityID]) -> [Entity]?
     ) -> [Entity]? {
         guard let entityID = self[keyPath: keyPath] else {

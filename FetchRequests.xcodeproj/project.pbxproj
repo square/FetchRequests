@@ -23,7 +23,6 @@
 		2ABB23462B98FC770015F902 /* PaginatingFetchDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508C22C6D18D007F73E9 /* PaginatingFetchDefinition.swift */; };
 		2ABB23472B98FC770015F902 /* ObservableToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508922C6D18D007F73E9 /* ObservableToken.swift */; };
 		2ABB23482B98FC770015F902 /* IndexPath+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */; };
-		2ABB23492B98FC770015F902 /* BoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* BoxedJSON.swift */; };
 		2ABB234A2B98FC770015F902 /* AssociatedValueReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508A22C6D18D007F73E9 /* AssociatedValueReference.swift */; };
 		2ABB234B2B98FC770015F902 /* CollapsibleSectionsFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508E22C6D18D007F73E9 /* CollapsibleSectionsFetchedResultsController.swift */; };
 		2ABB234C2B98FC770015F902 /* FetchDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509022C6D18D007F73E9 /* FetchDefinition.swift */; };
@@ -35,7 +34,6 @@
 		2ABB23522B98FC770015F902 /* CollectionType+SortDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */; };
 		2ABB23532B98FC770015F902 /* FetchableRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6623972E267D034D009B696F /* FetchableRequest.swift */; };
 		2ABB23542B98FC770015F902 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508822C6D18D007F73E9 /* Logging.swift */; };
-		2ABB23552B98FC770015F902 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* JSON.swift */; };
 		2ABB23562B98FC770015F902 /* FetchableEntityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509422C6D18D007F73E9 /* FetchableEntityID.swift */; };
 		2ABB23572B98FC770015F902 /* FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C509322C6D18D007F73E9 /* FetchableObject.swift */; };
 		2ABB23592B98FC770015F902 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABB23412B98FC770015F902 /* Collections */; };
@@ -45,9 +43,7 @@
 		2ABB23672B98FC7E0015F902 /* FetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift */; };
 		2ABB23682B98FC7E0015F902 /* FetchableRequestTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8096F826AA46C70035BFB4 /* FetchableRequestTestCase.swift */; };
 		2ABB23692B98FC7E0015F902 /* FetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */; };
-		2ABB236A2B98FC7E0015F902 /* JSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* JSONTestCase.swift */; };
 		2ABB236B2B98FC7E0015F902 /* PaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* PaginatingFetchedResultsControllerTestCase.swift */; };
-		2ABB236C2B98FC7E0015F902 /* FetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */; };
 		2ABB236D2B98FC7E0015F902 /* FetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */; };
 		2ABB236E2B98FC7E0015F902 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
 		2ABB236F2B98FC7E0015F902 /* TestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* TestObject+Associations.swift */; };
@@ -72,7 +68,6 @@
 		471C50BC22C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift */; };
 		471C50BE22C6D337007F73E9 /* TestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B222C6D337007F73E9 /* TestObject.swift */; };
 		471C50BF22C6D337007F73E9 /* FetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */; };
-		471C50C022C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */; };
 		471C50C122C6D337007F73E9 /* TestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */; };
 		47A6ECCE22CA8FA80034A854 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		47A6ECD022CA8FA80034A854 /* PaginatingFetchDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C508C22C6D18D007F73E9 /* PaginatingFetchDefinition.swift */; };
@@ -109,7 +104,6 @@
 		47A6ED2022CA90640034A854 /* TestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */; };
 		47A6ED2122CA90640034A854 /* FetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift */; };
 		47A6ED2222CA90640034A854 /* FetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */; };
-		47A6ED2322CA90640034A854 /* FetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */; };
 		47A6ED2422CA90640034A854 /* TestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B222C6D337007F73E9 /* TestObject.swift */; };
 		47A6ED2522CA90640034A854 /* FetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */; };
 		47A6ED3022CA90A20034A854 /* FetchRequests.h in Headers */ = {isa = PBXBuildFile; fileRef = 471C506F22C6D0DB007F73E9 /* FetchRequests.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -133,7 +127,6 @@
 		47A6ED5122CA90A40034A854 /* TestObject+FetchableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */; };
 		47A6ED5222CA90A40034A854 /* FetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift */; };
 		47A6ED5322CA90A40034A854 /* FetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */; };
-		47A6ED5422CA90A40034A854 /* FetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */; };
 		47A6ED5522CA90A40034A854 /* TestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B222C6D337007F73E9 /* TestObject.swift */; };
 		47A6ED5622CA90A40034A854 /* FetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */; };
 		47A6ED6422CAA6060034A854 /* FetchRequests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A6ED1522CA905A0034A854 /* FetchRequests.framework */; };
@@ -150,20 +143,9 @@
 		47B31B562330697200D6EB66 /* PausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* PausableFetchedResultsControllerTestCase.swift */; };
 		47B31B572330697500D6EB66 /* PaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* PaginatingFetchedResultsControllerTestCase.swift */; };
 		47B31B582330697700D6EB66 /* FetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */; };
-		47C4ECE52335E969004F16D0 /* JSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* JSONTestCase.swift */; };
-		47C4ECE62335E969004F16D0 /* JSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* JSONTestCase.swift */; };
-		47C4ECE72335E969004F16D0 /* JSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* JSONTestCase.swift */; };
 		47C4ECE923361358004F16D0 /* LoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* LoggingTestCase.swift */; };
 		47C4ECEA23361AF6004F16D0 /* LoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* LoggingTestCase.swift */; };
 		47C4ECEB23361AF7004F16D0 /* LoggingTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE823361358004F16D0 /* LoggingTestCase.swift */; };
-		47D33F072334163100E247E4 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* JSON.swift */; };
-		47D33F082334163100E247E4 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* JSON.swift */; };
-		47D33F092334163100E247E4 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* JSON.swift */; };
-		47D33F0A2334163100E247E4 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D33F062334163100E247E4 /* JSON.swift */; };
-		47FB808F237CE816008F5438 /* BoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* BoxedJSON.swift */; };
-		47FB8090237CE816008F5438 /* BoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* BoxedJSON.swift */; };
-		47FB8091237CE816008F5438 /* BoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* BoxedJSON.swift */; };
-		47FB8092237CE816008F5438 /* BoxedJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FB808E237CE816008F5438 /* BoxedJSON.swift */; };
 		6623972F267D034D009B696F /* FetchableRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6623972E267D034D009B696F /* FetchableRequest.swift */; };
 		66239730267D034D009B696F /* FetchableRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6623972E267D034D009B696F /* FetchableRequest.swift */; };
 		66239731267D034D009B696F /* FetchableRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6623972E267D034D009B696F /* FetchableRequest.swift */; };
@@ -173,9 +155,7 @@
 		66239739267D03C0009B696F /* PausableFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AE22C6D337007F73E9 /* PausableFetchedResultsControllerTestCase.swift */; };
 		6623973A267D03C0009B696F /* FetchedResultsControllerTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B022C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift */; };
 		6623973B267D03C0009B696F /* FetchRequestAssociationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */; };
-		6623973C267D03C0009B696F /* JSONTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C4ECE42335E969004F16D0 /* JSONTestCase.swift */; };
 		6623973D267D03C0009B696F /* PaginatingFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AF22C6D337007F73E9 /* PaginatingFetchedResultsControllerTestCase.swift */; };
-		6623973E267D03C0009B696F /* FetchableObjectProtocolTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */; };
 		6623973F267D03C0009B696F /* FetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */; };
 		66239740267D03C0009B696F /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50AC22C6D337007F73E9 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift */; };
 		66239741267D03C0009B696F /* TestObject+Associations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471C50B722C6D337007F73E9 /* TestObject+Associations.swift */; };
@@ -254,7 +234,6 @@
 		471C50B122C6D337007F73E9 /* FetchedResultsControllerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsControllerTestCase.swift; sourceTree = "<group>"; };
 		471C50B222C6D337007F73E9 /* TestObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestObject.swift; sourceTree = "<group>"; };
 		471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchRequestAssociationTestCase.swift; sourceTree = "<group>"; };
-		471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchableObjectProtocolTestCase.swift; sourceTree = "<group>"; };
 		471C50B622C6D337007F73E9 /* TestObject+FetchableObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestObject+FetchableObject.swift"; sourceTree = "<group>"; };
 		471C50B722C6D337007F73E9 /* TestObject+Associations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestObject+Associations.swift"; sourceTree = "<group>"; };
 		47A6ECE422CA8FA80034A854 /* FetchRequests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FetchRequests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -266,10 +245,7 @@
 		47B31B502330671E00D6EB66 /* TestObject+FetchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestObject+FetchRequests.swift"; sourceTree = "<group>"; };
 		47B4771722C6D7860008C56E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		47B4771822C6D7860008C56E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		47C4ECE42335E969004F16D0 /* JSONTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTestCase.swift; sourceTree = "<group>"; };
 		47C4ECE823361358004F16D0 /* LoggingTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingTestCase.swift; sourceTree = "<group>"; };
-		47D33F062334163100E247E4 /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
-		47FB808E237CE816008F5438 /* BoxedJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxedJSON.swift; sourceTree = "<group>"; };
 		6623972E267D034D009B696F /* FetchableRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchableRequest.swift; sourceTree = "<group>"; };
 		6623974B267D03C0009B696F /* FetchRequests-watchOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "FetchRequests-watchOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -449,8 +425,6 @@
 				47A6ED7722CAA92F0034A854 /* IndexPath+Convenience.swift */,
 				471C508B22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift */,
 				471C509322C6D18D007F73E9 /* FetchableObject.swift */,
-				47D33F062334163100E247E4 /* JSON.swift */,
-				47FB808E237CE816008F5438 /* BoxedJSON.swift */,
 				2AB9762F26A7A8DC0086AA77 /* OrderedSetCompat.swift */,
 			);
 			path = Sources;
@@ -503,9 +477,7 @@
 			isa = PBXGroup;
 			children = (
 				47C4ECE823361358004F16D0 /* LoggingTestCase.swift */,
-				47C4ECE42335E969004F16D0 /* JSONTestCase.swift */,
 				471C50B422C6D337007F73E9 /* FetchRequestAssociationTestCase.swift */,
-				471C50B522C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -768,7 +740,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = "";
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1530;
+				LastUpgradeCheck = 1610;
 				ORGANIZATIONNAME = "Speramus Inc.";
 				TargetAttributes = {
 					471C506B22C6D0DB007F73E9 = {
@@ -890,7 +862,6 @@
 				2ABB23462B98FC770015F902 /* PaginatingFetchDefinition.swift in Sources */,
 				2ABB23472B98FC770015F902 /* ObservableToken.swift in Sources */,
 				2ABB23482B98FC770015F902 /* IndexPath+Convenience.swift in Sources */,
-				2ABB23492B98FC770015F902 /* BoxedJSON.swift in Sources */,
 				2ABB234A2B98FC770015F902 /* AssociatedValueReference.swift in Sources */,
 				2ABB234B2B98FC770015F902 /* CollapsibleSectionsFetchedResultsController.swift in Sources */,
 				2ABB234C2B98FC770015F902 /* FetchDefinition.swift in Sources */,
@@ -902,7 +873,6 @@
 				2ABB23522B98FC770015F902 /* CollectionType+SortDescriptors.swift in Sources */,
 				2ABB23532B98FC770015F902 /* FetchableRequest.swift in Sources */,
 				2ABB23542B98FC770015F902 /* Logging.swift in Sources */,
-				2ABB23552B98FC770015F902 /* JSON.swift in Sources */,
 				2ABB23562B98FC770015F902 /* FetchableEntityID.swift in Sources */,
 				2ABB23572B98FC770015F902 /* FetchableObject.swift in Sources */,
 			);
@@ -918,9 +888,7 @@
 				2ABB23672B98FC7E0015F902 /* FetchedResultsControllerTestHarness.swift in Sources */,
 				2ABB23682B98FC7E0015F902 /* FetchableRequestTestCase.swift in Sources */,
 				2ABB23692B98FC7E0015F902 /* FetchRequestAssociationTestCase.swift in Sources */,
-				2ABB236A2B98FC7E0015F902 /* JSONTestCase.swift in Sources */,
 				2ABB236B2B98FC7E0015F902 /* PaginatingFetchedResultsControllerTestCase.swift in Sources */,
-				2ABB236C2B98FC7E0015F902 /* FetchableObjectProtocolTestCase.swift in Sources */,
 				2ABB236D2B98FC7E0015F902 /* FetchedResultsControllerTestCase.swift in Sources */,
 				2ABB236E2B98FC7E0015F902 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				2ABB236F2B98FC7E0015F902 /* TestObject+Associations.swift in Sources */,
@@ -936,7 +904,6 @@
 				471C509D22C6D18D007F73E9 /* PaginatingFetchDefinition.swift in Sources */,
 				471C509A22C6D18D007F73E9 /* ObservableToken.swift in Sources */,
 				47A6ED7822CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
-				47FB808F237CE816008F5438 /* BoxedJSON.swift in Sources */,
 				471C509B22C6D18D007F73E9 /* AssociatedValueReference.swift in Sources */,
 				471C509F22C6D18D007F73E9 /* CollapsibleSectionsFetchedResultsController.swift in Sources */,
 				471C50A122C6D18D007F73E9 /* FetchDefinition.swift in Sources */,
@@ -948,7 +915,6 @@
 				471C509C22C6D18D007F73E9 /* CollectionType+SortDescriptors.swift in Sources */,
 				6623972F267D034D009B696F /* FetchableRequest.swift in Sources */,
 				471C509922C6D18D007F73E9 /* Logging.swift in Sources */,
-				47D33F072334163100E247E4 /* JSON.swift in Sources */,
 				471C50A522C6D18D007F73E9 /* FetchableEntityID.swift in Sources */,
 				471C50A422C6D18D007F73E9 /* FetchableObject.swift in Sources */,
 			);
@@ -964,9 +930,7 @@
 				471C50BC22C6D337007F73E9 /* FetchedResultsControllerTestHarness.swift in Sources */,
 				2A8096F926AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				471C50BF22C6D337007F73E9 /* FetchRequestAssociationTestCase.swift in Sources */,
-				47C4ECE52335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47B31B572330697500D6EB66 /* PaginatingFetchedResultsControllerTestCase.swift in Sources */,
-				471C50C022C6D337007F73E9 /* FetchableObjectProtocolTestCase.swift in Sources */,
 				47B31B582330697700D6EB66 /* FetchedResultsControllerTestCase.swift in Sources */,
 				47B31B542330696D00D6EB66 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47B31B4F2330649300D6EB66 /* TestObject+Associations.swift in Sources */,
@@ -982,7 +946,6 @@
 				47A6ECD022CA8FA80034A854 /* PaginatingFetchDefinition.swift in Sources */,
 				47A6ECD122CA8FA80034A854 /* ObservableToken.swift in Sources */,
 				47A6ED7922CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
-				47FB8092237CE816008F5438 /* BoxedJSON.swift in Sources */,
 				47A6ECD322CA8FA80034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ECD422CA8FA80034A854 /* CollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ECD522CA8FA80034A854 /* FetchDefinition.swift in Sources */,
@@ -994,7 +957,6 @@
 				47A6ECDA22CA8FA80034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239732267D034D009B696F /* FetchableRequest.swift in Sources */,
 				47A6ECDC22CA8FA80034A854 /* Logging.swift in Sources */,
-				47D33F0A2334163100E247E4 /* JSON.swift in Sources */,
 				47A6ECDD22CA8FA80034A854 /* FetchableEntityID.swift in Sources */,
 				47A6ECDE22CA8FA80034A854 /* FetchableObject.swift in Sources */,
 			);
@@ -1007,7 +969,6 @@
 				47A6ED0122CA905A0034A854 /* PaginatingFetchDefinition.swift in Sources */,
 				47A6ED0222CA905A0034A854 /* ObservableToken.swift in Sources */,
 				47A6ED7A22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
-				47FB8091237CE816008F5438 /* BoxedJSON.swift in Sources */,
 				47A6ED0422CA905A0034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ED0522CA905A0034A854 /* CollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ED0622CA905A0034A854 /* FetchDefinition.swift in Sources */,
@@ -1019,7 +980,6 @@
 				47A6ED0B22CA905A0034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239731267D034D009B696F /* FetchableRequest.swift in Sources */,
 				47A6ED0D22CA905A0034A854 /* Logging.swift in Sources */,
-				47D33F092334163100E247E4 /* JSON.swift in Sources */,
 				47A6ED0E22CA905A0034A854 /* FetchableEntityID.swift in Sources */,
 				47A6ED0F22CA905A0034A854 /* FetchableObject.swift in Sources */,
 			);
@@ -1034,12 +994,10 @@
 				47A6ED1E22CA90640034A854 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED1F22CA90640034A854 /* PausableFetchedResultsControllerTestCase.swift in Sources */,
 				2A8096FB26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
-				47C4ECE72335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47A6ED2022CA90640034A854 /* TestObject+FetchableObject.swift in Sources */,
 				47A6ED2122CA90640034A854 /* FetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED2222CA90640034A854 /* FetchRequestAssociationTestCase.swift in Sources */,
 				47B31B532330671E00D6EB66 /* TestObject+FetchRequests.swift in Sources */,
-				47A6ED2322CA90640034A854 /* FetchableObjectProtocolTestCase.swift in Sources */,
 				47C4ECEB23361AF7004F16D0 /* LoggingTestCase.swift in Sources */,
 				47A6ED2422CA90640034A854 /* TestObject.swift in Sources */,
 				47A6ED2522CA90640034A854 /* FetchedResultsControllerTestCase.swift in Sources */,
@@ -1053,7 +1011,6 @@
 				47A6ED3222CA90A20034A854 /* PaginatingFetchDefinition.swift in Sources */,
 				47A6ED3322CA90A20034A854 /* ObservableToken.swift in Sources */,
 				47A6ED7B22CAA92F0034A854 /* IndexPath+Convenience.swift in Sources */,
-				47FB8090237CE816008F5438 /* BoxedJSON.swift in Sources */,
 				47A6ED3522CA90A20034A854 /* AssociatedValueReference.swift in Sources */,
 				47A6ED3622CA90A20034A854 /* CollapsibleSectionsFetchedResultsController.swift in Sources */,
 				47A6ED3722CA90A20034A854 /* FetchDefinition.swift in Sources */,
@@ -1065,7 +1022,6 @@
 				47A6ED3C22CA90A20034A854 /* CollectionType+SortDescriptors.swift in Sources */,
 				66239730267D034D009B696F /* FetchableRequest.swift in Sources */,
 				47A6ED3E22CA90A20034A854 /* Logging.swift in Sources */,
-				47D33F082334163100E247E4 /* JSON.swift in Sources */,
 				47A6ED3F22CA90A20034A854 /* FetchableEntityID.swift in Sources */,
 				47A6ED4022CA90A20034A854 /* FetchableObject.swift in Sources */,
 			);
@@ -1080,12 +1036,10 @@
 				47A6ED4F22CA90A40034A854 /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				47A6ED5022CA90A40034A854 /* PausableFetchedResultsControllerTestCase.swift in Sources */,
 				2A8096FA26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
-				47C4ECE62335E969004F16D0 /* JSONTestCase.swift in Sources */,
 				47A6ED5122CA90A40034A854 /* TestObject+FetchableObject.swift in Sources */,
 				47A6ED5222CA90A40034A854 /* FetchedResultsControllerTestHarness.swift in Sources */,
 				47A6ED5322CA90A40034A854 /* FetchRequestAssociationTestCase.swift in Sources */,
 				47B31B522330671E00D6EB66 /* TestObject+FetchRequests.swift in Sources */,
-				47A6ED5422CA90A40034A854 /* FetchableObjectProtocolTestCase.swift in Sources */,
 				47C4ECEA23361AF6004F16D0 /* LoggingTestCase.swift in Sources */,
 				47A6ED5522CA90A40034A854 /* TestObject.swift in Sources */,
 				47A6ED5622CA90A40034A854 /* FetchedResultsControllerTestCase.swift in Sources */,
@@ -1102,9 +1056,7 @@
 				6623973A267D03C0009B696F /* FetchedResultsControllerTestHarness.swift in Sources */,
 				2A8096FC26AA46C70035BFB4 /* FetchableRequestTestCase.swift in Sources */,
 				6623973B267D03C0009B696F /* FetchRequestAssociationTestCase.swift in Sources */,
-				6623973C267D03C0009B696F /* JSONTestCase.swift in Sources */,
 				6623973D267D03C0009B696F /* PaginatingFetchedResultsControllerTestCase.swift in Sources */,
-				6623973E267D03C0009B696F /* FetchableObjectProtocolTestCase.swift in Sources */,
 				6623973F267D03C0009B696F /* FetchedResultsControllerTestCase.swift in Sources */,
 				66239740267D03C0009B696F /* CollapsibleSectionsFetchedResultsControllerTestCase.swift in Sources */,
 				66239741267D03C0009B696F /* TestObject+Associations.swift in Sources */,
@@ -1155,6 +1107,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = xros;
 				TARGETED_DEVICE_FAMILY = 7;
 			};
@@ -1171,6 +1124,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = xros;
 				TARGETED_DEVICE_FAMILY = 7;
 			};
@@ -1179,13 +1133,13 @@
 		2ABB23762B98FC7E0015F902 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
@@ -1196,13 +1150,13 @@
 		2ABB23772B98FC7E0015F902 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = xros;
@@ -1215,6 +1169,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1283,9 +1238,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "";
 				TVOS_DEPLOYMENT_TARGET = 13.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1300,6 +1254,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1361,9 +1316,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "";
 				TVOS_DEPLOYMENT_TARGET = 13.0;
 				VALIDATE_PRODUCT = YES;
@@ -1385,6 +1339,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1400,6 +1355,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1407,13 +1363,13 @@
 		471C508422C6D0DC007F73E9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1423,13 +1379,13 @@
 		471C508522C6D0DC007F73E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1447,6 +1403,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = watchos;
 				TARGETED_DEVICE_FAMILY = 4;
 			};
@@ -1463,6 +1420,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = watchos;
 				TARGETED_DEVICE_FAMILY = 4;
 			};
@@ -1479,6 +1437,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 			};
@@ -1495,6 +1454,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 			};
@@ -1503,13 +1463,13 @@
 		47A6ED2A22CA90640034A854 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1520,13 +1480,13 @@
 		47A6ED2B22CA90640034A854 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -1545,6 +1505,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -1560,6 +1521,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -1567,7 +1529,6 @@
 		47A6ED5B22CA90A40034A854 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1575,6 +1536,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1584,7 +1546,6 @@
 		47A6ED5C22CA90A40034A854 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1592,6 +1553,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1601,13 +1563,13 @@
 		66239749267D03C0009B696F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1618,13 +1580,13 @@
 		6623974A267D03C0009B696F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = FetchRequests/TestsInfo.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.crewapp.FetchRequestsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;

@@ -1,13 +1,16 @@
---swiftversion 5.9
+--swiftversion 6.0
 
 --exclude Pods
 
 --rules andOperator
 --rules anyObjectProtocol
 
+--rules blankLinesBetweenScopes
 --rules blankLineAfterImports
 --rules braces
 --rules conditionalAssignment
+--rules consecutiveSpaces
+--rules consistentSwitchCaseSpacing
 --rules duplicateImports
 --rules elseOnSameLine
 --rules genericExtensions
@@ -24,14 +27,18 @@
 --rules leadingDelimiters
 --rules linebreakAtEndOfFile
 
+--rules redundantBreak
 --rules redundantClosure
 --rules redundantFileprivate
 --rules redundantGet
 --rules redundantInit
+--rules redundantLet
+--rules redundantLetError
 --rules redundantOptionalBinding
 --rules redundantParens
 --rules redundantPattern
 --rules redundantReturn
+--rules redundantTypedThrows
 --rules redundantVoidReturnType
 --rules semicolons
 
@@ -49,6 +56,7 @@
 
 --rules strongifiedSelf
 --rules todos
+--rules trailingClosures
 --rules trailingCommas
 --rules trailingSpace
 --rules typeSugar
@@ -58,5 +66,6 @@
   --wraparguments before-first
   --wrapcollections before-first
   --wrapparameters before-first
+  --closingparen balanced
 
 --rules wrapMultilineStatementBraces

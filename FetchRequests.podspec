@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'FetchRequests'
-  s.version = '6.1.0'
+  s.version = '7.0'
   s.license = 'MIT'
   s.summary = 'NSFetchedResultsController inspired eventing'
   s.homepage = 'https://github.com/square/FetchRequests'

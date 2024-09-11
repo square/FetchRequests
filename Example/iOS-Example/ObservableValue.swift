@@ -1,5 +1,5 @@
 //
-//  Observable.swift
+//  ObservableValue.swift
 //  iOS Example
 //
 //  Created by Adam Lickel on 9/22/19.
@@ -16,14 +16,14 @@ struct Change<Value> {
 }
 
 @propertyWrapper
-class Observable<Value> {
+class ObservableValue<Value> {
     typealias Handler = @MainActor (Change<Value>) -> Void
 
     fileprivate var observers: Atomic<[UUID: Handler]> = Atomic(wrappedValue: [:])
 
     var wrappedValue: Value {
         didSet {
-            unsafeHandler {
+            MainActor.assumeIsolated {
                 let change = Change(oldValue: oldValue, newValue: wrappedValue)
                 let observers = self.observers.wrappedValue
 
@@ -45,14 +45,7 @@ class Observable<Value> {
     }
 }
 
-@MainActor(unsafe)
-private func unsafeHandler(for handler: @MainActor () -> Void) {
-    assert(Thread.isMainThread)
-    // This is a dumb wrapper, but I can't otherwise have a "clean" compile
-    handler()
-}
-
-extension Observable where Value: Equatable {
+extension ObservableValue where Value: Equatable {
     func observeChanges(handler: @escaping Handler) -> InvalidatableToken {
         observe { change in
             guard change.oldValue != change.newValue else {
@@ -65,9 +58,9 @@ extension Observable where Value: Equatable {
 
 private class Token<Value>: InvalidatableToken {
     let uuid = UUID()
-    private weak var parent: Observable<Value>?
+    private weak var parent: ObservableValue<Value>?
 
-    init(parent: Observable<Value>) {
+    init(parent: ObservableValue<Value>) {
         self.parent = parent
     }
 

@@ -10,12 +10,12 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable, Sendable {
     var id: FetchedObject.ID
-    var keyPath: PartialKeyPath<FetchedObject>
+    var keyPath: PartialKeyPath<FetchedObject> & Sendable
 }
 
-class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference {
+class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference, @unchecked Sendable {
     private var observations: [Entity: [InvalidatableToken]] = [:]
 
     fileprivate override func stopObservingValue() {
@@ -70,7 +70,7 @@ class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValu
     }
 }
 
-class AssociatedValueReference: NSObject {
+class AssociatedValueReference: NSObject, @unchecked Sendable {
     typealias CreationObserved = @MainActor (_ value: Any?, _ entity: Any) -> AssociationReplacement<Any>
     typealias ChangeHandler = @MainActor (_ invalidate: Bool) -> Void
 
@@ -118,9 +118,7 @@ extension AssociatedValueReference {
         startObservingValue()
 
         creationObserver?.observeIfNeeded { [weak self] entity in
-            performOnMainThread {
-                self?.observedCreationEvent(with: entity)
-            }
+            self?.observedCreationEvent(with: entity)
         }
     }
 

@@ -11,7 +11,7 @@ import Foundation
 import FetchRequests
 
 @dynamicMemberLookup
-class Model: NSObject {
+final class Model: NSObject, @unchecked Sendable {
     typealias ID = String
 
     struct RawData: Codable, Identifiable, Equatable {
@@ -20,7 +20,7 @@ class Model: NSObject {
         var updatedAt: Date
     }
 
-    @Observable
+    @ObservableValue
     var data: RawData {
         willSet {
             integrate(data: newValue)
@@ -117,10 +117,12 @@ extension Model: FetchableObjectProtocol {
 
     func observeIsDeletedChanges(_ handler: @escaping @MainActor () -> Void) -> InvalidatableToken {
         self.observe(\.isDeleted, options: [.old, .new]) { object, change in
-            guard let old = change.oldValue, let new = change.newValue, old != new else {
-                return
+            MainActor.assumeIsolated {
+                guard let old = change.oldValue, let new = change.newValue, old != new else {
+                    return
+                }
+                handler()
             }
-            unsafeHandler(for: handler)
         }
     }
 
@@ -131,13 +133,6 @@ extension Model: FetchableObjectProtocol {
     func listenForUpdates() {
         observingUpdates = true
     }
-}
-
-@MainActor(unsafe)
-private func unsafeHandler(for handler: @MainActor () -> Void) {
-    assert(Thread.isMainThread)
-    // This is a dumb wrapper, but I can't otherwise have a "clean" compile
-    handler()
 }
 
 // MARK: - Private Helpers

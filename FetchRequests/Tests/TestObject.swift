@@ -10,12 +10,12 @@ import Foundation
 import FetchRequests
 
 final class TestObject: NSObject, @unchecked Sendable {
-    typealias RawData = JSON
+    typealias RawData = [String: Any]
 
     @objc dynamic var id: String
     @objc dynamic var tag: Int = 0
     @objc dynamic var sectionName: String = ""
-    @objc dynamic var data: RawData = [:] {
+    @objc dynamic var data: RawData = RawData() {
         didSet {
             integrate(data: data)
         }
@@ -64,8 +64,8 @@ final class TestObject: NSObject, @unchecked Sendable {
     }
 
     private func integrate(data: RawData) {
-        tag = data.tag?.int ?? 0
-        sectionName = data.sectionName?.string ?? ""
+        tag = (data["tag"] as? Int) ?? 0
+        sectionName = (data["sectionName"] as? String) ?? ""
     }
 }
 

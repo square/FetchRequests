@@ -71,7 +71,7 @@ extension TestObject {
 
     static func fetchRequestAssociations(
         matching: [PartialKeyPath<TestObject>],
-        request: @escaping @MainActor (AssociationRequest) -> Void
+        request: @escaping @Sendable @MainActor (AssociationRequest) -> Void
     ) -> [FetchRequestAssociation<TestObject>] {
         let tagString = FetchRequestAssociation<TestObject>(
             keyPath: \.tag,
@@ -108,11 +108,11 @@ extension TestObject {
 
 class WrappedObservableToken<T>: ObservableToken {
     private let notificationToken: ObservableNotificationCenterToken
-    private let transform: (Notification) -> T?
+    private let transform: @Sendable (Notification) -> T?
 
     init(
         name: Notification.Name,
-        transform: @escaping (Notification) -> T?
+        transform: @escaping @Sendable (Notification) -> T?
     ) {
         notificationToken = ObservableNotificationCenterToken(name: name)
         self.transform = transform
@@ -122,7 +122,7 @@ class WrappedObservableToken<T>: ObservableToken {
         notificationToken.invalidate()
     }
 
-    func observe(handler: @escaping (T) -> Void) {
+    func observe(handler: @escaping @Sendable @MainActor (T) -> Void) {
         let transform = self.transform
         notificationToken.observe { notification in
             guard let value = transform(notification) else {
@@ -134,17 +134,17 @@ class WrappedObservableToken<T>: ObservableToken {
 }
 
 class TestEntityObservableToken: WrappedObservableToken<TestObject.RawData> {
-    private let include: (TestObject.RawData) -> Bool
+    private let include: @Sendable (TestObject.RawData) -> Bool
 
     init(
         name: Notification.Name,
-        include: @escaping (TestObject.RawData) -> Bool = { _ in true }
+        include: @escaping @Sendable (TestObject.RawData) -> Bool = { _ in true }
     ) {
         self.include = include
         super.init(name: name, transform: { $0.object as? Parameter })
     }
 
-    override func observe(handler: @escaping (TestObject.RawData) -> Void) {
+    override func observe(handler: @escaping @Sendable @MainActor (TestObject.RawData) -> Void) {
         let include = self.include
         super.observe { data in
             guard include(data) else {
@@ -172,7 +172,7 @@ extension TestObject {
 extension FetchRequestAssociation where FetchedObject == TestObject {
     convenience init<AssociatedType: TestObject>(
         for associatedType: AssociatedType.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedType.ID?>,
+        keyPath: KeyPath<FetchedObject, AssociatedType.ID?> & Sendable,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
@@ -196,7 +196,7 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
 
     convenience init<AssociatedType: TestObject>(
         for associatedType: [AssociatedType].Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?>,
+        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?> & Sendable,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(

@@ -50,7 +50,9 @@ opt_in_rules:
   - optional_enum_case_matching
   - overridden_super_call
   - pattern_matching_keywords
+  - prefer_key_path
   - prefer_self_type_over_type_of_self
+  - private_swiftui_state
   - prohibited_super_call
   - private_outlet
   - private_subject
@@ -59,6 +61,7 @@ opt_in_rules:
   - redundant_nil_coalescing
   - redundant_objc_attribute
   - self_binding
+  - shorthand_argument
   - single_test_class
   - shorthand_optional_binding
   - sorted_first_last
@@ -106,3 +109,4 @@ deployment_target:
   tvOS_deployment_target: 14
   watchOS_deployment_target: 7
   macOS_deployment_target: 11
+  # visionOS_deployment_target: 1

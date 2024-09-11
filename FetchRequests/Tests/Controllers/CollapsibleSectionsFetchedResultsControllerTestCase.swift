@@ -10,7 +10,7 @@ import XCTest
 @testable import FetchRequests
 
 // swiftlint:disable:next type_name
-class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase {
+class CollapsibleSectionsFetchedResultsControllerTestCase: XCTestCase, @unchecked Sendable {
     private typealias FetchController = CollapsibleSectionsFetchedResultsController<TestObject>
 
     // swiftlint:disable implicitly_unwrapped_optional
@@ -100,7 +100,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testInitialSectionCollapse() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -136,7 +136,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
         let maxNumberOfItems = 4
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -168,7 +168,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
         let maxNumberOfItems = 4
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -208,7 +208,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testObjectUpdatesAfterExpanding() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -253,7 +253,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testIndexPath() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -287,7 +287,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testItemMovingSections() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -346,7 +346,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testInsertingItemsTriggersCollapse() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "0"
@@ -446,7 +446,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testBasicFetch() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false,
             initialSectionCollapseCheck: { section in
                 section.name == "1"
@@ -561,7 +561,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testFetchingIntoSections() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -609,7 +609,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
     func testFetchingIntoSectionsAvoidsReplacingInstances() throws {
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -660,7 +660,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \TestObject.id, ascending: true),
             ],
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -873,13 +873,13 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 extension CollapsibleSectionsFetchedResultsControllerTestCase {
     @MainActor
-    private func setupControllerForKVO(_ file: StaticString = #file, line: UInt = #line) throws {
+    private func setupControllerForKVO(_ file: StaticString = #filePath, line: UInt = #line) throws {
         controller = FetchController(
             definition: createFetchDefinition(),
             sortDescriptors: [
                 NSSortDescriptor(key: #keyPath(TestObject.tag), ascending: true),
             ],
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -1098,7 +1098,7 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
         // We need a custom controller so that sort descriptors is "empty"
         controller = FetchController(
             definition: createFetchDefinition(),
-            sectionNameKeyPath: \.sectionName,
+            sectionNameKeyPath: \TestObject.sectionName,
             debounceInsertsAndReloads: false
         )
 
@@ -1323,14 +1323,14 @@ extension CollapsibleSectionsFetchedResultsControllerTestCase {
 
 private extension CollapsibleSectionsFetchedResultsControllerTestCase {
     @MainActor
-    func performFetch(_ objectIDs: [String], file: StaticString = #file, line: UInt = #line) throws {
+    func performFetch(_ objectIDs: [String], file: StaticString = #filePath, line: UInt = #line) throws {
         let objects = objectIDs.compactMap { TestObject(id: $0) }
 
         try performFetch(objects, file: file, line: line)
     }
 
     @MainActor
-    func performFetch(_ objects: [TestObject], file: StaticString = #file, line: UInt = #line) throws {
+    func performFetch(_ objects: [TestObject], file: StaticString = #filePath, line: UInt = #line) throws {
         controller.performFetch()
 
         self.fetchCompletion(objects)
@@ -1340,7 +1340,7 @@ private extension CollapsibleSectionsFetchedResultsControllerTestCase {
     }
 
     // swiftlint:disable:next implicitly_unwrapped_optional
-    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #file, line: UInt = #line) -> TestObject! {
+    func getObjectAtIndex(_ index: Int, withObjectID objectID: String, file: StaticString = #filePath, line: UInt = #line) -> TestObject! {
         let object = controller.fetchedObjects[index]
 
         XCTAssertEqual(object.id, objectID, file: file, line: line)
