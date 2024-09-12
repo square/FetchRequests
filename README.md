@@ -2,12 +2,12 @@
 
 FetchRequests is an eventing library inspired by NSFetchedResultsController and written in Swift.
 
-[![Build Status](https://github.com/square/FetchRequests/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/square/FetchRequests/actions/workflows/build.yml)
+[![Swift 6](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fsquare%2FFetchRequests%2Fbadge%3Ftype%3Dswift-versions&logo=swift&logoColor=white&label=swift)](https://swiftpackageindex.com/square/FetchRequests)
+[![Release](https://img.shields.io/github/v/release/square/FetchRequests)](https://github.com/square/FetchRequests/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/square/FetchRequests/build.yml)](https://github.com/square/FetchRequests/actions/workflows/build.yml)
 [![codecov](https://img.shields.io/codecov/c/github/square/FetchRequests/main)](https://codecov.io/gh/square/FetchRequests)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
-[![Carthage Compatible](https://img.shields.io/badge/carthage-compatible-4BC51D)](https://github.com/Carthage/Carthage)
-[![Platform](https://img.shields.io/cocoapods/p/FetchRequests)](https://cocoapods.org/pods/FetchRequests)
-[![Pod License](https://img.shields.io/cocoapods/l/FetchRequests)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fsquare%2FFetchRequests%2Fbadge%3Ftype%3Dplatforms&logo=none&label=platforms)](https://swiftpackageindex.com/square/FetchRequests)
+[![License](https://img.shields.io/github/license/square/FetchRequests)](https://opensource.org/licenses/MIT)
 
 - [Features](#features)
 - [Usage](#usage)
@@ -50,7 +50,7 @@ It should be possible to further remove those restrictions, and some effort has 
 
 ### SwiftUI
 
-There are two SwiftUI Property Wrappers available for use, `FetchableRequest` and `SectionedFetchableRequest`. These are analagous to CoreData's property wrappers.
+There are two SwiftUI Property Wrappers available for use, `FetchableRequest` and `SectionedFetchableRequest`. These are analogous to CoreData's property wrappers.
 
 The controller will perform a fetch once and only once upon the first view render. After that point, it is dependent upon live update events.
 
@@ -96,9 +96,9 @@ struct MembersView: View {
 
 ## Requirements
 
-- iOS 13+ / macOS 10.15+ / tvOS 13+ / watchOS 6+
-- Xcode 12+
-- Swift 5+
+- iOS 13+ / macOS 10.15+ / tvOS 13+ / watchOS 6+ / visionOS 1+
+- Xcode 16+
+- Swift 6+
 
 When installing via SPM, we will use [Swift Collections](https://github.com/apple/swift-collections).
 Otherwise we will use a [less efficient OrderedSet](https://github.com/square/FetchRequests/blob/main/FetchRequests/Sources/OrderedSetCompat.swift).
@@ -111,12 +111,22 @@ Otherwise we will use a [less efficient OrderedSet](https://github.com/square/Fe
 
 ## Installation
 
+### Swift Package Manager
+
+Install with [Swift Package Manager](https://swift.org/package-manager/) by adding it to the `dependencies` value of your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/square/FetchRequests.git", from: "7.0.0")
+]
+```
+
 ### CocoaPods
 
 Install with [CocoaPods](http://cocoapods.org) by specifying the following in your `Podfile`:
 
 ```ruby
-pod 'FetchRequests', '~> 5.0'
+pod 'FetchRequests', '~> 7.0'
 ```
 
 ### Carthage
@@ -124,17 +134,7 @@ pod 'FetchRequests', '~> 5.0'
 Install with [Carthage](https://github.com/Carthage/Carthage) by specify the following in your `Cartfile`:
 
 ```
-github "square/FetchRequests" ~> 5.0
-```
-
-### Swift Package Manager
-
-Install with [Swift Package Manager](https://swift.org/package-manager/) by adding it to the `dependencies` value of your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/square/FetchRequests.git", from: "5.0.0")
-]
+github "square/FetchRequests" ~> 7.0
 ```
 
 ## Contributing
