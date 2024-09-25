@@ -8,8 +8,14 @@ import Foundation
 import Combine
 import SwiftUI
 
+#if compiler(>=6)
+extension SectionedFetchableRequest: @preconcurrency DynamicProperty {}
+#else
+extension SectionedFetchableRequest: DynamicProperty {}
+#endif
+
 @propertyWrapper
-public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: @preconcurrency DynamicProperty {
+public struct SectionedFetchableRequest<FetchedObject: FetchableObject> {
     @FetchableRequest
     private var base: FetchableResults<FetchedObject>
 
@@ -24,7 +30,7 @@ public struct SectionedFetchableRequest<FetchedObject: FetchableObject>: @precon
 
     public init(
         definition: FetchDefinition<FetchedObject>,
-        sectionNameKeyPath: KeyPath<FetchedObject, String> & Sendable,
+        sectionNameKeyPath: FetchedResultsController<FetchedObject>.SectionNameKeyPath,
         sortDescriptors: [NSSortDescriptor] = [],
         debounceInsertsAndReloads: Bool = true,
         animation: Animation? = nil
@@ -49,8 +55,14 @@ private class Opaque<T> {
     var value: T?
 }
 
+#if compiler(>=6)
+extension FetchableRequest: @preconcurrency DynamicProperty {}
+#else
+extension FetchableRequest: DynamicProperty {}
+#endif
+
 @propertyWrapper
-public struct FetchableRequest<FetchedObject: FetchableObject>: @preconcurrency DynamicProperty {
+public struct FetchableRequest<FetchedObject: FetchableObject> {
     @State
     public private(set) var wrappedValue = FetchableResults<FetchedObject>()
 

@@ -23,7 +23,7 @@ public protocol DoublyObservableObject: ObservableObject {
 public protocol FetchedResultsControllerProtocol<FetchedObject>: DoublyObservableObject {
     associatedtype FetchedObject: FetchableObject
 
-    typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
+    typealias SectionNameKeyPath = FetchedResultsController<FetchedObject>.SectionNameKeyPath
     typealias Section = FetchedResultsSection<FetchedObject>
 
     var definition: FetchDefinition<FetchedObject> { get }

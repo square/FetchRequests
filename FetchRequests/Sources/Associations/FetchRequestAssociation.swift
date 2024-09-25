@@ -31,8 +31,18 @@ public class FetchRequestAssociation<FetchedObject: FetchableObject> {
     /// Start observing a source object
     public typealias TokenGenerator<Source, Token: ObservableToken> = (Source) -> Token?
 
+#if compiler(>=6)
     internal typealias AssociationKeyPath = PartialKeyPath<FetchedObject> & Sendable
+#else
+    internal typealias AssociationKeyPath = PartialKeyPath<FetchedObject>
+#endif
     internal typealias ReferenceGenerator = (FetchedObject) -> AssociatedValueReference
+
+#if compiler(>=6)
+    public typealias EntityKeyPath<T> = KeyPath<FetchedObject, T> & Sendable
+#else
+    public typealias EntityKeyPath<T> = KeyPath<FetchedObject, T>
+#endif
 
     internal let keyPath: AssociationKeyPath
     internal let request: AssocationRequestByParent<Any>
@@ -87,7 +97,7 @@ public class FetchRequestAssociation<FetchedObject: FetchableObject> {
 public extension FetchRequestAssociation {
     /// Association by non-optional entity ID
     convenience init<AssociatedEntity, AssociatedEntityID: Equatable>(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>
     ) {
         self.init(
@@ -115,7 +125,7 @@ public extension FetchRequestAssociation {
 
     /// Association by optional entity ID
     convenience init<AssociatedEntity, AssociatedEntityID: Equatable>(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID?> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>
     ) {
         self.init(
@@ -152,7 +162,7 @@ public extension FetchRequestAssociation {
         AssociatedEntityID: Equatable,
         Token: ObservableToken<RawAssociatedEntity>
     >(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         creationObserved: @escaping CreationObserved<AssociatedEntity, RawAssociatedEntity>
@@ -219,7 +229,7 @@ public extension FetchRequestAssociation {
         AssociatedEntityID: Equatable,
         Token: ObservableToken<RawAssociatedEntity>
     >(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID?> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         creationObserved: @escaping CreationObserved<AssociatedEntity, RawAssociatedEntity>
@@ -285,7 +295,7 @@ public extension FetchRequestAssociation {
         AssociatedEntityID: Equatable,
         Token: ObservableToken<AssociatedEntity>
     >(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         preferExistingValueOnCreate: Bool
@@ -309,7 +319,7 @@ public extension FetchRequestAssociation {
         AssociatedEntityID: Equatable,
         Token: ObservableToken<AssociatedEntity>
     >(
-        keyPath: KeyPath<FetchedObject, AssociatedEntityID?> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntityID?>,
         request: @escaping AssocationRequestByParent<AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<FetchedObject, Token>,
         preferExistingValueOnCreate: Bool
@@ -337,7 +347,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: AssociatedEntity.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedEntity.ID> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntity.ID>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
@@ -427,7 +437,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: AssociatedEntity.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedEntity.ID?> & Sendable,
+        keyPath: EntityKeyPath<AssociatedEntity.ID?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<AssociatedEntity.ID, Token>,
         preferExistingValueOnCreate: Bool
@@ -525,7 +535,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]> & Sendable,
+        keyPath: EntityKeyPath<[AssociatedEntity.ID]>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
@@ -547,7 +557,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
-        keyPath: KeyPath<FetchedObject, [Reference]> & Sendable,
+        keyPath: EntityKeyPath<[Reference]>,
         request: @escaping AssocationRequestByID<Reference, AssociatedEntity>,
         referenceAccessor: @escaping @Sendable (AssociatedEntity) -> Reference,
         creationTokenGenerator: @escaping TokenGenerator<[Reference], Token>,
@@ -653,7 +663,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedEntity.ID]?> & Sendable,
+        keyPath: EntityKeyPath<[AssociatedEntity.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedEntity.ID, AssociatedEntity>,
         creationTokenGenerator: @escaping TokenGenerator<[AssociatedEntity.ID], Token>,
         creationObserved: @escaping CreationObserved<[AssociatedEntity], AssociatedEntity.RawData>
@@ -675,7 +685,7 @@ public extension FetchRequestAssociation {
         Token: ObservableToken<AssociatedEntity.RawData>
     >(
         for associatedType: [AssociatedEntity].Type,
-        keyPath: KeyPath<FetchedObject, [Reference]?> & Sendable,
+        keyPath: EntityKeyPath<[Reference]?>,
         request: @escaping AssocationRequestByID<Reference, AssociatedEntity>,
         referenceAccessor: @escaping @Sendable (AssociatedEntity) -> Reference,
         creationTokenGenerator: @escaping TokenGenerator<[Reference], Token>,
@@ -784,7 +794,7 @@ public extension FetchRequestAssociation {
         EntityID: FetchableEntityID,
         Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
-        keyPath: KeyPath<FetchedObject, EntityID> & Sendable,
+        keyPath: EntityKeyPath<EntityID>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
     ) {
@@ -856,7 +866,7 @@ public extension FetchRequestAssociation {
         EntityID: FetchableEntityID,
         Token: ObservableToken<EntityID.FetchableEntity.RawData>
     >(
-        keyPath: KeyPath<FetchedObject, EntityID?> & Sendable,
+        keyPath: EntityKeyPath<EntityID?>,
         creationTokenGenerator: @escaping TokenGenerator<EntityID, Token>,
         preferExistingValueOnCreate: Bool
     ) {

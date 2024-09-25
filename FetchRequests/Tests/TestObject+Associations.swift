@@ -172,7 +172,7 @@ extension TestObject {
 extension FetchRequestAssociation where FetchedObject == TestObject {
     convenience init<AssociatedType: TestObject>(
         for associatedType: AssociatedType.Type,
-        keyPath: KeyPath<FetchedObject, AssociatedType.ID?> & Sendable,
+        keyPath: EntityKeyPath<AssociatedType.ID?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
@@ -196,7 +196,7 @@ extension FetchRequestAssociation where FetchedObject == TestObject {
 
     convenience init<AssociatedType: TestObject>(
         for associatedType: [AssociatedType].Type,
-        keyPath: KeyPath<FetchedObject, [AssociatedType.ID]?> & Sendable,
+        keyPath: EntityKeyPath<[AssociatedType.ID]?>,
         request: @escaping AssocationRequestByID<AssociatedType.ID, AssociatedType>
     ) {
         self.init(
