@@ -96,7 +96,7 @@ public class CollapsibleSectionsFetchedResultsController<FetchedObject: Fetchabl
     public typealias Section = CollapsibleResultsSection<FetchedObject>
     public typealias SectionCollapseCheck = (_ section: BackingFetchController.Section) -> Bool
     public typealias SectionCollapseConfigCheck = (_ section: BackingFetchController.Section) -> SectionCollapseConfig?
-    public typealias SectionNameKeyPath = KeyPath<FetchedObject, String> & Sendable
+    public typealias SectionNameKeyPath = FetchedResultsController<FetchedObject>.SectionNameKeyPath
 
     private var changedSectionsDuringContentChange: Set<String> = []
     private var deletedSectionsDuringContentChange: Set<String> = []
@@ -418,18 +418,50 @@ private class DelegateThunk<FetchedObject: FetchableObject> {
 
     private weak var parent: (any Parent)?
 
+#if compiler(<6)
+    private let willChange: @MainActor (_ controller: Controller) -> Void
+    private let didChange: @MainActor (_ controller: Controller) -> Void
+
+    private let changeObject: @MainActor (_ controller: Controller, _ object: FetchedObject, _ change: FetchedResultsChange<IndexPath>) -> Void
+    private let changeSection: @MainActor (_ controller: Controller, _ section: Section, _ change: FetchedResultsChange<Int>) -> Void
+#endif
+
     init(_ parent: some Parent) {
         self.parent = parent
+
+#if compiler(<6)
+        willChange = { [weak parent] controller in
+            parent?.controllerWillChangeContent(controller)
+        }
+        didChange = { [weak parent] controller in
+            parent?.controllerDidChangeContent(controller)
+        }
+
+        changeObject = { [weak parent] controller, object, change in
+            parent?.controller(controller, didChange: object, for: change)
+        }
+        changeSection = { [weak parent] controller, section, change in
+            parent?.controller(controller, didChange: section, for: change)
+        }
+#endif
     }
 }
 
 extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: Controller) {
+#if compiler(>=6)
         self.parent?.controllerWillChangeContent(controller)
+#else
+        self.willChange(controller)
+#endif
     }
 
     func controllerDidChangeContent(_ controller: Controller) {
+#if compiler(>=6)
         self.parent?.controllerDidChangeContent(controller)
+#else
+        self.didChange(controller)
+#endif
     }
 
     func controller(
@@ -437,7 +469,11 @@ extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
         didChange object: FetchedObject,
         for change: FetchedResultsChange<IndexPath>
     ) {
+#if compiler(>=6)
         self.parent?.controller(controller, didChange: object, for: change)
+#else
+        self.changeObject(controller, object, change)
+#endif
     }
 
     func controller(
@@ -445,6 +481,10 @@ extension DelegateThunk: CollapsibleSectionsFetchedResultsControllerDelegate {
         didChange section: Section,
         for change: FetchedResultsChange<Int>
     ) {
+#if compiler(>=6)
         self.parent?.controller(controller, didChange: section, for: change)
+#else
+        self.changeSection(controller, section, change)
+#endif
     }
 }

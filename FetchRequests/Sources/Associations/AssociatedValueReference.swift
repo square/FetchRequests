@@ -10,10 +10,16 @@ import Foundation
 
 // MARK: - Internal Structures
 
-struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable, Sendable {
+struct AssociatedValueKey<FetchedObject: FetchableObject>: Hashable {
     var id: FetchedObject.ID
-    var keyPath: PartialKeyPath<FetchedObject> & Sendable
+    var keyPath: FetchRequestAssociation<FetchedObject>.AssociationKeyPath
 }
+
+#if compiler(>=6)
+extension AssociatedValueKey: Sendable {}
+#else
+extension AssociatedValueKey: @unchecked Sendable {}
+#endif
 
 class FetchableAssociatedValueReference<Entity: FetchableObject>: AssociatedValueReference, @unchecked Sendable {
     private var observations: [Entity: [InvalidatableToken]] = [:]

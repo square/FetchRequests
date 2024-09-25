@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = macos_deployment_target
   s.visionos.deployment_target = visionos_deployment_target
 
-  s.swift_version = '5.0'
+  s.swift_versions = ['5.0', '6.0']
 
   s.source_files = [
     'FetchRequests/simplediff-swift/simplediff.swift',
