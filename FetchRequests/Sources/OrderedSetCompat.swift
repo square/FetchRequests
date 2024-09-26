@@ -38,6 +38,10 @@ struct OrderedSet<Element: Hashable> {
     }
 }
 
+// MARK: - Sendable
+
+extension OrderedSet: Sendable where Element: Sendable {}
+
 // MARK: - Capacity
 
 extension OrderedSet {
