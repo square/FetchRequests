@@ -19,7 +19,7 @@ jobs:
           - tvOS
           - watchOS
           - macOS
-          - visionOS
+          #- visionOS # These runtimes are missing?
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -29,7 +29,8 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           scheme: FetchRequests-${{ matrix.platform }}
-          swift: ~6.0
+          #swift: ~6.0
+          xcode: '16.0.0' # It's currently preferring 16.1 beta
           action: test
           code-coverage: true
       - name: Code Coverage
@@ -56,6 +57,7 @@ jobs:
         with:
           platform: iOS
           scheme: iOS Example
-          swift: ~6.0
+          #swift: ~6.0
+          xcode: '16.0.0' # It's currently preferring 16.1 beta
           action: build
           working-directory: Example
